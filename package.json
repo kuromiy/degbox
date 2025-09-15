@@ -1,0 +1,39 @@
+{
+  "name": "degbox",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/main/index.mjs",
+  "scripts": {
+    "dev": "tsx ./cmd/dev.ts",
+    "test": "echo \"Error: no test specified\"",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuromiy/degbox.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/kuromiy/degbox/issues"
+  },
+  "homepage": "https://github.com/kuromiy/degbox#readme",
+  "devDependencies": {
+    "@biomejs/biome": "2.2.4",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@types/node": "^24.3.1",
+    "@vitejs/plugin-react": "^5.0.2",
+    "electron": "^38.1.0",
+    "esbuild": "^0.25.9",
+    "husky": "^9.1.7",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5"
+  },
+  "dependencies": {
+    "electron-flow": "github:kuromiy/electron-flow#v1.0.3"
+  }
+}
