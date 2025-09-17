@@ -3,8 +3,13 @@ import { fileURLToPath } from "node:url";
 import { app, BrowserWindow } from "electron";
 import { registerAPI } from "./autogenerate/index.js";
 
+const IS_DEV =
+	process.env.NODE_ENV === "development" ||
+	(!app.isPackaged && !process.env.IS_TEST);
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const preloadPath = join(__dirname, "../preload/index.js");
+const rendererPath = join(__dirname, "../renderer/index.html");
 
 app.whenReady().then(async () => {
 	const window = new BrowserWindow({
@@ -15,8 +20,12 @@ app.whenReady().then(async () => {
 		},
 	});
 
-	window.loadURL("http://localhost:5173");
-	window.webContents.openDevTools();
+	if (IS_DEV) {
+		window.loadURL("http://localhost:5173");
+		window.webContents.openDevTools();
+	} else {
+		window.loadFile(rendererPath);
+	}
 
 	window.setMenuBarVisibility(false);
 

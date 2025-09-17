@@ -36,7 +36,7 @@
 			"includes": [
 				"src/main/autogenerate/register.ts",
 				"src/preload/autogenerate/register.ts",
-				"src/renderer/autogenerate/register.ts"
+				"src/renderer/autogenerate/register.tsx"
 			],
 			"formatter": {
 				"enabled": false
