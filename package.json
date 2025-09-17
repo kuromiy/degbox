@@ -33,6 +33,7 @@
 		"@types/react": "^19.1.13",
 		"@types/react-dom": "^19.1.9",
 		"@vitejs/plugin-react": "^5.0.2",
+		"drizzle-kit": "^0.31.4",
 		"electron": "^38.1.0",
 		"esbuild": "^0.25.9",
 		"husky": "^9.1.7",
@@ -42,9 +43,12 @@
 		"vite": "^7.1.5"
 	},
 	"dependencies": {
+		"@libsql/client": "^0.15.15",
+		"drizzle-orm": "^0.44.5",
 		"electron-flow": "github:kuromiy/electron-flow#v1.0.4",
 		"react": "^19.1.1",
 		"react-dom": "^19.1.1",
-		"react-router-dom": "^7.9.1"
+		"react-router-dom": "^7.9.1",
+		"winston": "^3.17.0"
 	}
 }
