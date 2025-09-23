@@ -1,0 +1,54 @@
+{
+	"name": "degbox",
+	"version": "1.0.0",
+	"description": "",
+	"main": "./dist/main/index.mjs",
+	"scripts": {
+		"dev": "tsx ./cmd/dev.ts",
+		"build": "tsx ./cmd/build.ts",
+		"test:e2e": "npx playwright test",
+		"prepare": "husky",
+		"lint": "npx @biomejs/biome check",
+		"check": "tsc --noEmit"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kuromiy/degbox.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "UNLICENSED",
+	"type": "module",
+	"bugs": {
+		"url": "https://github.com/kuromiy/degbox/issues"
+	},
+	"homepage": "https://github.com/kuromiy/degbox#readme",
+	"devDependencies": {
+		"@biomejs/biome": "2.2.4",
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
+		"@playwright/test": "^1.55.0",
+		"@tailwindcss/vite": "^4.1.13",
+		"@types/node": "^24.3.1",
+		"@types/react": "^19.1.13",
+		"@types/react-dom": "^19.1.9",
+		"@vitejs/plugin-react": "^5.0.2",
+		"drizzle-kit": "^0.31.4",
+		"electron": "^38.1.0",
+		"esbuild": "^0.25.9",
+		"husky": "^9.1.7",
+		"tailwindcss": "^4.1.13",
+		"tsx": "^4.20.5",
+		"typescript": "^5.9.2",
+		"vite": "^7.1.5"
+	},
+	"dependencies": {
+		"@libsql/client": "^0.15.15",
+		"drizzle-orm": "^0.44.5",
+		"electron-flow": "github:kuromiy/electron-flow#v1.0.4",
+		"react": "^19.1.1",
+		"react-dom": "^19.1.1",
+		"react-router-dom": "^7.9.1",
+		"winston": "^3.17.0"
+	}
+}
