@@ -5,7 +5,7 @@ import type { FileSystemOperationCommand } from "../index.js";
  * ディレクトリ作成コマンド
  * 指定されたディレクトリを作成する
  */
-export class DirecctoryCreateCommand implements FileSystemOperationCommand {
+export class DirectoryCreateCommand implements FileSystemOperationCommand {
 	constructor(private path: string) {}
 
 	public async execute() {

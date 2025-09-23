@@ -1,4 +1,4 @@
-import { DirecctoryCreateCommand } from "./commands/directory/directoryCreate.js";
+import { DirectoryCreateCommand } from "./commands/directory/directoryCreate.js";
 import { DirectoryDeleteCommand } from "./commands/directory/directoryDelete.js";
 import { FileCopyCommand } from "./commands/file/fileCopy.js";
 import { FileDeleteCommand } from "./commands/file/fileDelete.js";
@@ -99,7 +99,7 @@ class FileSystemInvoker implements FileSystem {
 	}
 
 	public async createDirectory(path: string) {
-		const command = new DirecctoryCreateCommand(path);
+		const command = new DirectoryCreateCommand(path);
 		await command.execute();
 		this.commands.push(command);
 	}
