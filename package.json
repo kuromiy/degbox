@@ -6,6 +6,8 @@
 	"scripts": {
 		"dev": "tsx ./cmd/dev.ts",
 		"build": "tsx ./cmd/build.ts",
+		"db:generate": "npx drizzle-kit generate",
+		"db:migrate": "npx drizzle-kit migrate",
 		"test:e2e": "npx playwright test",
 		"prepare": "husky",
 		"lint": "npx @biomejs/biome check",
@@ -45,7 +47,7 @@
 	"dependencies": {
 		"@libsql/client": "^0.15.15",
 		"drizzle-orm": "^0.44.5",
-		"electron-flow": "github:kuromiy/electron-flow#v1.0.4",
+		"electron-flow": "github:kuromiy/electron-flow#v1.0.7",
 		"react": "^19.1.1",
 		"react-dom": "^19.1.1",
 		"react-router-dom": "^7.9.1",

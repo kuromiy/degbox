@@ -28,6 +28,7 @@ export const AUTHORS = sqliteTable("authors", {
 export const CONTENTS = sqliteTable("contents", {
 	id: text("id").primaryKey(),
 	path: text("path").notNull(),
+	name: text("name").notNull(),
 	hash: text("hash").notNull(),
 });
 

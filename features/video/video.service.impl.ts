@@ -1,0 +1,121 @@
+import { spawn } from "node:child_process";
+import type { VideoService } from "./video.service.js";
+
+const FFMPEG_PATH =
+	"D:\\tools\\ffmpeg-6.0-full_build\\ffmpeg-6.0-full_build\\bin\\ffmpeg";
+
+export class VideoServiceImpl implements VideoService {
+	generateThumbnail(inputPath: string, outputPath: string): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			const process = spawn(FFMPEG_PATH, [
+				"-i",
+				inputPath, // 入力動画ファイル
+				"-vf",
+				"thumbnail=1000", // ビデオフィルタ: 1000フレームごとに最も代表的なフレームを選択
+				"-frames:v",
+				"1", // 出力するフレーム数を1枚に制限
+				outputPath, // 出力画像ファイルパス
+			]);
+			// このイベントでログを出力していると連続処理しているとハングアップして処理が止まるかも？
+			process.stdout.on("data", (data) => {
+				console.log(`createThumbnails stdout: ${data}`);
+			});
+			process.stderr.on("data", (data) => {
+				console.log(`createThumbnails stderr: ${data}`);
+			});
+
+			// 対象動画ファイルが壊れているとこのイベントが発生
+			process.on("error", (err) => {
+				console.log(`createThumbnails process error: ${err.message}`);
+				reject(err);
+			});
+
+			process.stdout.on("end", () => {
+				console.log("createThumbnails stdout ended");
+			});
+
+			process.stderr.on("end", () => {
+				console.log("createThumbnails stderr ended");
+			});
+
+			// 出力ファイル名に拡張子がないとcode: 1, signal: null で終了するためエラー
+			process.once("close", (code, signal) => {
+				if (code === 0) {
+					console.log(`createThumbnails completed successfully`);
+					resolve();
+				} else {
+					console.log(
+						`createThumbnails failed with code: ${code}, signal: ${signal}`,
+					);
+					reject(
+						new Error(`Process exited with code: ${code}, signal: ${signal}`),
+					);
+				}
+			});
+		});
+	}
+	generateThumbnailGif(inputPath: string, outputPath: string): Promise<void> {
+		return new Promise<void>((resolve, _) => {
+			const process = spawn(FFMPEG_PATH, [
+				"-i",
+				inputPath, // 入力動画ファイルパス
+				"-r",
+				"20", // フレームレート: 20fps（1秒間に20フレーム）
+				"-ss",
+				"0", // 開始地点: 0秒から開始
+				"-t",
+				"5", // 切り取り時間: 5秒間のクリップを作成
+				outputPath, // 出力GIFファイルパス
+			]);
+			process.stdout.on("data", (data) => {
+				console.log(`createThumbnailsGif success: ${data}`);
+			});
+			process.stderr.on("data", (data) => {
+				console.log(`createThumbnailsGif error: ${data}`);
+			});
+			process.once("close", (code, signal) => {
+				console.log(
+					`createThumbnailsGif close: code: ${code}, signal: ${signal}`,
+				);
+				resolve();
+			});
+		});
+	}
+	generateHls(
+		inputPath: string,
+		outputTsPath: string,
+		outputM3u8Path: string,
+	): Promise<void> {
+		return new Promise<void>((resolve, _) => {
+			const process = spawn(FFMPEG_PATH, [
+				"-i",
+				inputPath, // 入力動画ファイルパス
+				"-c:v",
+				"copy", // ビデオコーデック: コピー（再エンコードしない）
+				"-c:a",
+				"copy", // オーディオコーデック: コピー（再エンコードしない）
+				"-f",
+				"hls", // 出力フォーマット: HLS（HTTP Live Streaming）
+				"-hls_time",
+				"15", // セグメント長: 各tsファイルを15秒ごとに分割
+				"-hls_playlist_type",
+				"vod", // プレイリストタイプ: VOD（Video On Demand）用
+				"-hls_base_url",
+				`hls/`, // セグメントファイルのベースURL
+				"-hls_segment_filename",
+				outputTsPath, // セグメントファイル名のパターン（例: segment_%03d.ts）
+				outputM3u8Path, // 出力プレイリストファイル（.m3u8）パス
+			]);
+			process.stdout.on("data", (data) => {
+				console.log(`createHLS success: ${data}`);
+			});
+			process.stderr.on("data", (data) => {
+				console.log(`createHLS error: ${data}`);
+			});
+			process.once("close", (code, signal) => {
+				console.log(`createHLS close: code: ${code}, signal: ${signal}`);
+				resolve();
+			});
+		});
+	}
+}

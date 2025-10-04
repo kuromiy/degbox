@@ -1,8 +1,16 @@
 node_modules
 dist
+/content
+local.db
+tests/api/datas/
 
 # Playwright
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# mcp
+.claude
+.mcp.json
+.serena

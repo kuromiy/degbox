@@ -3,13 +3,35 @@ import type { Context } from "../context.js";
 import { ipcMain, type IpcMainInvokeEvent } from "electron";
 import { success, failure } from "electron-flow";
 
-import { checkHealth } from "../apis/health.check.api.js";
+import { sujestTags } from "../apis/tags/tag.sujest.api.js";
+import { pickupVideo } from "../apis/videos/video.pickup.api.js";
+import { registerVideo } from "../apis/videos/video.register.api.js";
 
 export const autoGenerateHandlers = {
-    "checkHealth": (ctx: Omit<Context, "event">) => {
+    "sujestTags": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await sujestTags({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
+    "pickupVideo": (ctx: Omit<Context, "event">) => {
         return async (event: IpcMainInvokeEvent, _: unknown) => {
             try {
-                const result = await checkHealth({ ...ctx, event }, );
+                const result = await pickupVideo({ ...ctx, event }, );
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
+    "registerVideo": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await registerVideo({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
                 return failure(e);
