@@ -1,8 +1,9 @@
+import { spawn } from "node:child_process";
 import { rm } from "node:fs/promises";
-import tailwindccss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import * as flow from "electron-flow";
 import esbuild from "esbuild";
+import * as hydraBuilder from "react-hydra-builder";
 import * as vite from "vite";
 
 await rm("./dist", { recursive: true, force: true });
@@ -21,9 +22,21 @@ await flow.build({
 	// }
 });
 
+// Tailwind CSSのビルド
+await buildTailwindcssByRenderer();
+await buildTailwindcssByServer();
+
+// サーバー側ページビルド
+await hydraBuilder.build({
+	buildTargetDir: "./src/server/view/pages",
+	buildTargetFileSuffix: "page.tsx",
+	outputDir: "./public/js",
+	metadataPath: "./dist/main/metadata.json",
+});
+
 // レンダラー
 await vite.build({
-	plugins: [react(), tailwindccss()],
+	plugins: [react()],
 	build: {
 		outDir: "../../dist/renderer",
 	},
@@ -52,3 +65,69 @@ await esbuild.build({
 	},
 	format: "esm",
 });
+
+async function buildTailwindcssByRenderer(): Promise<void> {
+	return new Promise((resolve, reject) => {
+		const ps = spawn("npx", [
+			"tailwindcss",
+			"-i",
+			"index.css",
+			"-o",
+			"./src/renderer/index.css",
+		]);
+		ps.stdout.on("data", (data) => {
+			console.log(`[Tailwindcss] ${data.toString().trim()}`);
+		});
+		ps.stderr.on("data", (data) => {
+			console.log(`[Tailwindcss] ${data.toString().trim()}`);
+		});
+		ps.on("error", (error) => {
+			console.error(
+				`[Process Error] Tailwindcssプロセスの起動に失敗しました:`,
+				error,
+			);
+			reject(error);
+		});
+		ps.on("close", (code) => {
+			console.log(`tailwindcss closed with code ${code}`);
+			if (code === 0) {
+				resolve();
+			} else {
+				reject(new Error(`Tailwindcss process exited with code ${code}`));
+			}
+		});
+	});
+}
+
+async function buildTailwindcssByServer(): Promise<void> {
+	return new Promise((resolve, reject) => {
+		const ps = spawn("npx", [
+			"tailwindcss",
+			"-i",
+			"index.css",
+			"-o",
+			"./public/css/index.css",
+		]);
+		ps.stdout.on("data", (data) => {
+			console.log(`[Tailwindcss] ${data.toString().trim()}`);
+		});
+		ps.stderr.on("data", (data) => {
+			console.log(`[Tailwindcss] ${data.toString().trim()}`);
+		});
+		ps.on("error", (error) => {
+			console.error(
+				`[Process Error] Tailwindcssプロセスの起動に失敗しました:`,
+				error,
+			);
+			reject(error);
+		});
+		ps.on("close", (code) => {
+			console.log(`tailwindcss closed with code ${code}`);
+			if (code === 0) {
+				resolve();
+			} else {
+				reject(new Error(`Tailwindcss process exited with code ${code}`));
+			}
+		});
+	});
+}

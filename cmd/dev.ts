@@ -1,10 +1,10 @@
 import { spawn } from "node:child_process";
 import { rm } from "node:fs/promises";
 import { exit } from "node:process";
-import tailwindccss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { watchBuild } from "electron-flow";
 import esbuild from "esbuild";
+import * as hydraBuilder from "react-hydra-builder";
 import { createServer } from "vite";
 
 // 初回実行はviteキャッシュを削除(net::err_aborted 504 (outdated optimize dep)が発生するため)
@@ -24,9 +24,22 @@ await watchBuild({
 	// }
 });
 
+// Tailwind CSSのビルド監視
+// TODO: tailwindビルドが終わる前にrendererのviteサーバーが起動してしまう問題の解決
+const tailwindcssPsByRenderer = watchBuildTailwindcssByRenderer();
+const tailwindcssPsByServer = watchBuildTailwindcssByServer();
+
+// サーバー側ページビルド
+await hydraBuilder.watchBuild({
+	buildTargetDir: "./src/server/view/pages",
+	buildTargetFileSuffix: "page.tsx",
+	outputDir: "./public/js",
+	metadataPath: "./dist/main/metadata.json",
+});
+
 // レンダラープロセス起動
 const rendererProcess = await createServer({
-	plugins: [react(), tailwindccss()],
+	plugins: [react()],
 	build: {
 		outDir: "../../dist/renderer",
 	},
@@ -117,5 +130,62 @@ ps.on("close", async (code) => {
 	console.log(`electron closed with code ${code}`);
 	await mainCtx.dispose();
 	await rendererProcess.close();
+	await preloadCtx.dispose();
+	tailwindcssPsByRenderer.kill();
+	tailwindcssPsByServer.kill();
 	exit();
 });
+
+function watchBuildTailwindcssByRenderer() {
+	const ps = spawn("npx", [
+		"tailwindcss",
+		"-i",
+		"index.css",
+		"-o",
+		"./src/renderer/index.css",
+		"--watch",
+	]);
+	ps.stdout.on("data", (data) => {
+		console.log(`[Tailwindcss] ${data.toString().trim()}`);
+	});
+	ps.stderr.on("data", (data) => {
+		console.error(`[Tailwindcss Error] ${data.toString().trim()}`);
+	});
+	ps.on("error", (error) => {
+		console.error(
+			`[Process Error] Tailwindcssプロセスの起動に失敗しました:`,
+			error,
+		);
+	});
+	ps.on("close", (code) => {
+		console.log(`tailwindcss closed with code ${code}`);
+	});
+	return ps;
+}
+
+function watchBuildTailwindcssByServer() {
+	const ps = spawn("npx", [
+		"tailwindcss",
+		"-i",
+		"index.css",
+		"-o",
+		"./public/css/index.css",
+		"--watch",
+	]);
+	ps.stdout.on("data", (data) => {
+		console.log(`[Tailwindcss] ${data.toString().trim()}`);
+	});
+	ps.stderr.on("data", (data) => {
+		console.error(`[Tailwindcss Error] ${data.toString().trim()}`);
+	});
+	ps.on("error", (error) => {
+		console.error(
+			`[Process Error] Tailwindcssプロセスの起動に失敗しました:`,
+			error,
+		);
+	});
+	ps.on("close", (code) => {
+		console.log(`tailwindcss closed with code ${code}`);
+	});
+	return ps;
+}

@@ -3,6 +3,11 @@ dist
 /content
 local.db
 tests/api/datas/
+public/
+data/
+
+# Tailwind CSS
+src/renderer/index.css
 
 # Playwright
 /test-results/

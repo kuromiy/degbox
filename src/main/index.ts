@@ -1,7 +1,9 @@
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { serve } from "@hono/node-server";
 import { app, BrowserWindow, protocol } from "electron";
 import { Container } from "../../features/shared/container/index.js";
+import { createServer } from "../server/server.js";
 import { registerAPI, registerProtocol } from "./autogenerate/index.js";
 import { depend } from "./depend.injection.js";
 
@@ -24,6 +26,17 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 app.whenReady().then(async () => {
+	const container = new Container();
+	depend.forEach(({ token, provider }) => {
+		container.register(token, provider);
+	});
+
+	const application = createServer(container);
+	serve({
+		fetch: application.fetch,
+		port: 8080,
+	});
+
 	const window = new BrowserWindow({
 		width: 320 * 4,
 		height: 320 * 3,
@@ -41,10 +54,6 @@ app.whenReady().then(async () => {
 
 	window.setMenuBarVisibility(false);
 
-	const container = new Container();
-	depend.forEach(({ token, provider }) => {
-		container.register(token, provider);
-	});
 	registerAPI({
 		container,
 	});

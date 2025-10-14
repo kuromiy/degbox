@@ -1,13 +1,11 @@
 import { isFailure } from "electron-flow/result";
-import { useActionState, useRef } from "react";
+import { useActionState } from "react";
 import { TagInput } from "../../../features/tag/tag.input.component.js";
 import { VideoInput } from "../../../features/video/video.input.component.js";
 import { ApiService } from "../autogenerate/register.js";
 
 const client = new ApiService();
 export default function IndexPage() {
-	const ref = useRef<HTMLFormElement>(null);
-
 	const [_, action] = useActionState<Error | null, FormData>(
 		async (_, formData) => {
 			const tags = formData.get("tags")?.toString();
@@ -29,7 +27,7 @@ export default function IndexPage() {
 	return (
 		<main className="flex justify-center">
 			<div className="w-full max-w-md">
-				<form ref={ref} action={action} className="flex flex-col gap-4">
+				<form action={action} className="flex flex-col gap-4">
 					<h1>動画登録</h1>
 					<VideoInput />
 					<TagInput />
