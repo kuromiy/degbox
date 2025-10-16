@@ -1,10 +1,12 @@
 import { spawn } from "node:child_process";
+import type { Logger } from "winston";
 import type { VideoService } from "./video.service.js";
 
 const FFMPEG_PATH =
 	"D:\\tools\\ffmpeg-6.0-full_build\\ffmpeg-6.0-full_build\\bin\\ffmpeg";
 
 export class VideoServiceImpl implements VideoService {
+	constructor(private readonly logger: Logger) {}
 	generateThumbnail(inputPath: string, outputPath: string): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			const process = spawn(FFMPEG_PATH, [
@@ -18,33 +20,33 @@ export class VideoServiceImpl implements VideoService {
 			]);
 			// このイベントでログを出力していると連続処理しているとハングアップして処理が止まるかも？
 			process.stdout.on("data", (data) => {
-				console.log(`createThumbnails stdout: ${data}`);
+				this.logger.debug(`createThumbnails stdout: ${data}`);
 			});
 			process.stderr.on("data", (data) => {
-				console.log(`createThumbnails stderr: ${data}`);
+				this.logger.debug(`createThumbnails stderr: ${data}`);
 			});
 
 			// 対象動画ファイルが壊れているとこのイベントが発生
 			process.on("error", (err) => {
-				console.log(`createThumbnails process error: ${err.message}`);
+				this.logger.error(`createThumbnails process error: ${err.message}`);
 				reject(err);
 			});
 
 			process.stdout.on("end", () => {
-				console.log("createThumbnails stdout ended");
+				this.logger.debug("createThumbnails stdout ended");
 			});
 
 			process.stderr.on("end", () => {
-				console.log("createThumbnails stderr ended");
+				this.logger.debug("createThumbnails stderr ended");
 			});
 
 			// 出力ファイル名に拡張子がないとcode: 1, signal: null で終了するためエラー
 			process.once("close", (code, signal) => {
 				if (code === 0) {
-					console.log(`createThumbnails completed successfully`);
+					this.logger.info(`createThumbnails completed successfully`);
 					resolve();
 				} else {
-					console.log(
+					this.logger.error(
 						`createThumbnails failed with code: ${code}, signal: ${signal}`,
 					);
 					reject(
@@ -68,13 +70,13 @@ export class VideoServiceImpl implements VideoService {
 				outputPath, // 出力GIFファイルパス
 			]);
 			process.stdout.on("data", (data) => {
-				console.log(`createThumbnailsGif success: ${data}`);
+				this.logger.debug(`createThumbnailsGif stdout: ${data}`);
 			});
 			process.stderr.on("data", (data) => {
-				console.log(`createThumbnailsGif error: ${data}`);
+				this.logger.debug(`createThumbnailsGif stderr: ${data}`);
 			});
 			process.once("close", (code, signal) => {
-				console.log(
+				this.logger.info(
 					`createThumbnailsGif close: code: ${code}, signal: ${signal}`,
 				);
 				resolve();
@@ -107,13 +109,13 @@ export class VideoServiceImpl implements VideoService {
 				outputM3u8Path, // 出力プレイリストファイル（.m3u8）パス
 			]);
 			process.stdout.on("data", (data) => {
-				console.log(`createHLS success: ${data}`);
+				this.logger.debug(`createHLS stdout: ${data}`);
 			});
 			process.stderr.on("data", (data) => {
-				console.log(`createHLS error: ${data}`);
+				this.logger.debug(`createHLS stderr: ${data}`);
 			});
 			process.once("close", (code, signal) => {
-				console.log(`createHLS close: code: ${code}, signal: ${signal}`);
+				this.logger.info(`createHLS close: code: ${code}, signal: ${signal}`);
 				resolve();
 			});
 		});

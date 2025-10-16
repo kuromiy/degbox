@@ -122,7 +122,7 @@ export const depend: DependencyEntry[] = [
 	},
 	{
 		token: TOKENS.VIDEO_SERVICE,
-		provider: (_: Container) => new VideoServiceImpl(),
+		provider: (c: Container) => new VideoServiceImpl(c.get(TOKENS.LOGGER)),
 	},
 
 	// action
