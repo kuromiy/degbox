@@ -5,16 +5,28 @@ import { sessionStore } from "../session.js";
 
 const SESSIONN_ID = "degbox-session-id";
 
-// TODO: 全体フローの見直し
 export const sessionMiddleware = factory.createMiddleware(async (c, next) => {
 	const sessionId = getCookie(c, SESSIONN_ID) || randomUUID();
 	const session = await sessionStore.getSession(sessionId);
-	if (!session) {
-		// TODO: 新規セッション作成
-		throw new Error("Session not found");
+
+	// セッションストアは新規セッションを自動作成するため、常に有効なセッションが返る
+	if (session) {
+		c.set("session", session);
 	}
-	c.set("session", session);
-	await next();
-	await sessionStore.setSession(sessionId, session);
-	setCookie(c, SESSIONN_ID, sessionId);
+
+	try {
+		await next();
+	} finally {
+		// エラー発生時もセッション状態を永続化
+		if (session) {
+			await sessionStore.setSession(sessionId, session);
+		}
+		setCookie(c, SESSIONN_ID, sessionId, {
+			httpOnly: true, // JavaScriptからのアクセスを防止
+			secure: false, // HTTP通信を許可（ローカルLAN環境）
+			sameSite: "Lax", // CSRF攻撃を防止
+			path: "/", // アプリ全体で有効
+			maxAge: 1800, // 30分 (sessionStoreのTTLと整合)
+		});
+	}
 });
