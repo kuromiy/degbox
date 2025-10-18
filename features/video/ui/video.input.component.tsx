@@ -1,6 +1,6 @@
 import { isFailure } from "electron-flow/result";
 import { useEffect, useRef, useState } from "react";
-import { ApiService } from "../../src/renderer/autogenerate/register.js";
+import { ApiService } from "../../../src/renderer/autogenerate/register.js";
 
 const client = new ApiService();
 

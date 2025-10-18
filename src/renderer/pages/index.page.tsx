@@ -1,7 +1,11 @@
 import { isFailure } from "electron-flow/result";
 import { useActionState } from "react";
-import { TagInput } from "../../../features/tag/tag.input.component.js";
-import { VideoInput } from "../../../features/video/video.input.component.js";
+import {
+	NeutralButton,
+	PositiveButton,
+} from "../../../features/shared/ui/button.component.js";
+import { TagInput } from "../../../features/tag/ui/tag.input.component.js";
+import { VideoInput } from "../../../features/video/ui/video.input.component.js";
 import { ApiService } from "../autogenerate/register.js";
 
 const client = new ApiService();
@@ -32,12 +36,8 @@ export default function IndexPage() {
 					<VideoInput />
 					<TagInput />
 					<div className="flex gap-4">
-						<button type="reset" className="px-4 py-2 border rounded-lg">
-							リセット
-						</button>
-						<button type="submit" className="px-4 py-2 border rounded-lg">
-							登録
-						</button>
+						<NeutralButton type="reset">リセット</NeutralButton>
+						<PositiveButton type="submit">登録</PositiveButton>
 					</div>
 				</form>
 			</div>

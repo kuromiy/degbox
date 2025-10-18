@@ -1,4 +1,8 @@
-import { TagInput } from "../../../../features/tag/tag.input.component.js";
+import {
+	NeutralButton,
+	PositiveButton,
+} from "../../../../features/shared/ui/button.component.js";
+import { TagInput } from "../../../../features/tag/ui/tag.input.component.js";
 
 export default function VideoRegisterPage(
 	formData?: Record<string, unknown>,
@@ -74,12 +78,8 @@ export default function VideoRegisterPage(
 					</div>
 
 					<div className="flex gap-4">
-						<button type="reset" className="px-4 py-2 border rounded-lg">
-							リセット
-						</button>
-						<button type="submit" className="px-4 py-2 border rounded-lg">
-							登録
-						</button>
+						<NeutralButton type="reset">リセット</NeutralButton>
+						<PositiveButton type="submit">登録</PositiveButton>
 					</div>
 				</form>
 			</div>
