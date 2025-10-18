@@ -36,16 +36,50 @@ export class Session<BODY> implements ISession<BODY> {
 
 class MemorySessionStore<BODY> implements ISessionStore<BODY> {
 	private _session: Record<string, ISession<BODY>> = {};
+	private lastAccess: Record<string, number> = {};
+	private lastCleanup = 0;
+	private readonly ttl: number;
+	private readonly CLEANUP_INTERVAL = 60 * 1000; // 1分に1回まで
+
+	constructor(ttlMs: number = 30 * 60 * 1000) {
+		this.ttl = ttlMs;
+	}
 
 	async getSession(id: string): Promise<ISession<BODY> | undefined> {
+		this.cleanup();
 		// セッションが存在しない場合は新規作成
 		if (!this._session[id]) {
 			this._session[id] = new Session<BODY>();
 		}
+		this.lastAccess[id] = Date.now();
 		return this._session[id];
 	}
+
 	async setSession(id: string, session: ISession<BODY>): Promise<void> {
 		this._session[id] = session;
+		this.lastAccess[id] = Date.now();
+	}
+
+	private cleanup(): void {
+		const now = Date.now();
+		// 前回のクリーンアップから一定時間経過していない場合はスキップ
+		if (now - this.lastCleanup < this.CLEANUP_INTERVAL) {
+			return;
+		}
+		this.lastCleanup = now;
+
+		for (const id in this.lastAccess) {
+			const lastAccessTime = this.lastAccess[id];
+			if (lastAccessTime !== undefined && now - lastAccessTime > this.ttl) {
+				delete this._session[id];
+				delete this.lastAccess[id];
+			}
+		}
+	}
+
+	destroy(): void {
+		this._session = {};
+		this.lastAccess = {};
 	}
 }
 
