@@ -1,4 +1,5 @@
 import { extname } from "node:path";
+import { csrf } from "hono/csrf";
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
@@ -36,6 +37,7 @@ app.get("/register", async (c) => {
 
 app.post(
 	"/register",
+	csrf(),
 	formValidatorMiddleware(registerVideoSchema),
 	async (c) => {
 		const { container } = c.var;
