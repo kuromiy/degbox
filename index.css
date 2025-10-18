@@ -1,1 +1,8 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+
+/*
+ * source(none)で自動検出を完全に無効化し、
+ * 以下の@sourceで明示的に指定したディレクトリのみを監視
+ */
+@source "src";
+@source "features";
