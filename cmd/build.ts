@@ -51,6 +51,7 @@ await esbuild.build({
 	bundle: true,
 	platform: "browser",
 	packages: "external",
+	sourcemap: true,
 });
 
 // メイン
@@ -64,6 +65,7 @@ await esbuild.build({
 		".js": ".mjs",
 	},
 	format: "esm",
+	sourcemap: true,
 });
 
 async function buildTailwindcssByRenderer(): Promise<void> {
