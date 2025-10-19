@@ -18,17 +18,22 @@ export class VideoDataSource implements VideoRepository {
 	}
 
 	async save(video: Video): Promise<Video> {
+		// 重複排除ヘルパー関数
+		const uniq = <T extends { id: string }>(arr: T[]) =>
+			Array.from(new Map(arr.map((x) => [x.id, x])).values());
+
+		const contents = uniq(video.contents);
+		const tags = uniq(video.tags);
+		const authors = uniq(video.authors);
+
 		// ビデオ本体を保存
 		await this.db
 			.insert(VIDEOS)
 			.values({
 				id: video.id,
 			})
-			.onConflictDoUpdate({
+			.onConflictDoNothing({
 				target: VIDEOS.id,
-				set: {
-					id: video.id,
-				},
 			});
 
 		// 既存の関連を削除
@@ -41,9 +46,9 @@ export class VideoDataSource implements VideoRepository {
 			.where(eq(VIDEOS_AUTHORS.videoId, video.id));
 
 		// コンテンツの関連を保存
-		if (video.contents.length > 0) {
+		if (contents.length > 0) {
 			await this.db.insert(VIDEOS_CONTENTS).values(
-				video.contents.map((content) => ({
+				contents.map((content) => ({
 					videoId: video.id,
 					contentId: content.id,
 				})),
@@ -51,9 +56,9 @@ export class VideoDataSource implements VideoRepository {
 		}
 
 		// タグの関連を保存
-		if (video.tags.length > 0) {
+		if (tags.length > 0) {
 			await this.db.insert(VIDEOS_TAGS).values(
-				video.tags.map((tag) => ({
+				tags.map((tag) => ({
 					videoId: video.id,
 					tagId: tag.id,
 				})),
@@ -61,9 +66,9 @@ export class VideoDataSource implements VideoRepository {
 		}
 
 		// 作者の関連を保存
-		if (video.authors.length > 0) {
+		if (authors.length > 0) {
 			await this.db.insert(VIDEOS_AUTHORS).values(
-				video.authors.map((author) => ({
+				authors.map((author) => ({
 					videoId: video.id,
 					authorId: author.id,
 				})),
