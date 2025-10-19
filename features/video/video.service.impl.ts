@@ -57,18 +57,23 @@ export class VideoServiceImpl implements VideoService {
 		});
 	}
 	generateThumbnailGif(inputPath: string, outputPath: string): Promise<void> {
-		return new Promise<void>((resolve, _) => {
+		return new Promise<void>((resolve, reject) => {
 			const process = spawn(FFMPEG_PATH, [
+				"-y",
 				"-i",
 				inputPath, // 入力動画ファイルパス
 				"-r",
-				"20", // フレームレート: 20fps（1秒間に20フレーム）
+				"20", // フレームレート: 20fps(1秒間に20フレーム)
 				"-ss",
 				"0", // 開始地点: 0秒から開始
 				"-t",
 				"5", // 切り取り時間: 5秒間のクリップを作成
 				outputPath, // 出力GIFファイルパス
 			]);
+			process.on("error", (err) => {
+				this.logger.error(`createThumbnailsGif process error: ${err.message}`);
+				reject(err);
+			});
 			process.stdout.on("data", (data) => {
 				this.logger.debug(`createThumbnailsGif stdout: ${data}`);
 			});
@@ -76,10 +81,17 @@ export class VideoServiceImpl implements VideoService {
 				this.logger.debug(`createThumbnailsGif stderr: ${data}`);
 			});
 			process.once("close", (code, signal) => {
-				this.logger.info(
-					`createThumbnailsGif close: code: ${code}, signal: ${signal}`,
-				);
-				resolve();
+				if (code === 0) {
+					this.logger.info(`createThumbnailsGif completed successfully`);
+					resolve();
+				} else {
+					this.logger.error(
+						`createThumbnailsGif failed with code: ${code}, signal: ${signal}`,
+					);
+					reject(
+						new Error(`Process exited with code: ${code}, signal: ${signal}`),
+					);
+				}
 			});
 		});
 	}
