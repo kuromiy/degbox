@@ -12,7 +12,7 @@ export class VideoAction {
 	) {}
 
 	async register(tags: Tag[], content: Content, author?: Author) {
-		// ビデオ登録
+		// ビデオエンティティ作成
 		const id = await this.repository.generateId();
 		const video = {
 			id,
@@ -20,7 +20,6 @@ export class VideoAction {
 			contents: [content],
 			authors: author ? [author] : [],
 		};
-		await this.repository.save(video);
 
 		// 各種メディアファイル生成（同じディレクトリ内）
 		const fullPath = join(content.path, content.name);
@@ -45,6 +44,8 @@ export class VideoAction {
 			join(outputDir, "preview.gif"),
 		);
 
-		return video;
+		// すべてのメディア生成が成功した後にビデオを保存
+		const saved = await this.repository.save(video);
+		return saved;
 	}
 }
