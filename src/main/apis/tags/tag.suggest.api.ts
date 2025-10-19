@@ -16,12 +16,15 @@ export async function suggestTags(ctx: Context, request: SuggestTagsRequest) {
 	logger.info("suggest tags", request);
 	const valid = suggestTagsSchema.safeParse(request);
 	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
+		logger.warn(
+			`Invalid request: ${valid.error?.message ?? "validation failed"}`,
+		);
 		throw new Error("Invalid request");
 	}
 	const { value } = valid.data;
-	if (value.length === 0) {
+	const query = value.trim();
+	if (query.length === 0) {
 		return [];
 	}
-	return await tagRepository.listByName(value);
+	return await tagRepository.listByName(query);
 }
