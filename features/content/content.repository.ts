@@ -1,4 +1,4 @@
-import type { Content } from "./content.model.ts";
+import type { Content } from "./content.model.js";
 
 export interface ContentRepository {
 	generateId(): Promise<string>;

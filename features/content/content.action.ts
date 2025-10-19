@@ -1,6 +1,6 @@
 import { basename, dirname } from "node:path";
-import type { ContentRepository } from "./content.repository.ts";
-import type { ContentService } from "./content.service.ts";
+import type { ContentRepository } from "./content.repository.js";
+import type { ContentService } from "./content.service.js";
 
 export class ContentAction {
 	constructor(

@@ -1,4 +1,4 @@
-import type { Tag } from "./tag.model.ts";
+import type { Tag } from "./tag.model.js";
 
 export interface TagRepository {
 	generateId(): Promise<string>;

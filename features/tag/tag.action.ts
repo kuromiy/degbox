@@ -1,5 +1,5 @@
-import type { Tag } from "./tag.model.ts";
-import type { TagRepository } from "./tag.repository.ts";
+import type { Tag } from "./tag.model.js";
+import type { TagRepository } from "./tag.repository.js";
 
 export class TagAction {
 	constructor(private readonly repository: TagRepository) {}
