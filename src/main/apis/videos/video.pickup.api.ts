@@ -23,7 +23,7 @@ export async function pickupVideo(ctx: Context) {
 		throw new Error("No file selected");
 	}
 	const unmanagedContent = { id, path };
-	logger.info(`Picked up video: ${path}`);
+	logger.info(`Picked up video: ${basename(path)}`);
 	await unmanagedContentRepository.save(unmanagedContent);
 	return { id: unmanagedContent.id, name: basename(unmanagedContent.path) };
 }
