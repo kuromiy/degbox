@@ -1,5 +1,5 @@
 // auto generated
-import type { sujestTags } from "../../main/apis/tags/tag.sujest.api.js";
+import type { suggestTags } from "../../main/apis/tags/tag.suggest.api.js";
 import type { pickupVideo } from "../../main/apis/videos/video.pickup.api.js";
 import type { registerVideo } from "../../main/apis/videos/video.register.api.js";
 import type { Result } from "electron-flow";
@@ -15,7 +15,7 @@ type ReturnTypeUnwrapped<T> = T extends (...args: infer _Args) => infer R
 declare global {
     interface Window {
         api: {
-            sujestTags: (value: string) => Promise<Result<ReturnTypeUnwrapped<typeof sujestTags>, Error>>;
+            suggestTags: (value: string) => Promise<Result<ReturnTypeUnwrapped<typeof suggestTags>, Error>>;
             pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, Error>>;
             registerVideo: (resourceId: string, rawTags: string, authorId: string | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
         };
@@ -24,15 +24,15 @@ declare global {
 
 // サービスインターフェース
 export interface ServiceIF {
-    sujestTags: (value: string) => Promise<Result<ReturnTypeUnwrapped<typeof sujestTags>, Error>>;
+    suggestTags: (value: string) => Promise<Result<ReturnTypeUnwrapped<typeof suggestTags>, Error>>;
     pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, Error>>;
     registerVideo: (resourceId: string, rawTags: string, authorId: string | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
 }
 
 // サービス実装クラス
 export class ApiService implements ServiceIF {
-    async sujestTags(value: string) {
-        return window.api.sujestTags(value);
+    async suggestTags(value: string) {
+        return window.api.suggestTags(value);
     }
 
     async pickupVideo() {
