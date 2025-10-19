@@ -88,8 +88,9 @@ export class VideoServiceImpl implements VideoService {
 		outputTsPath: string,
 		outputM3u8Path: string,
 	): Promise<void> {
-		return new Promise<void>((resolve, _) => {
+		return new Promise<void>((resolve, reject) => {
 			const process = spawn(FFMPEG_PATH, [
+				"-y",
 				"-i",
 				inputPath, // 入力動画ファイルパス
 				"-c:v",
@@ -108,6 +109,10 @@ export class VideoServiceImpl implements VideoService {
 				outputTsPath, // セグメントファイル名のパターン（例: segment_%03d.ts）
 				outputM3u8Path, // 出力プレイリストファイル（.m3u8）パス
 			]);
+			process.on("error", (err) => {
+				this.logger.error(`createHLS process error: ${err.message}`);
+				reject(err);
+			});
 			process.stdout.on("data", (data) => {
 				this.logger.debug(`createHLS stdout: ${data}`);
 			});
@@ -115,8 +120,17 @@ export class VideoServiceImpl implements VideoService {
 				this.logger.debug(`createHLS stderr: ${data}`);
 			});
 			process.once("close", (code, signal) => {
-				this.logger.info(`createHLS close: code: ${code}, signal: ${signal}`);
-				resolve();
+				if (code === 0) {
+					this.logger.info(`createHLS completed successfully`);
+					resolve();
+				} else {
+					this.logger.error(
+						`createHLS failed with code: ${code}, signal: ${signal}`,
+					);
+					reject(
+						new Error(`Process exited with code: ${code}, signal: ${signal}`),
+					);
+				}
 			});
 		});
 	}
