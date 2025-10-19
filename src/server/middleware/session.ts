@@ -3,10 +3,10 @@ import { getCookie, setCookie } from "hono/cookie";
 import { factory } from "../factory.js";
 import { sessionStore } from "../session.js";
 
-const SESSIONN_ID = "degbox-session-id";
+const SESSION_ID = "degbox-session-id";
 
 export const sessionMiddleware = factory.createMiddleware(async (c, next) => {
-	const sessionId = getCookie(c, SESSIONN_ID) || randomUUID();
+	const sessionId = getCookie(c, SESSION_ID) || randomUUID();
 	const session = await sessionStore.getSession(sessionId);
 
 	// セッションストアは新規セッションを自動作成するため、常に有効なセッションが返る
@@ -21,7 +21,7 @@ export const sessionMiddleware = factory.createMiddleware(async (c, next) => {
 		if (session) {
 			await sessionStore.setSession(sessionId, session);
 		}
-		setCookie(c, SESSIONN_ID, sessionId, {
+		setCookie(c, SESSION_ID, sessionId, {
 			httpOnly: true, // JavaScriptからのアクセスを防止
 			secure: false, // HTTP通信を許可（ローカルLAN環境）
 			sameSite: "Lax", // CSRF攻撃を防止
