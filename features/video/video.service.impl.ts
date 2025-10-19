@@ -2,8 +2,7 @@ import { spawn } from "node:child_process";
 import type { Logger } from "winston";
 import type { VideoService } from "./video.service.js";
 
-const FFMPEG_PATH =
-	"D:\\tools\\ffmpeg-6.0-full_build\\ffmpeg-6.0-full_build\\bin\\ffmpeg";
+const FFMPEG_PATH = process.env.FFMPEG_PATH || "ffmpeg";
 
 export class VideoServiceImpl implements VideoService {
 	constructor(private readonly logger: Logger) {}

@@ -6,6 +6,9 @@ tests/api/datas/
 public/
 data/
 
+# Environment variables
+.env
+
 # Tailwind CSS
 src/renderer/index.css
 
