@@ -1,3 +1,4 @@
+import { basename } from "node:path";
 import { PassThrough } from "node:stream";
 import type { Context } from "hono";
 import { createMiddleware } from "hono/factory";
@@ -44,6 +45,7 @@ async function render(
 		componentName,
 		"./dist/main/metadata.json",
 	);
+	const clientScript = basename(scriptFileName);
 	c.header("Content-Type", "text/html; charset=utf-8");
 	return stream(c, async (stream) => {
 		await new Promise<void>((resolve, reject) => {
@@ -66,7 +68,7 @@ async function render(
 					</body>
 				</html>,
 				{
-					bootstrapScripts: [`/public/js/${scriptFileName}`],
+					bootstrapScripts: [`/public/js/${clientScript}`],
 					bootstrapScriptContent: `window.__SERVER_DATA__ = ${safeJSONStringify(page.props)};`,
 					onShellReady() {
 						const passThrough = new PassThrough();
