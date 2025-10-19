@@ -12,6 +12,22 @@ export const renderMiddleware = createMiddleware(async (c, next) => {
 	await next();
 });
 
+/**
+ * Safely serialize JSON for inline script injection
+ * Prevents XSS by escaping:
+ * - < and > to prevent closing script tags
+ * - & to prevent HTML entity injection
+ * - U+2028 and U+2029 (line/paragraph separators) that can break string literals
+ */
+function safeJSONStringify(obj: unknown): string {
+	return JSON.stringify(obj)
+		.replace(/</g, "\\u003c")
+		.replace(/>/g, "\\u003e")
+		.replace(/&/g, "\\u0026")
+		.replace(/\u2028/g, "\\u2028")
+		.replace(/\u2029/g, "\\u2029");
+}
+
 async function render(
 	c: Context,
 	page: React.ReactElement,
@@ -51,7 +67,7 @@ async function render(
 				</html>,
 				{
 					bootstrapScripts: [`/public/js/${scriptFileName}`],
-					bootstrapScriptContent: `window.__SERVER_DATA__ = ${JSON.stringify(page.props)};`,
+					bootstrapScriptContent: `window.__SERVER_DATA__ = ${safeJSONStringify(page.props)};`,
 					onShellReady() {
 						const passThrough = new PassThrough();
 
