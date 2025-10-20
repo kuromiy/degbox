@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { createReadStream } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import type { FileSystem } from "../shared/filesystem/index.js";
 import type { ContentService } from "./content.service.js";
@@ -40,8 +40,13 @@ export class ContentServiceImpl implements ContentService {
 	}
 
 	async calcHash(path: string): Promise<string> {
-		const data = await readFile(path);
-		return createHash("sha256").update(data).digest("hex");
+		return await new Promise((resolve, reject) => {
+			const hash = createHash("sha256");
+			const rs = createReadStream(path);
+			rs.on("data", (chunk) => hash.update(chunk));
+			rs.on("end", () => resolve(hash.digest("hex")));
+			rs.on("error", reject);
+		});
 	}
 
 	async moveToDestination(
