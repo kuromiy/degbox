@@ -41,12 +41,14 @@ export function createElectron(): ElectronProcess {
 			);
 		});
 
-		ps.on("close", async (code) => {
-			console.log(`electron closed with code: ${code}`);
-			if (code !== null && cleanupHandler) {
-				await cleanupHandler(code);
-				exit();
+		ps.on("close", async (code, signal) => {
+			console.log(
+				`electron closed with code: ${code}, signal: ${signal ?? "none"}`,
+			);
+			if (cleanupHandler) {
+				await cleanupHandler(code ?? null);
 			}
+			exit(typeof code === "number" ? code : 0);
 		});
 	}
 
