@@ -45,7 +45,7 @@ class MemorySessionStore<BODY> implements ISessionStore<BODY> {
 		this.ttl = ttlMs;
 	}
 
-	async getSession(id: string): Promise<ISession<BODY> | undefined> {
+	async getSession(id: string): Promise<ISession<BODY>> {
 		this.cleanup();
 		// セッションが存在しない場合は新規作成
 		if (!this._session[id]) {

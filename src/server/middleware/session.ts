@@ -7,8 +7,7 @@ const SESSION_ID = "degbox-session-id";
 
 export const sessionMiddleware = factory.createMiddleware(async (c, next) => {
 	const sessionId = getCookie(c, SESSION_ID) || randomUUID();
-	// getSession()は実装上常にセッションを返す（存在しない場合は新規作成）
-	const session = (await sessionStore.getSession(sessionId))!;
+	const session = await sessionStore.getSession(sessionId);
 	c.set("session", session);
 
 	// セッションCookieを即座に設定

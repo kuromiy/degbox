@@ -4,6 +4,6 @@ export interface ISession<BODY> {
 }
 
 export interface ISessionStore<BODY> {
-	getSession(id: string): Promise<ISession<BODY> | undefined>;
+	getSession(id: string): Promise<ISession<BODY>>;
 	setSession(id: string, session: ISession<BODY>): Promise<void>;
 }
