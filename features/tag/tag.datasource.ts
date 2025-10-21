@@ -13,23 +13,30 @@ export class TagDataSource implements TagRepository {
 	}
 
 	async save(tag: Tag): Promise<Tag> {
+		// name が既に存在する場合は既存行をそのまま返す (id 不変を保証)
 		const result = await this.db
 			.insert(TAGS)
 			.values({
 				id: tag.id,
 				name: tag.name,
 			})
-			.onConflictDoUpdate({
-				target: TAGS.name,
-				set: { id: sql`excluded.id` }, // 競合時は既存のidを保持(no-op)
-			})
+			.onConflictDoNothing({ target: TAGS.name })
 			.returning();
 
-		const saved = result[0];
-		if (!saved) {
-			throw new Error(`Failed to save tag: ${tag.name}`);
+		// 挿入成功時は result[0] が返る、競合時は空配列
+		const inserted = result[0];
+		if (inserted) {
+			return inserted;
 		}
-		return saved;
+
+		// 競合時: 既存行を取得 (name はユニーク制約があるため必ず存在)
+		const existing = await this.findByName(tag.name);
+		if (!existing) {
+			throw new Error(
+				`Tag "${tag.name}" should exist after conflict, but not found`,
+			);
+		}
+		return existing;
 	}
 
 	async findById(id: string): Promise<Tag | undefined> {
