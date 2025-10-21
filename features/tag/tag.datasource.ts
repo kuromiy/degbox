@@ -21,7 +21,7 @@ export class TagDataSource implements TagRepository {
 			})
 			.onConflictDoUpdate({
 				target: TAGS.name,
-				set: { id: sql`id` }, // 競合時は既存のidを保持(no-op)
+				set: { id: sql`excluded.id` }, // 競合時は既存のidを保持(no-op)
 			})
 			.returning();
 
