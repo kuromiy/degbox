@@ -26,7 +26,21 @@ await flow.build({
 await buildTailwindcssByRenderer();
 await buildTailwindcssByServer();
 
-// サーバー側ページビルド
+// メインプロセスビルド（metadata.json生成）
+await esbuild.build({
+	entryPoints: ["./src/main/index.ts"],
+	outdir: "./dist/main",
+	bundle: true,
+	platform: "node",
+	packages: "external",
+	outExtension: {
+		".js": ".mjs",
+	},
+	format: "esm",
+	sourcemap: true,
+});
+
+// サーバー側ページビルド（metadata.json使用）
 await hydraBuilder.build({
 	buildTargetDir: "./src/server/view/pages",
 	buildTargetFileSuffix: "page.tsx",
@@ -51,20 +65,6 @@ await esbuild.build({
 	bundle: true,
 	platform: "browser",
 	packages: "external",
-	sourcemap: true,
-});
-
-// メイン
-await esbuild.build({
-	entryPoints: ["./src/main/index.ts"],
-	outdir: "./dist/main",
-	bundle: true,
-	platform: "node",
-	packages: "external",
-	outExtension: {
-		".js": ".mjs",
-	},
-	format: "esm",
 	sourcemap: true,
 });
 
