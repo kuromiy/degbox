@@ -1,11 +1,15 @@
-import { spawn } from "node:child_process";
 import { rm } from "node:fs/promises";
-import { exit } from "node:process";
-import tailwindccss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { watchBuild } from "electron-flow";
 import esbuild from "esbuild";
+import * as hydraBuilder from "react-hydra-builder";
 import { createServer } from "vite";
+import { createElectron } from "./lib/electron-process.js";
+import { createBuildLoggerPlugin } from "./lib/esbuild-logger-plugin.js";
+import { createTailwindWatcher } from "./lib/tailwind-watcher.js";
+
+// Electronプロセス管理を初期化
+const electron = createElectron();
 
 // 初回実行はviteキャッシュを削除(net::err_aborted 504 (outdated optimize dep)が発生するため)
 await rm("./node_modules/.vite", { recursive: true, force: true });
@@ -24,9 +28,30 @@ await watchBuild({
 	// }
 });
 
+// Tailwind CSSのビルド監視
+// TODO: tailwindビルドが終わる前にrendererのviteサーバーが起動してしまう問題の解決
+const tailwindcssPsByRenderer = createTailwindWatcher({
+	inputPath: "index.css",
+	outputPath: "./src/renderer/index.css",
+	label: "Tailwindcss (Renderer)",
+});
+const tailwindcssPsByServer = createTailwindWatcher({
+	inputPath: "index.css",
+	outputPath: "./public/css/index.css",
+	label: "Tailwindcss (Server)",
+});
+
+// サーバー側ページビルド
+await hydraBuilder.watchBuild({
+	buildTargetDir: "./src/server/view/pages",
+	buildTargetFileSuffix: "page.tsx",
+	outputDir: "./public/js",
+	metadataPath: "./dist/main/metadata.json",
+});
+
 // レンダラープロセス起動
 const rendererProcess = await createServer({
-	plugins: [react(), tailwindccss()],
+	plugins: [react()],
 	build: {
 		outDir: "../../dist/renderer",
 	},
@@ -57,65 +82,19 @@ const mainCtx = await esbuild.context({
 	},
 	format: "esm",
 	plugins: [
-		{
-			name: "build-logger",
-			setup(build) {
-				let buildStartTime: number;
-
-				build.onStart(() => {
-					buildStartTime = Date.now();
-					console.log(
-						`[${new Date().toLocaleTimeString()}] メインプロセスのビルドを開始しています...`,
-					);
-				});
-
-				build.onEnd((result) => {
-					const buildTime = Date.now() - buildStartTime;
-
-					if (result.errors.length > 0) {
-						console.log(
-							`[${new Date().toLocaleTimeString()}] メインプロセスのビルドに失敗しました (${buildTime}ms)`,
-						);
-						result.errors.forEach((error) => {
-							console.error(`エラー: ${error.text}`);
-							if (error.location) {
-								console.error(
-									`  ファイル: ${error.location.file}:${error.location.line}:${error.location.column}`,
-								);
-							}
-						});
-					} else {
-						console.log(
-							`[${new Date().toLocaleTimeString()}] メインプロセスのビルドが完了しました (${buildTime}ms)`,
-						);
-					}
-
-					if (result.warnings.length > 0) {
-						result.warnings.forEach((warning) => {
-							console.warn(`警告: ${warning.text}`);
-						});
-					}
-				});
-			},
-		},
+		createBuildLoggerPlugin({
+			processName: "メインプロセス",
+			onRebuildSuccess: () => electron.reload(),
+		}),
 	],
 });
 await mainCtx.watch();
 
-// electron起動
-const ps = spawn("./node_modules/electron/dist/electron.exe", ["."]);
-ps.stdout.on("data", (data) => {
-	console.log(`${data.toString().trim()}`);
-});
-ps.stderr.on("data", (data) => {
-	console.error(`[Electron Error] ${data.toString().trim()}`);
-});
-ps.on("error", (error) => {
-	console.error(`[Process Error] Electronプロセスの起動に失敗しました:`, error);
-});
-ps.on("close", async (code) => {
-	console.log(`electron closed with code ${code}`);
+// electron起動（cleanup処理を登録）
+electron.run(async (_) => {
 	await mainCtx.dispose();
 	await rendererProcess.close();
-	exit();
+	await preloadCtx.dispose();
+	tailwindcssPsByRenderer.kill();
+	tailwindcssPsByServer.kill();
 });

@@ -1,8 +1,24 @@
 node_modules
 dist
+/content
+local.db
+tests/api/datas/
+public/
+data/
+
+# Environment variables
+.env
+
+# Tailwind CSS
+src/renderer/index.css
 
 # Playwright
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# mcp
+.claude
+.mcp.json
+.serena
