@@ -1,5 +1,6 @@
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 import { exit } from "node:process";
+import electron from "electron";
 
 type ElectronProcess = {
 	run(cleanup: (code: number | null) => Promise<void>): void;
@@ -20,11 +21,17 @@ export function createElectron(): ElectronProcess {
 			ps = null;
 		}
 
+		// Electronバイナリパスを解決
+		const electronPath = electron as unknown as string;
+		if (!electronPath || typeof electronPath !== "string") {
+			throw new Error("Electronバイナリのパスを解決できませんでした");
+		}
+
 		// 新しいElectronプロセスを起動
 		console.log(
 			`[${new Date().toLocaleTimeString()}] Electronプロセスを起動しています...`,
 		);
-		ps = spawn("./node_modules/electron/dist/electron.exe", ["."]);
+		ps = spawn(electronPath, ["."], { stdio: "pipe" });
 
 		ps.stdout.on("data", (data) => {
 			console.log(`${data.toString().trim()}`);
