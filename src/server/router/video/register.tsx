@@ -47,13 +47,6 @@ app.post(
 			TOKENS.FILE_SYSTEM,
 			TOKENS.JOB_QUEUE,
 		);
-		// const body = await c.req.parseBody({ all: true });
-		// logger.info("register video", body);
-		// const valid = registerVideoSchema.safeParse(body);
-		// if (!valid.success) {
-		// 	logger.warn("Invalid request", valid.error);
-		// 	throw new Error("Invalid request");
-		// }
 		const valid = c.req.valid("form");
 		jobQueue.enqueue({
 			name: "register-video",
@@ -81,6 +74,7 @@ app.post(
 						const path = await fs.writeTempFile(buffer, extname(file.name));
 
 						// コンテンツの登録
+						logger.info("path", { path });
 						const content = await contentAction.register(path);
 						logger.info("Content", { content });
 

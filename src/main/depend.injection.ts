@@ -111,7 +111,8 @@ export const depend: DependencyEntry[] = [
 	},
 	{
 		token: TOKENS.VIDEO_REPOSITORY,
-		provider: (c: Container) => new VideoDataSource(c.get(TOKENS.DATABASE)),
+		provider: (c: Container) =>
+			new VideoDataSource(c.get(TOKENS.LOGGER), c.get(TOKENS.DATABASE)),
 	},
 
 	// service

@@ -5,6 +5,7 @@ import { factory } from "./factory.js";
 import { createContainerMiddleware } from "./middleware/container.js";
 import { renderMiddleware } from "./middleware/renderer.js";
 import { sessionMiddleware } from "./middleware/session.js";
+import fileRouter from "./router/file/get.js";
 import videoRouter from "./router/video/register.js";
 import type { Env } from "./types.js";
 
@@ -14,6 +15,7 @@ export function createServer(container: Container): Hono<Env> {
 	app.use(createContainerMiddleware(container));
 	app.use(sessionMiddleware);
 	app.use(renderMiddleware);
+	app.route("/file", fileRouter);
 	app.route("/video", videoRouter);
 	app.onError((err, c) => {
 		console.log("error", err);

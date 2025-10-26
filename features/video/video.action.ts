@@ -14,12 +14,6 @@ export class VideoAction {
 	async register(tags: Tag[], content: Content, author?: Author) {
 		// ビデオエンティティ作成
 		const id = await this.repository.generateId();
-		const video = {
-			id,
-			tags,
-			contents: [content],
-			authors: author ? [author] : [],
-		};
 
 		// 各種メディアファイル生成（同じディレクトリ内）
 		const fullPath = join(content.path, content.name);
@@ -44,8 +38,16 @@ export class VideoAction {
 			join(outputDir, "preview.gif"),
 		);
 
+		const video = {
+			id,
+			tags,
+			previewGifPath: join(outputDir, "preview.gif"),
+			thumbnailPath: join(outputDir, "thumbnail.jpg"),
+			contents: [content],
+			authors: author ? [author] : [],
+		};
+
 		// すべてのメディア生成が成功した後にビデオを保存
-		const saved = await this.repository.save(video);
-		return saved;
+		return await this.repository.save(video);
 	}
 }

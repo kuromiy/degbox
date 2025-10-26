@@ -1,5 +1,5 @@
 export type Author = {
 	id: string;
 	name: string;
-	urls: string[];
+	urls: Record<string, string>;
 };
