@@ -200,8 +200,8 @@ export class VideoDataSource implements VideoRepository {
 
 			return {
 				id: videoId,
-				previewGifPath: join(firstContent.path, "preview.gif"),
-				thumbnailPath: join(firstContent.path, "thumbnail.jpg"),
+				previewGifPath: `http://localhost:8080/file/${join(firstContent.path, "preview.gif")}`,
+				thumbnailPath: `http://localhost:8080/file/${join(firstContent.path, "thumbnail.jpg")}`,
 				tags: ts,
 				contents: cs,
 				authors: as,

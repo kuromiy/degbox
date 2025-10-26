@@ -1,5 +1,5 @@
 import { isFailure } from "electron-flow/result";
-import { use, useActionState, useMemo } from "react";
+import { use, useActionState } from "react";
 import { Link } from "react-router-dom";
 import VideoThumbnail from "../../../features/video/ui/VideoThumbnail.js";
 import { ApiService } from "../autogenerate/register.js";
@@ -12,9 +12,10 @@ async function fetchVideo(keyword?: string, page?: number, size?: number) {
 	}
 	return result.value;
 }
+const fetchVideoPromise = fetchVideo();
 
 export default function VideoSearchPage() {
-	const initData = use(useMemo(() => fetchVideo(), []));
+	const initData = use(fetchVideoPromise);
 	const [state, action, _] = useActionState<
 		ReturnType<typeof fetchVideo>,
 		FormData
