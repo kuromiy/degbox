@@ -1,7 +1,7 @@
 node_modules
 dist
 /content
-local.db
+*.db
 tests/api/datas/
 public/
 data/

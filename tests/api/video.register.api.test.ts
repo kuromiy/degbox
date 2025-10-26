@@ -1,15 +1,19 @@
 import { strict as assert } from "node:assert";
-import { describe, it, mock } from "node:test";
-import type { IpcMainInvokeEvent } from "electron";
+import { describe, it } from "node:test";
 import { Container } from "../../features/shared/container/index.js";
 import type { UnmanagedContent } from "../../features/unmanaged-content/unmanagedContent.model.js";
 import { registerVideo } from "../../src/main/apis/videos/video.register.api.js";
 import type { Context } from "../../src/main/context.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
+import { createTestDatabase } from "../helpers/createTestDatabase.js";
+import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "./testjobqueue.js";
 
 describe("ビデオ登録API", () => {
 	it("ビデオを正常に登録し、onSuccessが呼ばれonErrorは呼ばれないことを検証", async () => {
+		// テスト用データベースを作成
+		const database = await createTestDatabase("register.test.db");
+
 		// TestJobQueueを作成
 		const testJobQueue = new TestJobQueue();
 		const cache = new Map<string, UnmanagedContent>();
@@ -24,6 +28,7 @@ describe("ビデオ登録API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container.register(TOKENS.CACHE, () => cache);
 
@@ -35,20 +40,7 @@ describe("ビデオ登録API", () => {
 		};
 
 		// IpcMainInvokeEventのモックを作成
-		const mockEvent = {
-			processId: 1,
-			frameId: 1,
-			sender: {
-				id: 1,
-				send: mock.fn(),
-				sendSync: mock.fn(),
-				sendTo: mock.fn(),
-				sendToFrame: mock.fn(),
-				postMessage: mock.fn(),
-			} as unknown as IpcMainInvokeEvent["sender"],
-			senderFrame: {} as unknown as IpcMainInvokeEvent["senderFrame"],
-			preventDefault: mock.fn(),
-		} as unknown as IpcMainInvokeEvent;
+		const mockEvent = createTestIpcMainInvokeEvent();
 
 		// Contextオブジェクトを作成（モックされたeventを含む）
 		const context: Context = {

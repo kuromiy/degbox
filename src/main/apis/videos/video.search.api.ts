@@ -28,7 +28,7 @@ export async function searchVideo(ctx: Context, request: SearchVideoRequest) {
 		return {
 			count: count,
 			result: [],
-			page: page,
+			page: rowPage,
 			size: size,
 		};
 	}
@@ -36,7 +36,7 @@ export async function searchVideo(ctx: Context, request: SearchVideoRequest) {
 	return {
 		count: count,
 		result: result,
-		page: page,
+		page: rowPage,
 		size: size,
 	};
 }
