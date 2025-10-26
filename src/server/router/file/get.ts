@@ -1,5 +1,5 @@
-import { createReadStream, realpathSync } from "node:fs";
-import { access } from "node:fs/promises";
+import { constants, createReadStream, realpathSync } from "node:fs";
+import { access, realpath, stat } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { stream } from "hono/streaming";
 import { TOKENS } from "../../../main/depend.injection.js";
@@ -19,7 +19,7 @@ try {
 
 async function isExistFile(path: string) {
 	try {
-		await access(path);
+		await access(path, constants.R_OK);
 		return true;
 	} catch (_err) {
 		return false;
@@ -91,13 +91,77 @@ app.get("/*", async (c) => {
 		return c.notFound();
 	}
 
-	return stream(c, async (stream) => {
-		stream.onAbort(() => {
-			logger.info("Aborted.");
+	// TOCTOU対策: ストリーミング直前に再検証
+	let fileStats: Awaited<ReturnType<typeof stat>>;
+	let resolvedRealPath: string;
+	try {
+		// シンボリックリンクを解決して実パスを取得
+		resolvedRealPath = await realpath(safePath);
+		// ファイル情報を取得
+		fileStats = await stat(resolvedRealPath);
+	} catch (err) {
+		logger.warn("File disappeared or inaccessible", {
+			path: safePath,
+			error: err,
 		});
-		const fileStream = createReadStream(safePath);
-		for await (const chunk of fileStream) {
-			await stream.write(chunk);
+		return c.notFound();
+	}
+
+	// ディレクトリではなく通常ファイルであることを確認
+	if (!fileStats.isFile()) {
+		logger.warn("Attempted to stream non-file", { path: resolvedRealPath });
+		return c.json({ error: "Forbidden" }, 403);
+	}
+
+	// 解決されたパスが許可されたベースディレクトリ内にあることを再確認
+	const relFromRoot = relative(REAL_FILE_ROOT, resolvedRealPath);
+	if (relFromRoot.startsWith("..") || isAbsolute(relFromRoot)) {
+		logger.warn("Resolved path outside allowed directory", {
+			path: resolvedRealPath,
+		});
+		return c.json({ error: "Forbidden" }, 403);
+	}
+
+	return stream(c, async (responseStream) => {
+		let fileStream: ReturnType<typeof createReadStream> | null = null;
+		let streamClosed = false;
+
+		const cleanupStream = () => {
+			if (fileStream && !streamClosed) {
+				streamClosed = true;
+				fileStream.destroy();
+				logger.info("File stream closed");
+			}
+		};
+
+		responseStream.onAbort(() => {
+			logger.info("Response aborted by client");
+			cleanupStream();
+		});
+
+		try {
+			fileStream = createReadStream(resolvedRealPath);
+
+			// ファイルストリームのエラーハンドリング
+			fileStream.on("error", (err) => {
+				logger.error("File stream error", {
+					path: resolvedRealPath,
+					error: err,
+				});
+				cleanupStream();
+			});
+
+			for await (const chunk of fileStream) {
+				await responseStream.write(chunk);
+			}
+		} catch (err) {
+			logger.error("Error during streaming", {
+				path: resolvedRealPath,
+				error: err,
+			});
+			throw err;
+		} finally {
+			cleanupStream();
 		}
 	});
 });

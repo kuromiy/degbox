@@ -1,5 +1,5 @@
 import { rm } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
@@ -31,8 +31,8 @@ export type TestDatabaseResult = {
 export async function createTestDatabase(
 	dbName: string,
 ): Promise<TestDatabaseResult> {
-	// 絶対パスに解決（現在の作業ディレクトリに依存しないようにする）
-	const absoluteDbPath = resolve(dbName);
+	// 絶対パスに解決（テストヘルパーディレクトリを基準とするため、CWDに依存しない）
+	const absoluteDbPath = join(__dirname, "../../", dbName);
 
 	// 既存のデータベースファイルを削除（存在しない場合は無視）
 	await rm(absoluteDbPath, { force: true });
