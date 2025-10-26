@@ -4,8 +4,8 @@ import { TOKENS } from "../../depend.injection.js";
 
 export const searchVideoSchema = z.object({
 	keyword: z.string().optional().default(""),
-	page: z.number().optional().default(1),
-	size: z.number().optional().default(20),
+	page: z.number().int().min(1).optional().default(1),
+	size: z.number().int().min(1).max(100).optional().default(20),
 });
 export type SearchVideoRequest = z.infer<typeof searchVideoSchema>;
 

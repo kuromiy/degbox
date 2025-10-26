@@ -1,18 +1,32 @@
 import { strict as assert } from "node:assert";
-import { describe, it } from "node:test";
+import { afterEach, describe, it } from "node:test";
 import { Container } from "../../features/shared/container/index.js";
 import type { UnmanagedContent } from "../../features/unmanaged-content/unmanagedContent.model.js";
 import { registerVideo } from "../../src/main/apis/videos/video.register.api.js";
 import type { Context } from "../../src/main/context.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
-import { createTestDatabase } from "../helpers/createTestDatabase.js";
+import {
+	type CleanupFunction,
+	createTestDatabase,
+} from "../helpers/createTestDatabase.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "./testjobqueue.js";
 
 describe("ビデオ登録API", () => {
+	let cleanup: CleanupFunction | null = null;
+
+	afterEach(async () => {
+		if (cleanup) {
+			await cleanup();
+			cleanup = null;
+		}
+	});
+
 	it("ビデオを正常に登録し、onSuccessが呼ばれonErrorは呼ばれないことを検証", async () => {
 		// テスト用データベースを作成
-		const database = await createTestDatabase("register.test.db");
+		const { database, cleanup: dbCleanup } =
+			await createTestDatabase("register.test.db");
+		cleanup = dbCleanup;
 
 		// TestJobQueueを作成
 		const testJobQueue = new TestJobQueue();

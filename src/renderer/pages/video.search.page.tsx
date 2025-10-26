@@ -1,5 +1,5 @@
 import { isFailure } from "electron-flow/result";
-import { use, useActionState } from "react";
+import { use, useActionState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import VideoThumbnail from "../../../features/video/ui/VideoThumbnail.js";
 import { ApiService } from "../autogenerate/register.js";
@@ -12,10 +12,9 @@ async function fetchVideo(keyword?: string, page?: number, size?: number) {
 	}
 	return result.value;
 }
-const fetchVideoPromise = fetchVideo();
 
 export default function VideoSearchPage() {
-	const initData = use(fetchVideoPromise);
+	const initData = use(useMemo(() => fetchVideo(), []));
 	const [state, action, _] = useActionState<
 		ReturnType<typeof fetchVideo>,
 		FormData
@@ -23,6 +22,9 @@ export default function VideoSearchPage() {
 		const keyword = formData.get("keyword")?.toString();
 		const sizeStr = formData.get("size")?.toString();
 		const size = sizeStr ? Number.parseInt(sizeStr, 10) : undefined;
+		if (size !== undefined && (Number.isNaN(size) || size <= 0)) {
+			throw new Error("Invalid size parameter");
+		}
 		const result = await fetchVideo(keyword, undefined, size);
 		return result;
 	}, initData);
@@ -53,9 +55,9 @@ export default function VideoSearchPage() {
 				</select>
 			</form>
 			<div className="grid grid-cols-3 gap-6">
-				{state.result.map((video, index) => {
+				{state.result.map((video) => {
 					return (
-						<div key={index.toString()}>
+						<div key={video.id}>
 							<VideoThumbnail
 								thumbnailPath={video.thumbnailPath}
 								previewGifPath={video.previewGifPath}

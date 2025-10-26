@@ -115,6 +115,13 @@ export class VideoDataSource implements VideoRepository {
 			`VideoDataSource#search. keyword: ${keyword}, page: ${page}, size: ${size}`,
 		);
 
+		// パラメータのバリデーション
+		if (page < 0 || size <= 0 || size > 100) {
+			throw new Error(
+				`Invalid pagination parameters: page=${page}, size=${size}`,
+			);
+		}
+
 		// まず、条件に一致する一意のビデオIDを取得（SQL段階で重複排除）
 		const videoIdQuery = this.db
 			.selectDistinct({ id: VIDEOS.id })

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { buildFileUrl } from "../../../src/renderer/config/index.js";
 
 interface VideoThumbnailProps {
 	thumbnailPath: string;
@@ -14,8 +15,8 @@ export default function VideoThumbnail({
 	const [isHovered, setIsHovered] = useState(false);
 
 	const imageSrc = isHovered
-		? `http://localhost:8080/file/${previewGifPath}`
-		: `http://localhost:8080/file/${thumbnailPath}`;
+		? buildFileUrl(previewGifPath)
+		: buildFileUrl(thumbnailPath);
 
 	return (
 		<img
