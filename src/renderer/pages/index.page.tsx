@@ -1,5 +1,6 @@
 import { isFailure } from "electron-flow/result";
 import { useActionState } from "react";
+import { Link } from "react-router-dom";
 import {
 	NeutralButton,
 	PositiveButton,
@@ -30,6 +31,7 @@ export default function IndexPage() {
 
 	return (
 		<main className="flex justify-center">
+			<Link to="/">検索</Link>
 			<div className="w-full max-w-md">
 				<form action={action} className="flex flex-col gap-4">
 					<h1>動画登録</h1>

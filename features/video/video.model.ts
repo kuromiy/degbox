@@ -4,6 +4,8 @@ import type { Tag } from "../tag/tag.model.js";
 
 export type Video = {
 	id: string;
+	previewGifPath: string;
+	thumbnailPath: string;
 	contents: Content[];
 	tags: Tag[];
 	authors: Author[];

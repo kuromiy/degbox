@@ -10,7 +10,7 @@ import {
 	type Container,
 	InjectionToken,
 } from "../../features/shared/container/index.js";
-import { database } from "../../features/shared/database/index.js";
+import { createDatabase } from "../../features/shared/database/index.js";
 import type { Database } from "../../features/shared/database/type.js";
 import {
 	type FileSystem,
@@ -67,6 +67,7 @@ type DependencyEntry = {
 const fileSystem = new FileSystemImpl((err) => console.error(err));
 const jobQueue = new JobQueue();
 const cache = new Map<string, UnmanagedContent>();
+const database = createDatabase("file:local.db");
 
 export const depend: DependencyEntry[] = [
 	// infra
@@ -111,7 +112,8 @@ export const depend: DependencyEntry[] = [
 	},
 	{
 		token: TOKENS.VIDEO_REPOSITORY,
-		provider: (c: Container) => new VideoDataSource(c.get(TOKENS.DATABASE)),
+		provider: (c: Container) =>
+			new VideoDataSource(c.get(TOKENS.LOGGER), c.get(TOKENS.DATABASE)),
 	},
 
 	// service

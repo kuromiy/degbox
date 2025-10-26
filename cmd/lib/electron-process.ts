@@ -17,6 +17,8 @@ export function createElectron(): ElectronProcess {
 			console.log(
 				`[${new Date().toLocaleTimeString()}] 既存のElectronプロセスを終了しています...`,
 			);
+			// 古いプロセスのcloseイベントハンドラーを削除してからkill
+			ps.removeAllListeners("close");
 			ps.kill();
 			ps = null;
 		}
@@ -52,6 +54,7 @@ export function createElectron(): ElectronProcess {
 			console.log(
 				`electron closed with code: ${code}, signal: ${signal ?? "none"}`,
 			);
+			// ユーザーがElectronウィンドウを閉じた場合のみ開発サーバーを終了
 			if (cleanupHandler) {
 				await cleanupHandler(code ?? null);
 			}

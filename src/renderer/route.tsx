@@ -1,9 +1,14 @@
 import { createHashRouter } from "react-router-dom";
 import IndexPage from "./pages/index.page.js";
+import VideoSearchPage from "./pages/video.search.page.js";
 
 export const route = createHashRouter([
 	{
-		path: "/",
+		path: "/register",
 		element: <IndexPage />,
+	},
+	{
+		path: "/",
+		element: <VideoSearchPage />,
 	},
 ]);

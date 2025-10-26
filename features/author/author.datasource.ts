@@ -31,7 +31,7 @@ export class AuthorDataSource implements AuthorRepository {
 		return {
 			id: author.id,
 			name: author.name,
-			urls: Object.values(author.urls),
+			urls: author.urls,
 		};
 	}
 }

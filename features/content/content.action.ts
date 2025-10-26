@@ -1,4 +1,5 @@
-import { basename, dirname } from "node:path";
+import { basename, dirname, relative } from "node:path";
+import { cwd } from "node:process";
 import type { ContentRepository } from "./content.repository.js";
 import type { ContentService } from "./content.service.js";
 
@@ -18,7 +19,7 @@ export class ContentAction {
 		const destPath = await this.service.moveToDestination(path, id);
 
 		// パスからファイル名を取得
-		const dirPath = dirname(destPath);
+		const dirPath = relative(cwd(), dirname(destPath)); // TODO: cwdではなくプロジェクトルートからの相対パスにする。
 		const fileName = basename(destPath);
 
 		const content = {

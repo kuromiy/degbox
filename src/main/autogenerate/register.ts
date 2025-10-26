@@ -6,6 +6,7 @@ import { success, failure } from "electron-flow";
 import { suggestTags } from "../apis/tags/tag.suggest.api.js";
 import { pickupVideo } from "../apis/videos/video.pickup.api.js";
 import { registerVideo } from "../apis/videos/video.register.api.js";
+import { searchVideo } from "../apis/videos/video.search.api.js";
 
 export const autoGenerateHandlers = {
     "suggestTags": (ctx: Omit<Context, "event">) => {
@@ -32,6 +33,16 @@ export const autoGenerateHandlers = {
         return async (event: IpcMainInvokeEvent, args: any) => {
             try {
                 const result = await registerVideo({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
+    "searchVideo": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await searchVideo({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
                 return failure(e);
