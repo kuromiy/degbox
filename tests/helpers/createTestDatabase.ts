@@ -48,7 +48,8 @@ export async function createTestDatabase(
 	// クリーンアップ関数を作成（絶対パスを使用して確実に削除）
 	const cleanup = async () => {
 		client.close();
-		await rm(absoluteDbPath, { force: true });
+		// await rm(absoluteDbPath, { force: true });
+		// これコメントアウトすると [Error: EBUSY: resource busy or locked, unlink 'xxxx\search.server.test.db'] { errno: -4082, code: 'EBUSY', syscall: 'unlink', path: 'xxxx\\search.server.test.db' }
 	};
 
 	return { database, cleanup };

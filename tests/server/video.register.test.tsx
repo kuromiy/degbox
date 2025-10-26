@@ -16,6 +16,7 @@ import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createServer } from "../../src/server/server.js";
 import VideoRegisterPage from "../../src/server/view/pages/video.register.page.js";
 import { TestJobQueue } from "../api/testjobqueue.js";
+import { normalizeHtml } from "../helpers/normalizeHtml.js";
 import { testLogger } from "./testlogger.js";
 
 const testJobQueue = new TestJobQueue();
@@ -38,14 +39,10 @@ describe("ビデオ登録画面", () => {
 
 		const expectedHtml = renderToString(<VideoRegisterPage />);
 
-		const normalize = (html: string) =>
-			html
-				.replace(/\s+/g, " ") // 複数の空白を1つに
-				.replace(/encType/gi, "enctype") // encTypeをenctypeに統一
-				.replace(/\/>/g, ">") // 自己閉じタグのスラッシュを削除
-				.trim();
-
-		assert.equal(normalize(renderedHtml || ""), normalize(expectedHtml));
+		assert.equal(
+			normalizeHtml(renderedHtml || ""),
+			normalizeHtml(expectedHtml),
+		);
 	});
 
 	it("ビデオ登録ができること", async () => {
@@ -82,14 +79,10 @@ describe("ビデオ登録画面", () => {
 		const renderedHtml = $("#app").html();
 		const expectedHtml = renderToString(<VideoRegisterPage />);
 
-		const normalize = (html: string) =>
-			html
-				.replace(/\s+/g, " ") // 複数の空白を1つに
-				.replace(/encType/gi, "enctype") // encTypeをenctypeに統一
-				.replace(/\/>/g, ">") // 自己閉じタグのスラッシュを削除
-				.trim();
-
-		assert.equal(normalize(renderedHtml || ""), normalize(expectedHtml));
+		assert.equal(
+			normalizeHtml(renderedHtml || ""),
+			normalizeHtml(expectedHtml),
+		);
 
 		// JobQueueの完了を待つ
 		await testJobQueue.waitForCompletion();
