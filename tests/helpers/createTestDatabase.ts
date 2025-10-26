@@ -1,10 +1,11 @@
 import { rm } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import { migrate } from "drizzle-orm/libsql/migrator";
 import * as schema from "../../features/shared/database/schema.js";
+import type { Database } from "../../features/shared/database/type.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,7 +19,7 @@ export type CleanupFunction = () => Promise<void>;
  * テスト用データベースの戻り値の型
  */
 export type TestDatabaseResult = {
-	database: ReturnType<typeof drizzle<typeof schema>>;
+	database: Database;
 	cleanup: CleanupFunction;
 };
 
@@ -30,10 +31,13 @@ export type TestDatabaseResult = {
 export async function createTestDatabase(
 	dbName: string,
 ): Promise<TestDatabaseResult> {
-	// 既存のデータベースファイルを削除（存在しない場合は無視）
-	await rm(dbName, { force: true });
+	// 絶対パスに解決（現在の作業ディレクトリに依存しないようにする）
+	const absoluteDbPath = resolve(dbName);
 
-	const url = `file:${dbName}`;
+	// 既存のデータベースファイルを削除（存在しない場合は無視）
+	await rm(absoluteDbPath, { force: true });
+
+	const url = `file:${absoluteDbPath}`;
 	const client = createClient({ url });
 	const database = drizzle({ client, schema });
 
@@ -41,9 +45,10 @@ export async function createTestDatabase(
 	const migrationsFolder = join(__dirname, "../../drizzle");
 	await migrate(database, { migrationsFolder });
 
-	// クリーンアップ関数を作成
+	// クリーンアップ関数を作成（絶対パスを使用して確実に削除）
 	const cleanup = async () => {
 		client.close();
+		await rm(absoluteDbPath, { force: true });
 	};
 
 	return { database, cleanup };

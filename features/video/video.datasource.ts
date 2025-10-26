@@ -88,16 +88,22 @@ export class VideoDataSource implements VideoRepository {
 
 	async count(keyword: string): Promise<number> {
 		this.logger.info(`VideoDataSource#count call. keyword: ${keyword}`);
-		const query = this.db
-			.select({ count: countDistinct(VIDEOS.id) })
-			.from(VIDEOS)
-			.innerJoin(VIDEOS_TAGS, eq(VIDEOS.id, VIDEOS_TAGS.videoId))
-			.innerJoin(TAGS, eq(TAGS.id, VIDEOS_TAGS.tagId));
 
-		if (keyword.trim() !== "") {
-			this.logger.info("where add");
-			query.where(like(TAGS.name, `%${keyword}%`));
-		}
+		const trimmedKeyword = keyword.trim();
+
+		const query =
+			trimmedKeyword !== ""
+				? // キーワードがある場合：タグでフィルタリング
+					this.db
+						.select({ count: countDistinct(VIDEOS.id) })
+						.from(VIDEOS)
+						.innerJoin(VIDEOS_TAGS, eq(VIDEOS.id, VIDEOS_TAGS.videoId))
+						.innerJoin(TAGS, eq(TAGS.id, VIDEOS_TAGS.tagId))
+						.where(like(TAGS.name, `%${trimmedKeyword}%`))
+				: // キーワードが空の場合：すべてのビデオをカウント
+					this.db
+						.select({ count: countDistinct(VIDEOS.id) })
+						.from(VIDEOS);
 
 		const result = await query.execute();
 		this.logger.info("result", result);
@@ -122,21 +128,39 @@ export class VideoDataSource implements VideoRepository {
 			);
 		}
 
-		// まず、条件に一致する一意のビデオIDを取得（SQL段階で重複排除）
-		const videoIdQuery = this.db
-			.selectDistinct({ id: VIDEOS.id })
-			.from(VIDEOS)
-			.innerJoin(VIDEOS_TAGS, eq(VIDEOS.id, VIDEOS_TAGS.videoId))
-			.innerJoin(TAGS, eq(TAGS.id, VIDEOS_TAGS.tagId));
+		const trimmedKeyword = keyword.trim();
+		let videoIdsResult: { id: string }[];
 
-		if (keyword.trim() !== "") {
-			videoIdQuery.where(like(TAGS.name, `%${keyword}%`));
+		if (trimmedKeyword !== "") {
+			// キーワードがある場合：タグでフィルタリング
+			const videoIdQuery = this.db
+				.selectDistinct({ id: VIDEOS.id })
+				.from(VIDEOS)
+				.innerJoin(VIDEOS_TAGS, eq(VIDEOS.id, VIDEOS_TAGS.videoId))
+				.innerJoin(TAGS, eq(TAGS.id, VIDEOS_TAGS.tagId))
+				.where(like(TAGS.name, `%${trimmedKeyword}%`))
+				.limit(size)
+				.offset(page * size);
+
+			videoIdsResult = await videoIdQuery.execute();
+			this.logger.info(`unique videos length: ${videoIdsResult.length}`);
+
+			// キーワードでフィルタリングした結果、該当するビデオがない場合は早期リターン
+			if (videoIdsResult.length === 0) {
+				this.logger.info("No videos found for keyword, returning empty result");
+				return [];
+			}
+		} else {
+			// キーワードが空の場合：すべてのビデオを取得（タグのJOINなし）
+			const videoIdQuery = this.db
+				.selectDistinct({ id: VIDEOS.id })
+				.from(VIDEOS)
+				.limit(size)
+				.offset(page * size);
+
+			videoIdsResult = await videoIdQuery.execute();
+			this.logger.info(`unique videos length: ${videoIdsResult.length}`);
 		}
-
-		videoIdQuery.limit(size).offset(page * size);
-
-		const videoIdsResult = await videoIdQuery.execute();
-		this.logger.info(`unique videos length: ${videoIdsResult.length}`);
 
 		const videoIds = videoIdsResult.map((v) => v.id);
 
