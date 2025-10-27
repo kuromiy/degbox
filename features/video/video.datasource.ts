@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { join } from "node:path";
+import { posix } from "node:path";
 import { countDistinct, eq, inArray, like } from "drizzle-orm";
 import type { Logger } from "winston";
 import {
@@ -200,8 +200,8 @@ export class VideoDataSource implements VideoRepository {
 
 			return {
 				id: videoId,
-				previewGifPath: `http://localhost:8080/file/${join(firstContent.path, "preview.gif")}`,
-				thumbnailPath: `http://localhost:8080/file/${join(firstContent.path, "thumbnail.jpg")}`,
+				previewGifPath: `http://localhost:8080/file/${posix.join(firstContent.path, "preview.gif")}`,
+				thumbnailPath: `http://localhost:8080/file/${posix.join(firstContent.path, "thumbnail.jpg")}`,
 				tags: ts,
 				contents: cs,
 				authors: as,
