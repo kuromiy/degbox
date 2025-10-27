@@ -6,7 +6,7 @@ import { TOKENS } from "../../../main/depend.injection.js";
 import { factory } from "../../factory.js";
 
 const app = factory.createApp();
-const FILE_ROOT = resolve(process.cwd(), "content");
+const FILE_ROOT = resolve(process.cwd());
 
 // FILE_ROOTの正規化された実パスを取得（シンボリックリンク解決済み）
 let REAL_FILE_ROOT: string;
@@ -78,6 +78,8 @@ function sanitizeAndValidatePath(requestPath: string): string | null {
 app.get("/*", async (c) => {
 	const { container } = c.var;
 	const logger = container.get(TOKENS.LOGGER);
+
+	logger.info("raw request", { path: c.req.path });
 
 	const safePath = sanitizeAndValidatePath(c.req.path);
 	if (!safePath) {

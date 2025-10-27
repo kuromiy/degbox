@@ -1,7 +1,7 @@
 import { strict as assert } from "node:assert";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { describe, it } from "node:test";
+import { afterEach, describe, it } from "node:test";
 import { load } from "cheerio";
 import { eq } from "drizzle-orm";
 import { renderToString } from "react-dom/server";
@@ -16,19 +16,39 @@ import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createServer } from "../../src/server/server.js";
 import VideoRegisterPage from "../../src/server/view/pages/video.register.page.js";
 import { TestJobQueue } from "../api/testjobqueue.js";
+import {
+	type CleanupFunction,
+	createTestDatabase,
+} from "../helpers/createTestDatabase.js";
+import { normalizeHtml } from "../helpers/normalizeHtml.js";
 import { testLogger } from "./testlogger.js";
 
-const testJobQueue = new TestJobQueue();
-const container = new Container();
-depend.forEach(({ token, provider }) => {
-	container.register(token, provider);
-});
-container.register(TOKENS.LOGGER, () => testLogger);
-container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-const app = createServer(container);
-
 describe("ビデオ登録画面", () => {
+	let cleanup: CleanupFunction | null = null;
+
+	afterEach(async () => {
+		if (cleanup) {
+			await cleanup();
+			cleanup = null;
+		}
+	});
 	it("VideoRegisterPageが正しくレンダリングされる", async () => {
+		// テスト用データベースを作成
+		const { database, cleanup: dbCleanup } = await createTestDatabase(
+			"register.render.server.test.db",
+		);
+		cleanup = dbCleanup;
+
+		const testJobQueue = new TestJobQueue();
+		const container = new Container();
+		depend.forEach(({ token, provider }) => {
+			container.register(token, provider);
+		});
+		container.register(TOKENS.DATABASE, () => database);
+		container.register(TOKENS.LOGGER, () => testLogger);
+		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
+		const app = createServer(container);
+
 		const res = await app.request("/video/register");
 		assert.equal(res.status, 200);
 
@@ -38,17 +58,29 @@ describe("ビデオ登録画面", () => {
 
 		const expectedHtml = renderToString(<VideoRegisterPage />);
 
-		const normalize = (html: string) =>
-			html
-				.replace(/\s+/g, " ") // 複数の空白を1つに
-				.replace(/encType/gi, "enctype") // encTypeをenctypeに統一
-				.replace(/\/>/g, ">") // 自己閉じタグのスラッシュを削除
-				.trim();
-
-		assert.equal(normalize(renderedHtml || ""), normalize(expectedHtml));
+		assert.equal(
+			normalizeHtml(renderedHtml || ""),
+			normalizeHtml(expectedHtml),
+		);
 	});
 
 	it("ビデオ登録ができること", async () => {
+		// テスト用データベースを作成
+		const { database, cleanup: dbCleanup } = await createTestDatabase(
+			"register.post.server.test.db",
+		);
+		cleanup = dbCleanup;
+
+		const testJobQueue = new TestJobQueue();
+		const container = new Container();
+		depend.forEach(({ token, provider }) => {
+			container.register(token, provider);
+		});
+		container.register(TOKENS.DATABASE, () => database);
+		container.register(TOKENS.LOGGER, () => testLogger);
+		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
+		const app = createServer(container);
+
 		const formData = new FormData();
 
 		// 実際の動画ファイルを読み込み
@@ -61,10 +93,13 @@ describe("ビデオ登録画面", () => {
 		formData.append("file", videoFile);
 		formData.append("tags", "tag1 tag2");
 
-		// POSTリクエスト送信
+		// POSTリクエスト送信（OriginヘッダーでCSRF対策）
 		const postRes = await app.request("/video/register", {
 			method: "POST",
 			body: formData,
+			headers: {
+				Origin: "http://localhost",
+			},
 		});
 		assert.equal(postRes.status, 302); // リダイレクトを確認
 
@@ -82,20 +117,13 @@ describe("ビデオ登録画面", () => {
 		const renderedHtml = $("#app").html();
 		const expectedHtml = renderToString(<VideoRegisterPage />);
 
-		const normalize = (html: string) =>
-			html
-				.replace(/\s+/g, " ") // 複数の空白を1つに
-				.replace(/encType/gi, "enctype") // encTypeをenctypeに統一
-				.replace(/\/>/g, ">") // 自己閉じタグのスラッシュを削除
-				.trim();
-
-		assert.equal(normalize(renderedHtml || ""), normalize(expectedHtml));
+		assert.equal(
+			normalizeHtml(renderedHtml || ""),
+			normalizeHtml(expectedHtml),
+		);
 
 		// JobQueueの完了を待つ
 		await testJobQueue.waitForCompletion();
-
-		// 登録された動画がデータベースに存在することを確認する
-		const database = container.get(TOKENS.DATABASE);
 
 		// TestJobQueueから登録されたVideoを取得
 		const successCallback = testJobQueue.successCallbacks.find(

@@ -24,6 +24,42 @@ export type TestDatabaseResult = {
 };
 
 /**
+ * グローバルクリーンアップ用のDBパス登録
+ */
+const pendingCleanupPaths = new Set<string>();
+
+/**
+ * ファイル削除をリトライする
+ * @param path 削除するファイルのパス
+ * @param retries リトライ回数（デフォルト: 3）
+ * @param delayMs リトライ間隔（ミリ秒、デフォルト: 100）
+ */
+async function unlinkWithRetry(
+	path: string,
+	retries = 3,
+	delayMs = 100,
+): Promise<void> {
+	for (let i = 0; i < retries; i++) {
+		try {
+			await rm(path, { force: true });
+			pendingCleanupPaths.delete(path);
+			return;
+		} catch (_error) {
+			if (i === retries - 1) {
+				// 最終リトライ失敗時はグローバルクリーンアップに登録
+				console.warn(
+					`Failed to delete ${path} after ${retries} retries. Registered for global cleanup.`,
+				);
+				pendingCleanupPaths.add(path);
+				return;
+			}
+			// リトライ前に待機（指数バックオフ）
+			await new Promise((resolve) => setTimeout(resolve, delayMs * (i + 1)));
+		}
+	}
+}
+
+/**
  * テスト用のデータベースを作成する
  * @param dbName データベースファイル名（例: "search.test.db"）
  * @returns データベースインスタンスとクリーンアップ関数
@@ -48,7 +84,8 @@ export async function createTestDatabase(
 	// クリーンアップ関数を作成（絶対パスを使用して確実に削除）
 	const cleanup = async () => {
 		client.close();
-		await rm(absoluteDbPath, { force: true });
+		// ファイルハンドル解放を待ってからリトライベースで削除
+		await unlinkWithRetry(absoluteDbPath);
 	};
 
 	return { database, cleanup };
