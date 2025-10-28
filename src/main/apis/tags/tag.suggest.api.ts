@@ -2,29 +2,54 @@ import { z } from "zod";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../depend.injection.js";
 
-export const suggestTagsSchema = z.object({
-	value: z.string(),
-});
-export type SuggestTagsRequest = z.infer<typeof suggestTagsSchema>;
+/**
+ * 関連タグサジェストAPI
+ * 既に選択されているタグに基づいて、共起行列から関連性の高いタグを提案
+ */
 
-export async function suggestTags(ctx: Context, request: SuggestTagsRequest) {
+export const suggestRelatedTagsSchema = z.object({
+	tagNames: z.array(z.string()).min(1),
+	limit: z.number().optional().default(5),
+});
+export type SuggestRelatedTagsRequest = z.infer<
+	typeof suggestRelatedTagsSchema
+>;
+
+export async function suggestRelatedTags(
+	ctx: Context,
+	request: SuggestRelatedTagsRequest,
+) {
 	const { container } = ctx;
-	const [logger, tagRepository] = container.get(
+	const [logger, tagSuggestionService] = container.get(
 		TOKENS.LOGGER,
-		TOKENS.TAG_REPOSITORY,
+		TOKENS.TAG_SUGGESTION_SERVICE,
 	);
-	logger.info("suggest tags", request);
-	const valid = suggestTagsSchema.safeParse(request);
+
+	logger.info("suggest related tags", request);
+
+	const valid = suggestRelatedTagsSchema.safeParse(request);
 	if (!valid.success) {
 		logger.warn(
 			`Invalid request: ${valid.error?.message ?? "validation failed"}`,
 		);
 		throw new Error("Invalid request");
 	}
-	const { value } = valid.data;
-	const query = value.trim();
-	if (query.length === 0) {
+
+	const { tagNames, limit } = valid.data;
+
+	// 空白やトリムされた結果が空のタグ名を除外
+	const validTagNames = tagNames
+		.map((name) => name.trim())
+		.filter((name) => name.length > 0);
+
+	if (validTagNames.length === 0) {
 		return [];
 	}
-	return await tagRepository.listByName(query);
+
+	const suggestions = await tagSuggestionService.suggestTagsByNames(
+		validTagNames,
+		limit,
+	);
+
+	return suggestions;
 }

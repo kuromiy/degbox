@@ -19,8 +19,11 @@ import {
 import { JobQueue } from "../../features/shared/jobqueue/index.js";
 import { logger } from "../../features/shared/logger/index.js";
 import { TagAction } from "../../features/tag/tag.action.js";
+import { TagCooccurrenceDataSource } from "../../features/tag/tag.cooccurrence.datasource.js";
+import type { TagCooccurrenceRepository } from "../../features/tag/tag.cooccurrence.repository.js";
 import { TagDataSource } from "../../features/tag/tag.datasource.js";
 import type { TagRepository } from "../../features/tag/tag.repository.js";
+import { TagSuggestionService } from "../../features/tag/tag.suggestion.service.js";
 import { UnmanagedContentDataSource } from "../../features/unmanaged-content/unmanagedContent.datasource.js";
 import type { UnmanagedContent } from "../../features/unmanaged-content/unmanagedContent.model.js";
 import { VideoAction } from "../../features/video/video.action.js";
@@ -45,12 +48,18 @@ export const TOKENS = {
 		"ContentRepository",
 	),
 	TAG_REPOSITORY: new InjectionToken<TagRepository>("TagRepository"),
+	TAG_COOCCURRENCE_REPOSITORY: new InjectionToken<TagCooccurrenceRepository>(
+		"TagCooccurrenceRepository",
+	),
 	AUTHOR_REPOSITORY: new InjectionToken<AuthorRepository>("AuthorRepository"),
 	VIDEO_REPOSITORY: new InjectionToken<VideoRepository>("VideoRepository"),
 
 	// service
 	CONTENT_SERVICE: new InjectionToken<ContentService>("ContentService"),
 	VIDEO_SERVICE: new InjectionToken<VideoService>("VideoService"),
+	TAG_SUGGESTION_SERVICE: new InjectionToken<TagSuggestionService>(
+		"TagSuggestionService",
+	),
 
 	// action
 	CONTENT_ACTION: new InjectionToken<ContentAction>("ContentAction"),
@@ -107,6 +116,11 @@ export const depend: DependencyEntry[] = [
 		provider: (c: Container) => new TagDataSource(c.get(TOKENS.DATABASE)),
 	},
 	{
+		token: TOKENS.TAG_COOCCURRENCE_REPOSITORY,
+		provider: (c: Container) =>
+			new TagCooccurrenceDataSource(c.get(TOKENS.DATABASE)),
+	},
+	{
 		token: TOKENS.AUTHOR_REPOSITORY,
 		provider: (c: Container) => new AuthorDataSource(c.get(TOKENS.DATABASE)),
 	},
@@ -126,6 +140,14 @@ export const depend: DependencyEntry[] = [
 		token: TOKENS.VIDEO_SERVICE,
 		provider: (c: Container) => new VideoServiceImpl(c.get(TOKENS.LOGGER)),
 	},
+	{
+		token: TOKENS.TAG_SUGGESTION_SERVICE,
+		provider: (c: Container) =>
+			new TagSuggestionService(
+				c.get(TOKENS.TAG_REPOSITORY),
+				c.get(TOKENS.TAG_COOCCURRENCE_REPOSITORY),
+			),
+	},
 
 	// action
 	{
@@ -138,7 +160,11 @@ export const depend: DependencyEntry[] = [
 	},
 	{
 		token: TOKENS.TAG_ACTION,
-		provider: (c: Container) => new TagAction(c.get(TOKENS.TAG_REPOSITORY)),
+		provider: (c: Container) =>
+			new TagAction(
+				c.get(TOKENS.TAG_REPOSITORY),
+				c.get(TOKENS.TAG_COOCCURRENCE_REPOSITORY),
+			),
 	},
 	{
 		token: TOKENS.VIDEO_ACTION,

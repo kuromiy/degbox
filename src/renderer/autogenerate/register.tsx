@@ -1,5 +1,6 @@
 // auto generated
-import type { suggestTags } from "../../main/apis/tags/tag.suggest.api.js";
+import type { autocompleteTags } from "../../main/apis/tags/tag.autocomplete.api.js";
+import type { suggestRelatedTags } from "../../main/apis/tags/tag.suggest.api.js";
 import type { pickupVideo } from "../../main/apis/videos/video.pickup.api.js";
 import type { registerVideo } from "../../main/apis/videos/video.register.api.js";
 import type { searchVideo } from "../../main/apis/videos/video.search.api.js";
@@ -16,7 +17,8 @@ type ReturnTypeUnwrapped<T> = T extends (...args: infer _Args) => infer R
 declare global {
     interface Window {
         api: {
-            suggestTags: (value: string) => Promise<Result<ReturnTypeUnwrapped<typeof suggestTags>, Error>>;
+            autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
+            suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
             pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, Error>>;
             registerVideo: (resourceId: string, rawTags: string, authorId: string | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
             searchVideo: (keyword: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, Error>>;
@@ -26,7 +28,8 @@ declare global {
 
 // サービスインターフェース
 export interface ServiceIF {
-    suggestTags: (value: string) => Promise<Result<ReturnTypeUnwrapped<typeof suggestTags>, Error>>;
+    autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
+    suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
     pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, Error>>;
     registerVideo: (resourceId: string, rawTags: string, authorId: string | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
     searchVideo: (keyword: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, Error>>;
@@ -34,8 +37,12 @@ export interface ServiceIF {
 
 // サービス実装クラス
 export class ApiService implements ServiceIF {
-    async suggestTags(value: string) {
-        return window.api.suggestTags(value);
+    async autocompleteTags(value: string, limit: number | undefined) {
+        return window.api.autocompleteTags(value, limit);
+    }
+
+    async suggestRelatedTags(tagNames: unknown[], limit: number | undefined) {
+        return window.api.suggestRelatedTags(tagNames, limit);
     }
 
     async pickupVideo() {

@@ -15,6 +15,13 @@
 			"when": 1759042732741,
 			"tag": "0001_complex_blizzard",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1761670155043,
+			"tag": "0002_light_gambit",
+			"breakpoints": true
 		}
 	]
 }
