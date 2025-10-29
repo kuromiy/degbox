@@ -1,17 +1,23 @@
-import { isFailure, isSuccess } from "electron-flow/result";
+import { isFailure } from "electron-flow/result";
 import { useActionState } from "react";
 import { Link } from "react-router-dom";
 import {
 	NeutralButton,
 	PositiveButton,
 } from "../../../features/shared/ui/button.component.js";
-import { TagInput } from "../../../features/tag/ui/tag.input.component.js";
+import {
+	TagInput,
+	useTagInput,
+} from "../../../features/tag/ui/tag.input.component.js";
 import { VideoInput } from "../../../features/video/ui/video.input.component.js";
 import { ApiService } from "../autogenerate/register.js";
 
 const client = new ApiService();
 
 export default function IndexPage() {
+	const { tags, add, replace, change, reset, autocompleteTags, suggestTags } =
+		useTagInput("");
+
 	const [_, action] = useActionState<Error | null, FormData>(
 		async (_, formData) => {
 			const tags = formData.get("tags")?.toString();
@@ -33,26 +39,6 @@ export default function IndexPage() {
 		null,
 	);
 
-	// TagInput用のAPIクライアントアダプター
-	const tagApiClient = {
-		autocompleteTags: async (value: string, limit?: number) => {
-			const result = await client.autocompleteTags(value, limit);
-			if (isSuccess(result)) {
-				return result.value;
-			}
-			console.error("Autocomplete error:", result.value);
-			return [];
-		},
-		suggestRelatedTags: async (tagNames: string[], limit?: number) => {
-			const result = await client.suggestRelatedTags(tagNames, limit);
-			if (isSuccess(result)) {
-				return result.value;
-			}
-			console.error("Related tags error:", result.value);
-			return [];
-		},
-	};
-
 	return (
 		<main className="flex justify-center">
 			<Link to="/">検索</Link>
@@ -60,7 +46,15 @@ export default function IndexPage() {
 				<form action={action} className="flex flex-col gap-4">
 					<h1>動画登録</h1>
 					<VideoInput />
-					<TagInput apiClient={tagApiClient} />
+					<TagInput
+						name="tags"
+						value={tags}
+						onAdd={add}
+						onReplace={replace}
+						onChange={change}
+						autocompleteTags={autocompleteTags}
+						suggestTags={suggestTags}
+					/>
 					<div className="flex gap-4">
 						<NeutralButton type="reset">リセット</NeutralButton>
 						<PositiveButton type="submit">登録</PositiveButton>

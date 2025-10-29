@@ -1,218 +1,199 @@
-import { useEffect, useRef, useState } from "react";
+import { isSuccess } from "electron-flow/result";
+import { useEffect, useId, useState } from "react";
+import { ApiService } from "../../../src/renderer/autogenerate/register.js";
 
-interface Tag {
-	id: string;
-	name: string;
+const client = new ApiService();
+
+function useAutocompleteTags(value: string) {
+	const [tags, setTags] = useState<string[]>([]);
+
+	useEffect(() => {
+		async function fetch() {
+			const response = await client.autocompleteTags(value, 5);
+			if (isSuccess(response)) {
+				setTags(response.value.map((v) => v.name));
+			}
+		}
+
+		fetch();
+	}, [value]);
+
+	return tags;
 }
 
-interface TagSuggestion {
-	tag: Tag;
-	score: number;
+function useSuggestTags(value: string[]) {
+	const [tags, setTags] = useState<string[]>([]);
+
+	useEffect(() => {
+		// 空配列の場合はAPIを呼ばない
+		if (value.length === 0) {
+			setTags([]);
+			return;
+		}
+
+		async function fetch() {
+			const response = await client.suggestRelatedTags(value, 5);
+			if (isSuccess(response)) {
+				setTags(response.value.map((v) => v.tag.name));
+			}
+		}
+
+		fetch();
+	}, [value]);
+
+	return tags;
 }
 
-interface TagInputProps
-	extends Omit<
-		React.InputHTMLAttributes<HTMLInputElement>,
-		"id" | "name" | "type"
-	> {
-	id?: string;
-	name?: string;
-	defaultValue?: string;
-	hasError?: boolean;
-	onTagsChange?: (tags: Tag[]) => void;
-	apiClient?: {
-		autocompleteTags: (value: string, limit?: number) => Promise<Tag[]>;
-		suggestRelatedTags: (
-			tagNames: string[],
-			limit?: number,
-		) => Promise<TagSuggestion[]>;
-	};
+function useTags(initValue: string) {
+	const [tags, setTags] = useState(initValue);
+
+	const tagArray = tags.split(/\s+/).filter((t) => t.length > 0);
+
+	// 最後の要素を現在入力中のタグとする
+	const inputtingTag = tagArray[tagArray.length - 1] || "";
+
+	// 最後を除いた要素を確定済みタグとする（サジェスト用）
+	const confirmedTags = tagArray;
+
+	function add(value: string) {
+		// 既存のタグに新しいタグを追加し、スペースで区切る
+		const newTags = tags.trim() ? `${tags.trim()} ${value} ` : `${value} `;
+		setTags(newTags);
+	}
+
+	function replace(value: string) {
+		// 確定済みタグに新しいタグを追加（現在入力中を置き換え）
+		const confirmedTagsStr = tagArray.slice(0, -1).join(" ");
+		const newTags = confirmedTagsStr
+			? `${confirmedTagsStr} ${value} `
+			: `${value} `;
+		setTags(newTags);
+	}
+
+	function change(value: string) {
+		setTags(value);
+	}
+
+	function reset() {
+		setTags(initValue);
+	}
+
+	return { tags, inputtingTag, confirmedTags, add, replace, change, reset };
+}
+
+export function useTagInput(initValue: string) {
+	const { tags, inputtingTag, confirmedTags, add, replace, change, reset } =
+		useTags(initValue);
+
+	const autocompleteTags = useAutocompleteTags(inputtingTag);
+	const suggestTags = useSuggestTags(confirmedTags);
+
+	return { tags, add, replace, change, reset, autocompleteTags, suggestTags };
 }
 
 export function TagInput({
-	id = "tags",
-	name = "tags",
-	defaultValue,
-	hasError,
-	onTagsChange,
-	apiClient,
-	...rest
-}: TagInputProps) {
-	const [inputValue, setInputValue] = useState("");
-	const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-	const [autocompleteList, setAutocompleteList] = useState<Tag[]>([]);
-	const [relatedSuggestions, setRelatedSuggestions] = useState<TagSuggestion[]>(
-		[],
+	name,
+	value,
+	onAdd,
+	onReplace,
+	onChange,
+	autocompleteTags,
+	suggestTags,
+}: {
+	name: string;
+	value: string;
+	onAdd: (valuee: string) => void;
+	onReplace: (value: string) => void;
+	onChange: (value: string) => void;
+	autocompleteTags: string[];
+	suggestTags: string[];
+}) {
+	const id = useId();
+
+	return (
+		<TagInputPresention
+			id={id}
+			name={name}
+			value={value}
+			onAdd={onAdd}
+			onReplace={onReplace}
+			onChange={onChange}
+			autocompleteTags={autocompleteTags}
+			suggestTags={suggestTags}
+		/>
 	);
-	const [showAutocomplete, setShowAutocomplete] = useState(false);
-	const inputRef = useRef<HTMLInputElement>(null);
+}
 
-	// 選択されたタグ名を結合してhidden inputに保存
-	const tagsValue = selectedTags.map((tag) => tag.name).join(" ");
-
-	// オートコンプリート
-	useEffect(() => {
-		if (!apiClient || !inputValue.trim()) {
-			setAutocompleteList([]);
-			setShowAutocomplete(false);
-			return;
-		}
-
-		const fetchAutocomplete = async () => {
-			try {
-				const results = await apiClient.autocompleteTags(inputValue, 10);
-				// 既に選択済みのタグを除外
-				const filtered = results.filter(
-					(tag) => !selectedTags.some((selected) => selected.id === tag.id),
-				);
-				setAutocompleteList(filtered);
-				setShowAutocomplete(filtered.length > 0);
-			} catch (error) {
-				console.error("Autocomplete error:", error);
-			}
-		};
-
-		const timer = setTimeout(fetchAutocomplete, 200);
-		return () => clearTimeout(timer);
-	}, [inputValue, apiClient, selectedTags]);
-
-	// 関連タグサジェスト
-	useEffect(() => {
-		if (!apiClient || selectedTags.length === 0) {
-			setRelatedSuggestions([]);
-			return;
-		}
-
-		const fetchRelatedTags = async () => {
-			try {
-				const tagNames = selectedTags.map((tag) => tag.name);
-				const results = await apiClient.suggestRelatedTags(tagNames, 5);
-				// 既に選択済みのタグを除外
-				const filtered = results.filter(
-					(suggestion) =>
-						!selectedTags.some((selected) => selected.id === suggestion.tag.id),
-				);
-				setRelatedSuggestions(filtered);
-			} catch (error) {
-				console.error("Related tags error:", error);
-			}
-		};
-
-		fetchRelatedTags();
-	}, [selectedTags, apiClient]);
-
-	// タグを追加
-	const addTag = (tag: Tag) => {
-		const newTags = [...selectedTags, tag];
-		setSelectedTags(newTags);
-		setInputValue("");
-		setShowAutocomplete(false);
-		onTagsChange?.(newTags);
-		inputRef.current?.focus();
-	};
-
-	// タグを削除
-	const removeTag = (tagId: string) => {
-		const newTags = selectedTags.filter((tag) => tag.id !== tagId);
-		setSelectedTags(newTags);
-		onTagsChange?.(newTags);
-	};
-
-	// Enterキーでタグ追加（オートコンプリートがある場合は最初の候補を選択）
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === "Enter") {
-			e.preventDefault();
-			const firstTag = autocompleteList[0];
-			if (firstTag) {
-				addTag(firstTag);
-			}
-		}
-	};
-
+function TagInputPresention({
+	id,
+	name,
+	value,
+	onAdd,
+	onReplace,
+	onChange,
+	autocompleteTags,
+	suggestTags,
+}: {
+	id: string;
+	name: string;
+	value: string;
+	onAdd: (value: string) => void;
+	onReplace: (value: string) => void;
+	onChange: (value: string) => void;
+	autocompleteTags: string[];
+	suggestTags: string[];
+}) {
 	return (
 		<div className="flex flex-col gap-2">
 			<label htmlFor={id}>タグ</label>
 
-			{/* 選択済みタグ表示 */}
-			{selectedTags.length > 0 && (
-				<div className="flex flex-wrap gap-2">
-					{selectedTags.map((tag) => (
-						<span
-							key={tag.id}
-							className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-						>
-							{tag.name}
-							<button
-								type="button"
-								onClick={() => removeTag(tag.id)}
-								className="hover:text-blue-600"
-								aria-label={`${tag.name}を削除`}
-							>
-								×
-							</button>
-						</span>
-					))}
-				</div>
-			)}
-
 			{/* タグ入力 */}
-			<div className="relative">
-				<input
-					ref={inputRef}
-					type="text"
-					id={id}
-					name={name}
-					value={inputValue}
-					onChange={(e) => setInputValue(e.target.value)}
-					onKeyDown={handleKeyDown}
-					aria-invalid={hasError ? "true" : "false"}
-					className={`w-full px-4 py-2 border rounded-lg ${hasError ? "border-red-500" : ""}`}
-					placeholder="タグを入力..."
-					autoComplete="off"
-					{...rest}
-				/>
+			<input
+				id={id}
+				name={name}
+				type="text"
+				className="px-4 py-2 border rounded-lg"
+				placeholder="タグを入力（スペース区切りで複数入力可）..."
+				autoComplete="off"
+				value={value}
+				onChange={(e) => onChange(e.target.value)}
+			/>
 
-				{/* オートコンプリートドロップダウン */}
-				{showAutocomplete && (
-					<div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
-						{autocompleteList.map((tag) => (
+			{/* オートコンプリート */}
+			{autocompleteTags.length !== 0 && (
+				<div className="flex flex-col">
+					{autocompleteTags.map((tag, index) => {
+						return (
 							<button
-								key={tag.id}
 								type="button"
-								onClick={() => addTag(tag)}
-								className="w-full px-4 py-2 text-left hover:bg-gray-100"
+								className="px-4 py-2 border"
+								key={index.toString()}
+								onClick={() => onReplace(tag)}
 							>
-								{tag.name}
+								{tag}
 							</button>
-						))}
-					</div>
-				)}
-			</div>
-
-			{/* 関連タグサジェスト */}
-			{relatedSuggestions.length > 0 && (
-				<div className="flex flex-col gap-2">
-					<span className="text-sm text-gray-600">おすすめタグ</span>
-					<div className="flex flex-wrap gap-2">
-						{relatedSuggestions.map(({ tag, score }) => (
-							<button
-								key={tag.id}
-								type="button"
-								onClick={() => addTag(tag)}
-								className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm flex items-center gap-1"
-							>
-								{tag.name}
-								<span className="text-xs text-gray-500">
-									{"★".repeat(Math.min(score, 3))}
-								</span>
-							</button>
-						))}
-					</div>
+						);
+					})}
 				</div>
 			)}
 
-			{/* hidden input for form submission */}
-			<input type="hidden" name={name} value={tagsValue} />
+			{/* サジェスト */}
+			{suggestTags.length !== 0 && (
+				<div className="flex flex-wrap gap-2">
+					{suggestTags.map((tag, index) => {
+						return (
+							<button
+								type="button"
+								className="px-4 py-2 border"
+								key={index.toString()}
+								onClick={() => onAdd(tag)}
+							>
+								{tag}
+							</button>
+						);
+					})}
+				</div>
+			)}
 		</div>
 	);
 }

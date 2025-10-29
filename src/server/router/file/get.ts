@@ -127,6 +127,7 @@ app.get("/*", async (c) => {
 	return stream(c, async (responseStream) => {
 		let fileStream: ReturnType<typeof createReadStream> | null = null;
 		let streamClosed = false;
+		let clientAborted = false;
 
 		const cleanupStream = () => {
 			if (fileStream && !streamClosed) {
@@ -138,6 +139,7 @@ app.get("/*", async (c) => {
 
 		responseStream.onAbort(() => {
 			logger.info("Response aborted by client");
+			clientAborted = true;
 			cleanupStream();
 		});
 
@@ -145,23 +147,41 @@ app.get("/*", async (c) => {
 			fileStream = createReadStream(resolvedRealPath);
 
 			// ファイルストリームのエラーハンドリング
-			fileStream.on("error", (err) => {
-				logger.error("File stream error", {
-					path: resolvedRealPath,
-					error: err,
-				});
+			fileStream.on("error", (err: NodeJS.ErrnoException) => {
+				// クライアント切断によるエラーは警告レベルに下げる
+				if (err.code === "ERR_STREAM_PREMATURE_CLOSE" && clientAborted) {
+					logger.info("Stream closed due to client abort", {
+						path: resolvedRealPath,
+					});
+				} else {
+					logger.error("File stream error", {
+						path: resolvedRealPath,
+						error: err,
+					});
+				}
 				cleanupStream();
 			});
 
 			for await (const chunk of fileStream) {
+				// クライアントが切断した場合はループを抜ける
+				if (clientAborted) {
+					break;
+				}
 				await responseStream.write(chunk);
 			}
 		} catch (err) {
-			logger.error("Error during streaming", {
-				path: resolvedRealPath,
-				error: err,
-			});
-			throw err;
+			// クライアント切断によるエラーは警告レベルに下げる
+			if (clientAborted) {
+				logger.info("Streaming interrupted by client abort", {
+					path: resolvedRealPath,
+				});
+			} else {
+				logger.error("Error during streaming", {
+					path: resolvedRealPath,
+					error: err,
+				});
+				throw err;
+			}
 		} finally {
 			cleanupStream();
 		}

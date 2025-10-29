@@ -2,7 +2,6 @@ import {
 	NeutralButton,
 	PositiveButton,
 } from "../../../../features/shared/ui/button.component.js";
-import { TagInput } from "../../../../features/tag/ui/tag.input.component.js";
 
 export default function VideoRegisterPage(
 	formData?: Record<string, unknown>,
@@ -46,9 +45,13 @@ export default function VideoRegisterPage(
 
 					{/* タグ入力フィールド */}
 					<div className="flex flex-col gap-1">
-						<TagInput
+						<label htmlFor="tags">タグ</label>
+						<input
+							name="tags"
+							type="text"
 							defaultValue={formData?.tags as string}
-							hasError={hasTagsError}
+							className={`px-4 py-2 border rounded-lg ${hasTagsError ? "border-red-500" : ""}`}
+							placeholder="タグを入力（スペース区切りで複数入力可）..."
 						/>
 						{hasTagsError && (
 							<div className="text-red-500 text-sm">
