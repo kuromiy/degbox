@@ -66,7 +66,7 @@ export class TagDataSource implements TagRepository {
 			.replace(/%/g, "\\%") // % → \%
 			.replace(/_/g, "\\_"); // _ → \_
 
-		const pattern = `%${escapedName}%`;
+		const pattern = `${escapedName}%`;
 
 		const result = await this.db
 			.select()

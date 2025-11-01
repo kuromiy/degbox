@@ -1,5 +1,6 @@
 import assert from "node:assert";
-import { afterEach, describe, it } from "node:test";
+import { rm } from "node:fs/promises";
+import { before, describe, it } from "node:test";
 import { load } from "cheerio";
 import { renderToString } from "react-dom/server";
 import { Container } from "../../features/shared/container/index.js";
@@ -14,29 +15,18 @@ import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createServer } from "../../src/server/server.js";
 import VideoSearchPage from "../../src/server/view/pages/video.search.page.js";
 import { TestJobQueue } from "../api/testjobqueue.js";
-import {
-	type CleanupFunction,
-	createTestDatabase,
-} from "../helpers/createTestDatabase.js";
+import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { normalizeHtml } from "../helpers/normalizeHtml.js";
 import { testLogger } from "./testlogger.js";
 
 describe("ビデオ検索画面", () => {
-	let cleanup: CleanupFunction | null = null;
-
-	afterEach(async () => {
-		if (cleanup) {
-			await cleanup();
-			cleanup = null;
-		}
+	before(async () => {
+		await rm("./tests/db", { recursive: true, force: true });
 	});
 
 	it("VideoSearchPageが正しくレンダリングされる", async () => {
 		// テスト用データベースを作成
-		const { database, cleanup: dbCleanup } = await createTestDatabase(
-			"search.server.test.db",
-		);
-		cleanup = dbCleanup;
+		const database = await createTestDatabase("search.server.test.db");
 
 		const testJobQueue = new TestJobQueue();
 		const container = new Container();
@@ -65,10 +55,7 @@ describe("ビデオ検索画面", () => {
 
 	it("空文字で検索した場合、すべてのビデオが表示されること", async () => {
 		// テスト用データベースを作成
-		const { database, cleanup: dbCleanup } = await createTestDatabase(
-			"search.empty.server.test.db",
-		);
-		cleanup = dbCleanup;
+		const database = await createTestDatabase("search.empty.server.test.db");
 
 		const testJobQueue = new TestJobQueue();
 		const container = new Container();

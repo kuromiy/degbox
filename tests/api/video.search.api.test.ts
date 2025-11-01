@@ -1,5 +1,6 @@
 import assert from "node:assert";
-import { afterEach, describe, it } from "node:test";
+import { rm } from "node:fs/promises";
+import { before, describe, it } from "node:test";
 import { Container } from "../../features/shared/container/index.js";
 import {
 	CONTENTS,
@@ -10,27 +11,17 @@ import {
 } from "../../features/shared/database/schema.js";
 import { searchVideo } from "../../src/main/apis/videos/video.search.api.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
-import {
-	type CleanupFunction,
-	createTestDatabase,
-} from "../helpers/createTestDatabase.js";
+import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 
 describe("ビデオ検索API", () => {
-	let cleanup: CleanupFunction | null = null;
-
-	afterEach(async () => {
-		if (cleanup) {
-			await cleanup();
-			cleanup = null;
-		}
+	before(async () => {
+		await rm("./tests/db", { recursive: true, force: true });
 	});
 
 	it("ビデオを空文字で検索した場合、すべて検索できること", async () => {
 		// テスト用データベースを作成
-		const { database, cleanup: dbCleanup } =
-			await createTestDatabase("search.test.db");
-		cleanup = dbCleanup;
+		const database = await createTestDatabase("search.test.db");
 
 		// 事前データ
 		const container = new Container();

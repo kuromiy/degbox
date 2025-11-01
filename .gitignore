@@ -5,6 +5,7 @@ dist
 tests/api/datas/
 public/
 data/
+tests/db
 
 # Environment variables
 .env

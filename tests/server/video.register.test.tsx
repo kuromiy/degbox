@@ -1,7 +1,7 @@
 import { strict as assert } from "node:assert";
-import { readFile } from "node:fs/promises";
+import { readFile, rm } from "node:fs/promises";
 import { join } from "node:path";
-import { afterEach, describe, it } from "node:test";
+import { before, describe, it } from "node:test";
 import { load } from "cheerio";
 import { eq } from "drizzle-orm";
 import { renderToString } from "react-dom/server";
@@ -16,37 +16,28 @@ import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createServer } from "../../src/server/server.js";
 import VideoRegisterPage from "../../src/server/view/pages/video.register.page.js";
 import { TestJobQueue } from "../api/testjobqueue.js";
-import {
-	type CleanupFunction,
-	createTestDatabase,
-} from "../helpers/createTestDatabase.js";
+import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { normalizeHtml } from "../helpers/normalizeHtml.js";
 import { testLogger } from "./testlogger.js";
 
 describe("ビデオ登録画面", () => {
-	let cleanup: CleanupFunction | null = null;
-
-	afterEach(async () => {
-		if (cleanup) {
-			await cleanup();
-			cleanup = null;
-		}
+	before(async () => {
+		await rm("./tests/db", { recursive: true, force: true });
 	});
+
 	it("VideoRegisterPageが正しくレンダリングされる", async () => {
+		console.log("VideoRegisterPageが正しくレンダリングされる");
 		// テスト用データベースを作成
-		const { database, cleanup: dbCleanup } = await createTestDatabase(
-			"register.render.server.test.db",
-		);
-		cleanup = dbCleanup;
+		const database = await createTestDatabase("register.render.server.test");
 
 		const testJobQueue = new TestJobQueue();
 		const container = new Container();
 		depend.forEach(({ token, provider }) => {
-			container.register(token, provider);
+			container?.register(token, provider);
 		});
-		container.register(TOKENS.DATABASE, () => database);
-		container.register(TOKENS.LOGGER, () => testLogger);
-		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
+		container?.register(TOKENS.DATABASE, () => database);
+		container?.register(TOKENS.LOGGER, () => testLogger);
+		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		const app = createServer(container);
 
 		const res = await app.request("/video/register");
@@ -65,20 +56,18 @@ describe("ビデオ登録画面", () => {
 	});
 
 	it("ビデオ登録ができること", async () => {
+		console.log("ビデオ登録ができること");
 		// テスト用データベースを作成
-		const { database, cleanup: dbCleanup } = await createTestDatabase(
-			"register.post.server.test.db",
-		);
-		cleanup = dbCleanup;
+		const database = await createTestDatabase("register.post.server.test");
 
 		const testJobQueue = new TestJobQueue();
 		const container = new Container();
 		depend.forEach(({ token, provider }) => {
-			container.register(token, provider);
+			container?.register(token, provider);
 		});
-		container.register(TOKENS.DATABASE, () => database);
-		container.register(TOKENS.LOGGER, () => testLogger);
-		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
+		container?.register(TOKENS.DATABASE, () => database);
+		container?.register(TOKENS.LOGGER, () => testLogger);
+		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		const app = createServer(container);
 
 		const formData = new FormData();

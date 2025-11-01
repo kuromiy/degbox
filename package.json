@@ -9,6 +9,7 @@
 		"db:generate": "npx drizzle-kit generate",
 		"db:migrate": "npx drizzle-kit migrate",
 		"test:e2e": "npx playwright test",
+		"test:api": "npx tsx --env-file=.env ./tests/api/index.ts",
 		"test:server": "npx tsx --env-file=.env ./tests/server/index.ts",
 		"prepare": "husky",
 		"lint": "npx @biomejs/biome check",
