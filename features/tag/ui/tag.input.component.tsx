@@ -1,5 +1,5 @@
 import { isSuccess } from "electron-flow/result";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { ApiService } from "../../../src/renderer/autogenerate/register.js";
 
 const client = new ApiService();
@@ -47,13 +47,16 @@ function useSuggestTags(value: string[]) {
 function useTags(initValue: string) {
 	const [tags, setTags] = useState(initValue);
 
-	const tagArray = tags.split(/\s+/).filter((t) => t.length > 0);
+	const tagArray = useMemo(
+		() => tags.split(/\s+/).filter((t) => t.length > 0),
+		[tags],
+	);
 
 	// 最後の要素を現在入力中のタグとする
 	const inputtingTag = tagArray[tagArray.length - 1] || "";
 
 	// 最後を除いた要素を確定済みタグとする（サジェスト用）
-	const confirmedTags = tagArray;
+	const confirmedTags = useMemo(() => tagArray, [tagArray]);
 
 	function add(value: string) {
 		// 既存のタグに新しいタグを追加し、スペースで区切る
