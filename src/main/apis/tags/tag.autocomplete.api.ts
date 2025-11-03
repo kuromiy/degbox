@@ -9,7 +9,7 @@ import { TOKENS } from "../../depend.injection.js";
 
 export const autocompleteTagsSchema = z.object({
 	value: z.string(),
-	limit: z.number().optional().default(10),
+	limit: z.number().positive().max(1000).optional().default(10),
 });
 export type AutocompleteTagsRequest = z.infer<typeof autocompleteTagsSchema>;
 

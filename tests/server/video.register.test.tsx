@@ -24,11 +24,10 @@ const CATEGORY_NAME = "video-register-server";
 
 describe("ビデオ登録画面", () => {
 	before(async () => {
-		await rm("./tests/db/video.register", { recursive: true, force: true });
+		await rm(`./tests/db/${CATEGORY_NAME}`, { recursive: true, force: true });
 	});
 
 	it("VideoRegisterPageが正しくレンダリングされる", async () => {
-		console.log("VideoRegisterPageが正しくレンダリングされる");
 		// テスト用データベースを作成
 		const database = await createTestDatabase(
 			[CATEGORY_NAME],
@@ -61,7 +60,6 @@ describe("ビデオ登録画面", () => {
 	});
 
 	it("ビデオ登録ができること", async () => {
-		console.log("ビデオ登録ができること");
 		// テスト用データベースを作成
 		const database = await createTestDatabase(
 			[CATEGORY_NAME],

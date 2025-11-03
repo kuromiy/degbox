@@ -7,10 +7,8 @@ function useAutocompleteTags(value: string) {
 	const [tags, setTags] = useState<string[]>([]);
 
 	useEffect(() => {
-		console.log("[useAutocompleteTags] value:", value, "client:", client);
 		// SSR時やclientが未定義の場合は何もしない
 		if (!client) {
-			console.log("[useAutocompleteTags] client is undefined, skipping");
 			return;
 		}
 
@@ -20,18 +18,28 @@ function useAutocompleteTags(value: string) {
 			return;
 		}
 
-		async function fetch() {
+		const abortController = new AbortController();
+
+		async function fetchTags() {
 			if (!client) return; // Type guard
 
-			console.log("[useAutocompleteTags] Fetching autocomplete for:", value);
-			const response = await client.autocompleteTags(value, 5);
-			console.log("[useAutocompleteTags] Response:", response);
-			if (isSuccess(response)) {
-				setTags(response.value.map((v) => v.name));
+			try {
+				const response = await client.autocompleteTags(value, 5);
+				if (!abortController.signal.aborted && isSuccess(response)) {
+					setTags(response.value.map((v) => v.name));
+				}
+			} catch (error) {
+				if (!abortController.signal.aborted) {
+					console.error("[useAutocompleteTags] Error:", error);
+				}
 			}
 		}
 
-		fetch();
+		fetchTags();
+
+		return () => {
+			abortController.abort();
+		};
 	}, [value, client]);
 
 	return tags;
@@ -42,10 +50,8 @@ function useSuggestTags(value: string[]) {
 	const [tags, setTags] = useState<string[]>([]);
 
 	useEffect(() => {
-		console.log("[useSuggestTags] value:", value, "client:", client);
 		// SSR時やclientが未定義の場合は何もしない
 		if (!client) {
-			console.log("[useSuggestTags] client is undefined, skipping");
 			return;
 		}
 
@@ -55,18 +61,28 @@ function useSuggestTags(value: string[]) {
 			return;
 		}
 
-		async function fetch() {
+		const abortController = new AbortController();
+
+		async function fetchSuggestions() {
 			if (!client) return; // Type guard
 
-			console.log("[useSuggestTags] Fetching suggestions for:", value);
-			const response = await client.suggestRelatedTags(value, 5);
-			console.log("[useSuggestTags] Response:", response);
-			if (isSuccess(response)) {
-				setTags(response.value.map((v) => v.tag.name));
+			try {
+				const response = await client.suggestRelatedTags(value, 5);
+				if (!abortController.signal.aborted && isSuccess(response)) {
+					setTags(response.value.map((v) => v.tag.name));
+				}
+			} catch (error) {
+				if (!abortController.signal.aborted) {
+					console.error("[useSuggestTags] Error:", error);
+				}
 			}
 		}
 
-		fetch();
+		fetchSuggestions();
+
+		return () => {
+			abortController.abort();
+		};
 	}, [value, client]);
 
 	return tags;
@@ -134,7 +150,7 @@ export function TagInput({
 }: {
 	name: string;
 	value: string;
-	onAdd: (valuee: string) => void;
+	onAdd: (value: string) => void;
 	onReplace: (value: string) => void;
 	onChange: (value: string) => void;
 	autocompleteTags: string[];

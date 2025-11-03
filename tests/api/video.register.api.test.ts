@@ -14,7 +14,7 @@ const CATEGORY_NAME = "video-register-api";
 
 describe("ビデオ登録API", () => {
 	before(async () => {
-		await rm("./tests/db/video.register.api", { recursive: true, force: true });
+		await rm(`./tests/db/${CATEGORY_NAME}`, { recursive: true, force: true });
 	});
 
 	it("ビデオを正常に登録し、onSuccessが呼ばれonErrorは呼ばれないことを検証", async () => {
