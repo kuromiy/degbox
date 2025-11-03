@@ -33,7 +33,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	return location.reload();
 }
 
-export default function IndexPage() {
+export default function VideoRegisterPage() {
 	const { Link, Form } = useNavigation();
 	const { tags, add, replace, change, autocompleteTags, suggestTags } =
 		useTagInput("");

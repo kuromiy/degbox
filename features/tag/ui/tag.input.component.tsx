@@ -1,30 +1,54 @@
 import { isSuccess } from "electron-flow/result";
-import { useEffect, useId, useMemo, useState } from "react";
-import { ApiService } from "../../../src/renderer/autogenerate/register.js";
-
-const client = new ApiService();
+import { useContext, useEffect, useId, useMemo, useState } from "react";
+import { ClientContext } from "../../shared/ui/client.context.js";
 
 function useAutocompleteTags(value: string) {
+	const client = useContext(ClientContext);
 	const [tags, setTags] = useState<string[]>([]);
 
 	useEffect(() => {
+		console.log("[useAutocompleteTags] value:", value, "client:", client);
+		// SSR時やclientが未定義の場合は何もしない
+		if (!client) {
+			console.log("[useAutocompleteTags] client is undefined, skipping");
+			return;
+		}
+
+		// 空文字列の場合は何もしない
+		if (!value || value.trim().length === 0) {
+			setTags([]);
+			return;
+		}
+
 		async function fetch() {
+			if (!client) return; // Type guard
+
+			console.log("[useAutocompleteTags] Fetching autocomplete for:", value);
 			const response = await client.autocompleteTags(value, 5);
+			console.log("[useAutocompleteTags] Response:", response);
 			if (isSuccess(response)) {
 				setTags(response.value.map((v) => v.name));
 			}
 		}
 
 		fetch();
-	}, [value]);
+	}, [value, client]);
 
 	return tags;
 }
 
 function useSuggestTags(value: string[]) {
+	const client = useContext(ClientContext);
 	const [tags, setTags] = useState<string[]>([]);
 
 	useEffect(() => {
+		console.log("[useSuggestTags] value:", value, "client:", client);
+		// SSR時やclientが未定義の場合は何もしない
+		if (!client) {
+			console.log("[useSuggestTags] client is undefined, skipping");
+			return;
+		}
+
 		// 空配列の場合はAPIを呼ばない
 		if (value.length === 0) {
 			setTags([]);
@@ -32,14 +56,18 @@ function useSuggestTags(value: string[]) {
 		}
 
 		async function fetch() {
+			if (!client) return; // Type guard
+
+			console.log("[useSuggestTags] Fetching suggestions for:", value);
 			const response = await client.suggestRelatedTags(value, 5);
+			console.log("[useSuggestTags] Response:", response);
 			if (isSuccess(response)) {
 				setTags(response.value.map((v) => v.tag.name));
 			}
 		}
 
 		fetch();
-	}, [value]);
+	}, [value, client]);
 
 	return tags;
 }
@@ -102,6 +130,7 @@ export function TagInput({
 	onChange,
 	autocompleteTags,
 	suggestTags,
+	id,
 }: {
 	name: string;
 	value: string;
@@ -110,12 +139,14 @@ export function TagInput({
 	onChange: (value: string) => void;
 	autocompleteTags: string[];
 	suggestTags: string[];
+	id?: string;
 }) {
-	const id = useId();
+	const generatedId = useId();
+	const inputId = id ?? generatedId;
 
 	return (
 		<TagInputPresention
-			id={id}
+			id={inputId}
 			name={name}
 			value={value}
 			onAdd={onAdd}

@@ -1,19 +1,28 @@
+import { useCallback } from "react";
 import {
 	NeutralButton,
 	PositiveButton,
 } from "../../../../features/shared/ui/button.component.js";
+import { ClientProvider } from "../../../../features/shared/ui/client.context.js";
+import {
+	TagInput,
+	useTagInput,
+} from "../../../../features/tag/ui/tag.input.component.js";
+import { FetchClient } from "../../client.js";
 
-export default function VideoRegisterPage(
-	formData?: Record<string, unknown>,
-	errors?: Record<string, string[]>,
-) {
-	const fileErrors = errors?.file;
-	const tagsErrors = errors?.tags;
-	const authorIdErrors = errors?.authorId;
-
+function VideoRegisterForm({
+	fileErrors,
+	authorIdErrors,
+}: {
+	fileErrors?: string[] | undefined;
+	authorIdErrors?: string[] | undefined;
+}) {
 	const hasFileError = !!(fileErrors && fileErrors.length > 0);
-	const hasTagsError = !!(tagsErrors && tagsErrors.length > 0);
 	const hasAuthorIdError = !!(authorIdErrors && authorIdErrors.length > 0);
+
+	// ClientProvider の内側で useTagInput を呼び出す
+	const { tags, add, replace, change, autocompleteTags, suggestTags } =
+		useTagInput("");
 
 	return (
 		<main className="flex justify-center">
@@ -44,23 +53,17 @@ export default function VideoRegisterPage(
 					</div>
 
 					{/* タグ入力フィールド */}
-					<div className="flex flex-col gap-1">
-						<label htmlFor="tags">タグ</label>
-						<input
-							name="tags"
-							type="text"
-							defaultValue={formData?.tags as string}
-							className={`px-4 py-2 border rounded-lg ${hasTagsError ? "border-red-500" : ""}`}
-							placeholder="タグを入力（スペース区切りで複数入力可）..."
-						/>
-						{hasTagsError && (
-							<div className="text-red-500 text-sm">
-								{tagsErrors.map((error) => (
-									<div key={error}>{error}</div>
-								))}
-							</div>
-						)}
-					</div>
+					{/* biome-ignore lint/correctness/useUniqueElementIds: Fixed ID needed to prevent hydration mismatch */}
+					<TagInput
+						name="tags"
+						value={tags}
+						onAdd={add}
+						onReplace={replace}
+						onChange={change}
+						autocompleteTags={autocompleteTags}
+						suggestTags={suggestTags}
+						id="video-tags-input"
+					/>
 
 					{/* 作者ID入力フィールド（オプション） */}
 					<div className="flex flex-col gap-1">
@@ -68,7 +71,6 @@ export default function VideoRegisterPage(
 						<input
 							type="text"
 							name="authorId"
-							defaultValue={formData?.authorId as string}
 							className={`border rounded-lg p-2 ${hasAuthorIdError ? "border-red-500" : ""}`}
 						/>
 						{hasAuthorIdError && (
@@ -87,5 +89,24 @@ export default function VideoRegisterPage(
 				</form>
 			</div>
 		</main>
+	);
+}
+
+export default function VideoRegisterPage(
+	_formData?: Record<string, unknown>,
+	errors?: Record<string, string[]>,
+) {
+	const fileErrors = errors?.file;
+	const authorIdErrors = errors?.authorId;
+
+	const createClient = useCallback(() => new FetchClient(), []);
+
+	return (
+		<ClientProvider createClient={createClient}>
+			<VideoRegisterForm
+				fileErrors={fileErrors}
+				authorIdErrors={authorIdErrors}
+			/>
+		</ClientProvider>
 	);
 }
