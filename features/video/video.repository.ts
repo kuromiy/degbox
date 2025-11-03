@@ -5,4 +5,5 @@ export interface VideoRepository {
 	save(video: Video): Promise<Video>;
 	count(keyword: string): Promise<number>;
 	search(keyword: string, page: number, size: number): Promise<Video[]>;
+	findById(videoId: string): Promise<Video | null>;
 }

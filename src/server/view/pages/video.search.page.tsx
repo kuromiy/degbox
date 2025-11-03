@@ -63,12 +63,16 @@ export default function VideoSearchPage({
 			<div className="grid grid-cols-3 gap-6">
 				{searchResult?.result.map((video) => {
 					return (
-						<div key={video.id}>
+						<a
+							key={video.id}
+							href={`/video/detail/${video.id}`}
+							className="block"
+						>
 							<VideoThumbnail
 								thumbnailPath={video.thumbnailPath}
 								previewGifPath={video.previewGifPath}
 							/>
-						</div>
+						</a>
 					);
 				})}
 			</div>

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { posix } from "node:path";
-import { countDistinct, eq, inArray, like } from "drizzle-orm";
+import { countDistinct, desc, eq, inArray, like } from "drizzle-orm";
 import type { Logger } from "winston";
 import {
 	AUTHORS,
@@ -139,6 +139,7 @@ export class VideoDataSource implements VideoRepository {
 				.innerJoin(VIDEOS_TAGS, eq(VIDEOS.id, VIDEOS_TAGS.videoId))
 				.innerJoin(TAGS, eq(TAGS.id, VIDEOS_TAGS.tagId))
 				.where(like(TAGS.name, `%${trimmedKeyword}%`))
+				.orderBy(desc(VIDEOS.id))
 				.limit(size)
 				.offset(page * size);
 
@@ -155,6 +156,7 @@ export class VideoDataSource implements VideoRepository {
 			const videoIdQuery = this.db
 				.selectDistinct({ id: VIDEOS.id })
 				.from(VIDEOS)
+				.orderBy(desc(VIDEOS.id))
 				.limit(size)
 				.offset(page * size);
 
@@ -209,5 +211,56 @@ export class VideoDataSource implements VideoRepository {
 		});
 		this.logger.info(`result num: ${result.length}`);
 		return result;
+	}
+
+	async findById(videoId: string): Promise<Video | null> {
+		this.logger.info(`VideoDataSource#findById. videoId: ${videoId}`);
+
+		// ビデオが存在するか確認
+		const videoResult = await this.db
+			.select()
+			.from(VIDEOS)
+			.where(eq(VIDEOS.id, videoId))
+			.limit(1);
+
+		if (videoResult.length === 0) {
+			this.logger.info(`Video not found: ${videoId}`);
+			return null;
+		}
+
+		// タグを取得
+		const tags = await this.db
+			.select()
+			.from(TAGS)
+			.innerJoin(VIDEOS_TAGS, eq(TAGS.id, VIDEOS_TAGS.tagId))
+			.where(eq(VIDEOS_TAGS.videoId, videoId));
+
+		// コンテンツを取得
+		const contents = await this.db
+			.select()
+			.from(CONTENTS)
+			.innerJoin(VIDEOS_CONTENTS, eq(CONTENTS.id, VIDEOS_CONTENTS.contentId))
+			.where(eq(VIDEOS_CONTENTS.videoId, videoId));
+
+		// 作者を取得
+		const authors = await this.db
+			.select()
+			.from(AUTHORS)
+			.innerJoin(VIDEOS_AUTHORS, eq(AUTHORS.id, VIDEOS_AUTHORS.authorId))
+			.where(eq(VIDEOS_AUTHORS.videoId, videoId));
+
+		const firstContent = contents[0]?.contents;
+		if (!firstContent) {
+			throw new Error(`No content found for video: ${videoId}`);
+		}
+
+		return {
+			id: videoId,
+			previewGifPath: `http://localhost:8080/file/${posix.join(firstContent.path, "preview.gif")}`,
+			thumbnailPath: `http://localhost:8080/file/${posix.join(firstContent.path, "thumbnail.jpg")}`,
+			tags: tags.map((t) => t.tags),
+			contents: contents.map((c) => c.contents),
+			authors: authors.map((a) => a.authors),
+		};
 	}
 }

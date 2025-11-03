@@ -5,6 +5,7 @@ import { success, failure } from "electron-flow";
 
 import { autocompleteTags } from "../apis/tags/tag.autocomplete.api.js";
 import { suggestRelatedTags } from "../apis/tags/tag.suggest.api.js";
+import { detailVideo } from "../apis/videos/video.detail.api.js";
 import { pickupVideo } from "../apis/videos/video.pickup.api.js";
 import { registerVideo } from "../apis/videos/video.register.api.js";
 import { searchVideo } from "../apis/videos/video.search.api.js";
@@ -24,6 +25,16 @@ export const autoGenerateHandlers = {
         return async (event: IpcMainInvokeEvent, args: any) => {
             try {
                 const result = await suggestRelatedTags({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
+    "detailVideo": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await detailVideo({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
                 return failure(e);

@@ -1,6 +1,7 @@
 // auto generated
 import type { autocompleteTags } from "../../main/apis/tags/tag.autocomplete.api.js";
 import type { suggestRelatedTags } from "../../main/apis/tags/tag.suggest.api.js";
+import type { detailVideo } from "../../main/apis/videos/video.detail.api.js";
 import type { pickupVideo } from "../../main/apis/videos/video.pickup.api.js";
 import type { registerVideo } from "../../main/apis/videos/video.register.api.js";
 import type { searchVideo } from "../../main/apis/videos/video.search.api.js";
@@ -19,6 +20,7 @@ declare global {
         api: {
             autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
             suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
+            detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
             pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, Error>>;
             registerVideo: (resourceId: string, rawTags: string, authorId: string | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
             searchVideo: (keyword: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, Error>>;
@@ -30,6 +32,7 @@ declare global {
 export interface ServiceIF {
     autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
+    detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
     pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, Error>>;
     registerVideo: (resourceId: string, rawTags: string, authorId: string | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
     searchVideo: (keyword: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, Error>>;
@@ -43,6 +46,10 @@ export class ApiService implements ServiceIF {
 
     async suggestRelatedTags(tagNames: unknown[], limit: number | undefined) {
         return window.api.suggestRelatedTags(tagNames, limit);
+    }
+
+    async detailVideo(videoId: string) {
+        return window.api.detailVideo(videoId);
     }
 
     async pickupVideo() {

@@ -63,6 +63,10 @@ export class FetchClient implements ServiceIF {
 		return failure(new Error("registerVideo is not allowed in FetchClient"));
 	}
 
+	async detailVideo(_videoId: string) {
+		return failure(new Error("detailVideo is not allowed in FetchClient"));
+	}
+
 	async searchVideo(
 		_keyword: string | undefined,
 		_page: number | undefined,

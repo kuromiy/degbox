@@ -15,7 +15,8 @@ export interface LinkProps {
 
 export interface NavigationComponents {
 	Link: React.ComponentType<LinkProps>;
-	Form: React.ComponentType<any>; // Client/Serverで異なる型を許容
+	// biome-ignore lint/suspicious/noExplicitAny: Client/Serverで異なる型を許容するため
+	Form: React.ComponentType<any>;
 }
 
 const NavigationContext = createContext<NavigationComponents | null>(null);

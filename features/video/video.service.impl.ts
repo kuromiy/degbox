@@ -1,4 +1,6 @@
 import { spawn } from "node:child_process";
+import { mkdirSync } from "node:fs";
+import { dirname } from "node:path";
 import type { Logger } from "winston";
 import type { VideoService } from "./video.service.js";
 
@@ -100,6 +102,10 @@ export class VideoServiceImpl implements VideoService {
 		outputM3u8Path: string,
 	): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
+			// hlsフォルダを作成（存在しない場合）
+			const segmentDir = dirname(outputTsPath);
+			mkdirSync(segmentDir, { recursive: true });
+
 			const process = spawn(FFMPEG_PATH, [
 				"-y",
 				"-i",
