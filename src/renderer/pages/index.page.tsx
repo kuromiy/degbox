@@ -1,10 +1,10 @@
 import { isFailure } from "electron-flow/result";
-import { useActionState } from "react";
-import { Link } from "react-router-dom";
+import { type ActionFunctionArgs, useActionData } from "react-router-dom";
 import {
 	NeutralButton,
 	PositiveButton,
 } from "../../../features/shared/ui/button.component.js";
+import { useNavigation } from "../../../features/shared/ui/navigation.context.js";
 import {
 	TagInput,
 	useTagInput,
@@ -14,36 +14,45 @@ import { ApiService } from "../autogenerate/register.js";
 
 const client = new ApiService();
 
+export async function action({ request }: ActionFunctionArgs) {
+	const formData = await request.formData();
+	const tags = formData.get("tags")?.toString();
+	const resourceId = formData.get("resourceId")?.toString();
+
+	console.log(`url: ${request.url}, tags: ${tags}, resourceId: ${resourceId}`);
+	if (!resourceId || !tags) {
+		console.log("必須項目が入力されていません");
+		return new Error("必須項目が入力されていません");
+	}
+
+	const response = await client.registerVideo(resourceId, tags, undefined);
+	if (isFailure(response)) {
+		console.log(`response error: ${response.value.message}`);
+		return new Error(response.value.message);
+	}
+	return location.reload();
+}
+
 export default function IndexPage() {
-	const { tags, add, replace, change, reset, autocompleteTags, suggestTags } =
+	const { Link, Form } = useNavigation();
+	const { tags, add, replace, change, autocompleteTags, suggestTags } =
 		useTagInput("");
-
-	const [_, action] = useActionState<Error | null, FormData>(
-		async (_, formData) => {
-			const tags = formData.get("tags")?.toString();
-			const resourceId = formData.get("resourceId")?.toString();
-
-			console.log(`tags: ${tags}, resourceId: ${resourceId}`);
-			if (!resourceId || !tags) {
-				console.log("必須項目が入力されていません");
-				return new Error("必須項目が入力されていません");
-			}
-
-			const response = await client.registerVideo(resourceId, tags, undefined);
-			if (isFailure(response)) {
-				console.log(`response error: ${response.value.message}`);
-				return new Error(response.value.message);
-			}
-			return null;
-		},
-		null,
-	);
+	const data = useActionData() as { message: string } | Error | undefined;
 
 	return (
 		<main className="flex justify-center">
+			{data && (
+				<div className="mb-4">
+					{data instanceof Error ? (
+						<div className="text-red-500">エラー: {data.message}</div>
+					) : (
+						<div className="text-green-500">{data.message}</div>
+					)}
+				</div>
+			)}
 			<Link to="/">検索</Link>
 			<div className="w-full max-w-md">
-				<form action={action} className="flex flex-col gap-4">
+				<Form className="flex flex-col gap-4" method="POST">
 					<h1>動画登録</h1>
 					<VideoInput />
 					<TagInput
@@ -59,7 +68,7 @@ export default function IndexPage() {
 						<NeutralButton type="reset">リセット</NeutralButton>
 						<PositiveButton type="submit">登録</PositiveButton>
 					</div>
-				</form>
+				</Form>
 			</div>
 		</main>
 	);

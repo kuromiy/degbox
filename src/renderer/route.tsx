@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import { createHashRouter } from "react-router-dom";
-import IndexPage from "./pages/index.page.js";
+import IndexPage, { action } from "./pages/index.page.js";
 import VideoSearchPage from "./pages/video.search.page.js";
 
 export const route = createHashRouter([
 	{
 		path: "/register",
 		element: <IndexPage />,
+		action: action,
 	},
 	{
 		path: "/",
