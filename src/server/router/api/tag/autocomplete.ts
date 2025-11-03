@@ -42,7 +42,7 @@ app.get("/autocomplete", async (c) => {
 		return c.json([]);
 	}
 
-	const tags = await tagRepository.listByName(query);
+	const tags = await tagRepository.listByName(query, valid.data.limit);
 	return c.json(tags);
 });
 

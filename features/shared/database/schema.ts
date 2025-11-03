@@ -83,10 +83,10 @@ export const TAG_COOCCURRENCES = sqliteTable(
 	{
 		tag1Id: text("tag1_id")
 			.notNull()
-			.references(() => TAGS.id),
+			.references(() => TAGS.id, { onDelete: "cascade" }),
 		tag2Id: text("tag2_id")
 			.notNull()
-			.references(() => TAGS.id),
+			.references(() => TAGS.id, { onDelete: "cascade" }),
 		count: integer("count").notNull().default(0),
 	},
 	(table) => [primaryKey({ columns: [table.tag1Id, table.tag2Id] })],

@@ -10,14 +10,19 @@ import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "./testjobqueue.js";
 
+const CATEGORY_NAME = "video-register-api";
+
 describe("ビデオ登録API", () => {
 	before(async () => {
-		await rm("./tests/db", { recursive: true, force: true });
+		await rm("./tests/db/video.register.api", { recursive: true, force: true });
 	});
 
 	it("ビデオを正常に登録し、onSuccessが呼ばれonErrorは呼ばれないことを検証", async () => {
 		// テスト用データベースを作成
-		const database = await createTestDatabase("register.test.db");
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"video.register.test",
+		);
 
 		// TestJobQueueを作成
 		const testJobQueue = new TestJobQueue();

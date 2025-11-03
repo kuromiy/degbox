@@ -30,10 +30,10 @@ export async function autocompleteTags(
 		);
 		throw new Error("Invalid request");
 	}
-	const { value } = valid.data;
+	const { value, limit } = valid.data;
 	const query = value.trim();
 	if (query.length === 0) {
 		return [];
 	}
-	return await tagRepository.listByName(query);
+	return await tagRepository.listByName(query, limit);
 }

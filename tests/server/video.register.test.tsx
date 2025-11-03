@@ -20,15 +20,20 @@ import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { normalizeHtml } from "../helpers/normalizeHtml.js";
 import { testLogger } from "./testlogger.js";
 
+const CATEGORY_NAME = "video-register-server";
+
 describe("ビデオ登録画面", () => {
 	before(async () => {
-		await rm("./tests/db", { recursive: true, force: true });
+		await rm("./tests/db/video.register", { recursive: true, force: true });
 	});
 
 	it("VideoRegisterPageが正しくレンダリングされる", async () => {
 		console.log("VideoRegisterPageが正しくレンダリングされる");
 		// テスト用データベースを作成
-		const database = await createTestDatabase("register.render.server.test");
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"video.register.render.test",
+		);
 
 		const testJobQueue = new TestJobQueue();
 		const container = new Container();
@@ -58,7 +63,10 @@ describe("ビデオ登録画面", () => {
 	it("ビデオ登録ができること", async () => {
 		console.log("ビデオ登録ができること");
 		// テスト用データベースを作成
-		const database = await createTestDatabase("register.post.server.test");
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"video.register.post.test",
+		);
 
 		const testJobQueue = new TestJobQueue();
 		const container = new Container();

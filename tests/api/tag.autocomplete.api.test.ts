@@ -8,14 +8,22 @@ import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 
+const CATEGORY_NAME = "tag-autocomplete-api";
+
 describe("タグ自動補完API", () => {
 	before(async () => {
-		await rm("./tests/db", { recursive: true, force: true });
+		await rm("./tests/db/tag.autocomplete.api", {
+			recursive: true,
+			force: true,
+		});
 	});
 
 	it("空文字で実効した場合、", async () => {
 		// テスト用データベースを作成
-		const database = await createTestDatabase("tag.autocomplete.test");
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"tag.autocomplete.test",
+		);
 
 		// 事前データ
 		const container = new Container();
@@ -50,8 +58,10 @@ describe("タグ自動補完API", () => {
 
 	it("意図したタグが取得できること", async () => {
 		// テスト用データベースを作成
-		const database = await createTestDatabase("tag.autocomplete.test.db");
-
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"tag.autocomplete.test",
+		);
 		// 事前データ
 		const container = new Container();
 		depend.forEach(({ token, provider }) => {
@@ -90,7 +100,10 @@ describe("タグ自動補完API", () => {
 
 	it("意図したタグが取得できること2", async () => {
 		// テスト用データベースを作成
-		const database = await createTestDatabase("tag.autocomplete.test.db");
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"tag.autocomplete.test",
+		);
 
 		// 事前データ
 		const container = new Container();

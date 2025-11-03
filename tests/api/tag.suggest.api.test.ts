@@ -11,14 +11,19 @@ import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 
+const CATEGORY_NAME = "tag-suggest-api";
+
 describe("タグ提案API", () => {
 	before(async () => {
-		await rm("./tests/db", { recursive: true, force: true });
+		await rm("./tests/db/tag.suggest.api", { recursive: true, force: true });
 	});
 
 	it("既存のタグに基づいて関連タグが提案されること", async () => {
 		// テスト用データベースを作成
-		const database = await createTestDatabase("tag.suggest.test");
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"tag.suggest.test",
+		);
 
 		// 事前データ
 		const container = new Container();

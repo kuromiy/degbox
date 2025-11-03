@@ -13,11 +13,11 @@ const __dirname = dirname(__filename);
 /**
  * テスト用のデータベースを作成する
  * @param dbName データベースファイル名（例: "search.test"）
- * @returns データベースインスタンスとクリーンアップ関数
+ * @returns データベースインスタンス
  */
-export async function createTestDatabase(dbName: string) {
-	// tests/db ディレクトリを作成（既に存在する場合は無視）
-	const dbDir = join(__dirname, "../db");
+export async function createTestDatabase(categories: string[], dbName: string) {
+	// tests/db ディレクトリを作成(既に存在する場合は無視)
+	const dbDir = join(__dirname, "../db", ...categories);
 	await mkdir(dbDir, { recursive: true });
 
 	// tests/db ディレクトリ配下に配置
@@ -28,7 +28,7 @@ export async function createTestDatabase(dbName: string) {
 	const client = createClient({ url });
 	const database = drizzle({ client, schema });
 
-	// マイグレーションを実行（絶対パスを使用）
+	// マイグレーションを実行(絶対パスを使用)
 	const migrationsFolder = join(__dirname, "../../drizzle");
 	await migrate(database, { migrationsFolder });
 

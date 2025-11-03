@@ -75,16 +75,16 @@ function useSuggestTags(value: string[]) {
 function useTags(initValue: string) {
 	const [tags, setTags] = useState(initValue);
 
-	const tagArray = useMemo(
-		() => tags.split(/\s+/).filter((t) => t.length > 0),
-		[tags],
-	);
+	const tagArray = useMemo(() => tags.split(/\s+/), [tags]);
 
 	// 最後の要素を現在入力中のタグとする
-	const inputtingTag = tagArray[tagArray.length - 1] || "";
+	const inputtingTag = tagArray[tagArray.length - 1] ?? "";
 
 	// 最後を除いた要素を確定済みタグとする（サジェスト用）
-	const confirmedTags = useMemo(() => tagArray, [tagArray]);
+	const confirmedTags = useMemo(
+		() => tagArray.slice(0, -1).filter((t) => t.length > 0),
+		[tagArray],
+	);
 
 	function add(value: string) {
 		// 既存のタグに新しいタグを追加し、スペースで区切る

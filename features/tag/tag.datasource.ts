@@ -59,7 +59,7 @@ export class TagDataSource implements TagRepository {
 		return result[0];
 	}
 
-	async listByName(name: string): Promise<Tag[]> {
+	async listByName(name: string, limit?: number): Promise<Tag[]> {
 		// ワイルドカード文字をエスケープ
 		const escapedName = name
 			.replace(/\\/g, "\\\\") // \ → \\
@@ -68,10 +68,16 @@ export class TagDataSource implements TagRepository {
 
 		const pattern = `${escapedName}%`;
 
-		const result = await this.db
+		const query = this.db
 			.select()
 			.from(TAGS)
 			.where(sql`${TAGS.name} LIKE ${pattern} ESCAPE '\\'`);
+
+		if (limit !== undefined) {
+			query.limit(limit);
+		}
+
+		const result = await query.execute();
 
 		return result;
 	}

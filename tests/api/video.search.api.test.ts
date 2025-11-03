@@ -14,14 +14,19 @@ import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 
+const CATEGORY_NAME = "video-search-api";
+
 describe("ビデオ検索API", () => {
 	before(async () => {
-		await rm("./tests/db", { recursive: true, force: true });
+		await rm("./tests/db/video.search.api", { recursive: true, force: true });
 	});
 
 	it("ビデオを空文字で検索した場合、すべて検索できること", async () => {
 		// テスト用データベースを作成
-		const database = await createTestDatabase("search.test.db");
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"video.search.test",
+		);
 
 		// 事前データ
 		const container = new Container();

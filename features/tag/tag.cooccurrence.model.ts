@@ -17,11 +17,14 @@ export namespace TagCooccurrence {
 	 * タグIDの配列から、すべての共起ペアを生成
 	 */
 	export function generatePairs(tagIds: string[]): Array<[string, string]> {
+		// 重複を除外して一意なタグIDのみを使用
+		const uniqueTagIds = [...new Set(tagIds)];
+
 		const pairs: Array<[string, string]> = [];
-		for (let i = 0; i < tagIds.length; i++) {
-			for (let j = i + 1; j < tagIds.length; j++) {
-				const tagId1 = tagIds[i];
-				const tagId2 = tagIds[j];
+		for (let i = 0; i < uniqueTagIds.length; i++) {
+			for (let j = i + 1; j < uniqueTagIds.length; j++) {
+				const tagId1 = uniqueTagIds[i];
+				const tagId2 = uniqueTagIds[j];
 				if (tagId1 && tagId2) {
 					pairs.push(normalize(tagId1, tagId2));
 				}

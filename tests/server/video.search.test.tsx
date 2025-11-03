@@ -19,14 +19,19 @@ import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { normalizeHtml } from "../helpers/normalizeHtml.js";
 import { testLogger } from "./testlogger.js";
 
+const CATEGORY_NAME = "video-search-server";
+
 describe("ビデオ検索画面", () => {
 	before(async () => {
-		await rm("./tests/db", { recursive: true, force: true });
+		await rm("./tests/db/video.search", { recursive: true, force: true });
 	});
 
 	it("VideoSearchPageが正しくレンダリングされる", async () => {
 		// テスト用データベースを作成
-		const database = await createTestDatabase("search.server.test.db");
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"video.search.render.test",
+		);
 
 		const testJobQueue = new TestJobQueue();
 		const container = new Container();
@@ -55,7 +60,10 @@ describe("ビデオ検索画面", () => {
 
 	it("空文字で検索した場合、すべてのビデオが表示されること", async () => {
 		// テスト用データベースを作成
-		const database = await createTestDatabase("search.empty.server.test.db");
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"video.search.query.test",
+		);
 
 		const testJobQueue = new TestJobQueue();
 		const container = new Container();
