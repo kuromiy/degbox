@@ -8,7 +8,7 @@ import { TOKENS } from "../../depend.injection.js";
  */
 
 export const suggestRelatedTagsSchema = z.object({
-	tagNames: z.array(z.string()).min(1),
+	tagNames: z.array(z.string().trim().min(1)).min(1),
 	limit: z.number().optional().default(5),
 });
 export type SuggestRelatedTagsRequest = z.infer<
@@ -37,17 +37,9 @@ export async function suggestRelatedTags(
 
 	const { tagNames, limit } = valid.data;
 
-	// 空白やトリムされた結果が空のタグ名を除外
-	const validTagNames = tagNames
-		.map((name) => name.trim())
-		.filter((name) => name.length > 0);
-
-	if (validTagNames.length === 0) {
-		return [];
-	}
-
+	// スキーマでトリムと最小長チェックが完了しているため、そのまま使用
 	const suggestions = await tagSuggestionService.suggestTagsByNames(
-		validTagNames,
+		tagNames,
 		limit,
 	);
 
