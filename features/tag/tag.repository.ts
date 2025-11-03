@@ -5,5 +5,5 @@ export interface TagRepository {
 	save(tag: Tag): Promise<Tag>;
 	findById(id: string): Promise<Tag | undefined>;
 	findByName(name: string): Promise<Tag | undefined>;
-	listByName(name: string): Promise<Tag[]>;
+	listByName(name: string, limit?: number): Promise<Tag[]>;
 }

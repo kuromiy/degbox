@@ -87,6 +87,10 @@ export async function registerVideo(
 					const video = await videoAction.register(tags, content, author);
 					logger.info("Video", { video });
 
+					// タグ共起行列の更新
+					await tagAction.updateCooccurrences(tags);
+					logger.info("Updated tag cooccurrences");
+
 					return video;
 				});
 			});

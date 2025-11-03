@@ -1,4 +1,9 @@
-import { primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+	integer,
+	primaryKey,
+	sqliteTable,
+	text,
+} from "drizzle-orm/sqlite-core";
 
 // 共通のカラム?
 // createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
@@ -70,4 +75,19 @@ export const VIDEOS_CONTENTS = sqliteTable(
 			.references(() => CONTENTS.id),
 	},
 	(table) => [primaryKey({ columns: [table.videoId, table.contentId] })],
+);
+
+// タグ共起行列
+export const TAG_COOCCURRENCES = sqliteTable(
+	"tag_cooccurrences",
+	{
+		tag1Id: text("tag1_id")
+			.notNull()
+			.references(() => TAGS.id, { onDelete: "cascade" }),
+		tag2Id: text("tag2_id")
+			.notNull()
+			.references(() => TAGS.id, { onDelete: "cascade" }),
+		count: integer("count").notNull().default(0),
+	},
+	(table) => [primaryKey({ columns: [table.tag1Id, table.tag2Id] })],
 );

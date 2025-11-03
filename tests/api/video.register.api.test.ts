@@ -1,32 +1,28 @@
 import { strict as assert } from "node:assert";
-import { afterEach, describe, it } from "node:test";
+import { rm } from "node:fs/promises";
+import { before, describe, it } from "node:test";
 import { Container } from "../../features/shared/container/index.js";
 import type { UnmanagedContent } from "../../features/unmanaged-content/unmanagedContent.model.js";
 import { registerVideo } from "../../src/main/apis/videos/video.register.api.js";
 import type { Context } from "../../src/main/context.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
-import {
-	type CleanupFunction,
-	createTestDatabase,
-} from "../helpers/createTestDatabase.js";
+import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "./testjobqueue.js";
 
-describe("ビデオ登録API", () => {
-	let cleanup: CleanupFunction | null = null;
+const CATEGORY_NAME = "video-register-api";
 
-	afterEach(async () => {
-		if (cleanup) {
-			await cleanup();
-			cleanup = null;
-		}
+describe("ビデオ登録API", () => {
+	before(async () => {
+		await rm(`./tests/db/${CATEGORY_NAME}`, { recursive: true, force: true });
 	});
 
 	it("ビデオを正常に登録し、onSuccessが呼ばれonErrorは呼ばれないことを検証", async () => {
 		// テスト用データベースを作成
-		const { database, cleanup: dbCleanup } =
-			await createTestDatabase("register.test.db");
-		cleanup = dbCleanup;
+		const database = await createTestDatabase(
+			[CATEGORY_NAME],
+			"video.register.test",
+		);
 
 		// TestJobQueueを作成
 		const testJobQueue = new TestJobQueue();
