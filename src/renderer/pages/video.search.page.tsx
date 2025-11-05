@@ -10,12 +10,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
 	const keyword = url.searchParams.get("keyword") ?? undefined;
 
-	// 文字列を数値に変換（nullの場合はundefined）
+	// 文字列を数値に変換（nullまたは無効な値の場合はundefined）
 	const pageStr = url.searchParams.get("page");
-	const page = pageStr ? Number(pageStr) : undefined;
+	const pageNum = pageStr ? Number(pageStr) : Number.NaN;
+	const page = Number.isFinite(pageNum) ? pageNum : undefined;
 
 	const sizeStr = url.searchParams.get("size");
-	const size = sizeStr ? Number(sizeStr) : undefined;
+	const sizeNum = sizeStr ? Number(sizeStr) : Number.NaN;
+	const size = Number.isFinite(sizeNum) ? sizeNum : undefined;
 
 	const response = await client.searchVideo(keyword, page, size);
 	if (isFailure(response)) {
