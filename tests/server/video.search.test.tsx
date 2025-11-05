@@ -12,6 +12,7 @@ import {
 	VIDEOS_TAGS,
 } from "../../features/shared/database/schema.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
+import { buildFileUrl } from "../../src/server/config/index.js";
 import { createServer } from "../../src/server/server.js";
 import VideoSearchPage from "../../src/server/view/pages/video.search.page.js";
 import { TestJobQueue } from "../api/testjobqueue.js";
@@ -136,10 +137,8 @@ describe("ビデオ検索画面", () => {
 						},
 					],
 					authors: [],
-					thumbnailPath:
-						"http://localhost:8080/file/contents/video/thumbnail.jpg",
-					previewGifPath:
-						"http://localhost:8080/file/contents/video/preview.gif",
+					thumbnailPath: buildFileUrl("contents/video/thumbnail.jpg"),
+					previewGifPath: buildFileUrl("contents/video/preview.gif"),
 				},
 				{
 					id: "1",
@@ -156,10 +155,8 @@ describe("ビデオ検索画面", () => {
 						},
 					],
 					authors: [],
-					thumbnailPath:
-						"http://localhost:8080/file/contents/video/thumbnail.jpg",
-					previewGifPath:
-						"http://localhost:8080/file/contents/video/preview.gif",
+					thumbnailPath: buildFileUrl("contents/video/thumbnail.jpg"),
+					previewGifPath: buildFileUrl("contents/video/preview.gif"),
 				},
 			],
 			page: 1,

@@ -19,10 +19,10 @@ export class VideoAction {
 		const fullPath = join(content.path, content.name);
 		const outputDir = content.path; // original.mp4と同じディレクトリ
 
-		// HLS生成
+		// HLS生成（hlsサブフォルダに出力）
 		await this.service.generateHls(
 			fullPath,
-			join(outputDir, "segment_%03d.ts"),
+			join(outputDir, "hls", "segment_%03d.ts"),
 			join(outputDir, "index.m3u8"),
 		);
 

@@ -3,7 +3,7 @@ import type { Tag } from "../../features/tag/tag.model.js";
 import type { TagSuggestion } from "../../features/tag/tag.suggestion.service.js";
 import type { ServiceIF } from "../renderer/autogenerate/register.js";
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = "http://192.168.3.33:8080";
 
 export class FetchClient implements ServiceIF {
 	async autocompleteTags(value: string, limit: number | undefined) {
@@ -61,6 +61,10 @@ export class FetchClient implements ServiceIF {
 		_authorId: string | undefined,
 	) {
 		return failure(new Error("registerVideo is not allowed in FetchClient"));
+	}
+
+	async detailVideo(_videoId: string) {
+		return failure(new Error("detailVideo is not allowed in FetchClient"));
 	}
 
 	async searchVideo(

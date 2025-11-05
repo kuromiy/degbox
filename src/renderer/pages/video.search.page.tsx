@@ -1,6 +1,6 @@
 import { isFailure } from "electron-flow/result";
 import { use, useActionState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import VideoThumbnail from "../../../features/video/ui/VideoThumbnail.js";
 import { ApiService } from "../autogenerate/register.js";
 
@@ -15,6 +15,7 @@ async function fetchVideo(keyword?: string, page?: number, size?: number) {
 const fetchVideoPromise = fetchVideo();
 
 export default function VideoSearchPage() {
+	const navigate = useNavigate();
 	const initData = use(fetchVideoPromise);
 	const [state, action, _] = useActionState<
 		ReturnType<typeof fetchVideo>,
@@ -62,6 +63,7 @@ export default function VideoSearchPage() {
 							<VideoThumbnail
 								thumbnailPath={video.thumbnailPath}
 								previewGifPath={video.previewGifPath}
+								onClick={() => navigate(`/video/${video.id}`)}
 							/>
 						</div>
 					);

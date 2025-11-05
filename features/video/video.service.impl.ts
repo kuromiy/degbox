@@ -1,11 +1,16 @@
 import { spawn } from "node:child_process";
+import { dirname } from "node:path";
 import type { Logger } from "winston";
+import type { FileSystem } from "../shared/filesystem/index.js";
 import type { VideoService } from "./video.service.js";
 
 const FFMPEG_PATH = process.env.FFMPEG_PATH || "ffmpeg";
 
 export class VideoServiceImpl implements VideoService {
-	constructor(private readonly logger: Logger) {}
+	constructor(
+		private readonly logger: Logger,
+		private readonly fs: FileSystem,
+	) {}
 	generateThumbnail(inputPath: string, outputPath: string): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			const process = spawn(FFMPEG_PATH, [
@@ -94,11 +99,15 @@ export class VideoServiceImpl implements VideoService {
 			});
 		});
 	}
-	generateHls(
+	async generateHls(
 		inputPath: string,
 		outputTsPath: string,
 		outputM3u8Path: string,
 	): Promise<void> {
+		// hlsフォルダを作成（存在しない場合）
+		const segmentDir = dirname(outputTsPath);
+		await this.fs.createDirectory(segmentDir);
+
 		return new Promise<void>((resolve, reject) => {
 			const process = spawn(FFMPEG_PATH, [
 				"-y",

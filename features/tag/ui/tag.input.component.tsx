@@ -218,7 +218,14 @@ function TagInputPresention({
 								type="button"
 								className="px-4 py-2 border"
 								key={index.toString()}
-								onClick={() => onReplace(tag)}
+								onMouseDown={(e) => {
+									e.preventDefault();
+									onReplace(tag);
+								}}
+								onTouchStart={(e) => {
+									e.preventDefault();
+									onReplace(tag);
+								}}
 							>
 								{tag}
 							</button>
@@ -236,7 +243,14 @@ function TagInputPresention({
 								type="button"
 								className="px-4 py-2 border"
 								key={index.toString()}
-								onClick={() => onAdd(tag)}
+								onMouseDown={(e) => {
+									e.preventDefault();
+									onAdd(tag);
+								}}
+								onTouchStart={(e) => {
+									e.preventDefault();
+									onAdd(tag);
+								}}
 							>
 								{tag}
 							</button>
