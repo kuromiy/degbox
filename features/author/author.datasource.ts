@@ -12,6 +12,18 @@ export class AuthorDataSource implements AuthorRepository {
 		return randomUUID();
 	}
 
+	async save(author: Author): Promise<Author> {
+		await this.db
+			.insert(AUTHORS)
+			.values(author)
+			.onConflictDoUpdate({
+				target: AUTHORS.id,
+				set: { ...author },
+			});
+
+		return author;
+	}
+
 	async get(id: string): Promise<Author | undefined> {
 		const result = await this.db
 			.select()

@@ -1,9 +1,14 @@
 import { Suspense } from "react";
 import { createHashRouter } from "react-router-dom";
+import AuthorRegisterPage, {
+	action as authorRegisterAction,
+} from "./pages/author.register.page.js";
 import VideoDetailPage, {
 	loader as videoDetailLoader,
 } from "./pages/video.detail.page.js";
-import VideoRegisterPage, { action } from "./pages/video.register.page.js";
+import VideoRegisterPage, {
+	action as videoRegisterAction,
+} from "./pages/video.register.page.js";
 import VideoSearchPage, {
 	loader as videoSearchLoader,
 } from "./pages/video.search.page.js";
@@ -12,7 +17,7 @@ export const route = createHashRouter([
 	{
 		path: "/register",
 		element: <VideoRegisterPage />,
-		action: action,
+		action: videoRegisterAction,
 		HydrateFallback: () => <div>読み込み中...</div>,
 	},
 	{
@@ -29,6 +34,12 @@ export const route = createHashRouter([
 		path: "/video/:videoId",
 		element: <VideoDetailPage />,
 		loader: videoDetailLoader,
+		HydrateFallback: () => <div>読み込み中...</div>,
+	},
+	{
+		path: "/author/register",
+		element: <AuthorRegisterPage />,
+		action: authorRegisterAction,
 		HydrateFallback: () => <div>読み込み中...</div>,
 	},
 ]);
