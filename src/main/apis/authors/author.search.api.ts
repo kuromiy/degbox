@@ -4,8 +4,8 @@ import { TOKENS } from "../../depend.injection.js";
 
 export const searchAuthorSchema = z.object({
 	name: z.string().optional(),
-	page: z.number().int().min(1).optional().default(1),
-	size: z.number().int().min(1).max(100).optional().default(20),
+	page: z.coerce.number().int().min(1).optional().default(1),
+	size: z.coerce.number().int().min(1).max(100).optional().default(20),
 });
 export type SearchAuthorRequest = z.infer<typeof searchAuthorSchema>;
 

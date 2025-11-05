@@ -20,7 +20,7 @@ export function VideoSearchTemplate({
 		<main className="container mx-auto pt-10 px-2 flex flex-col justify-center">
 			<Link to="/register">登録</Link>
 			<Link to="/author/register">作者登録</Link>
-			<Link to="/author/search">作者検索k</Link>
+			<Link to="/author/search">作者検索</Link>
 			<Form className="mb-8 flex items-center gap-4">
 				<input
 					type="text"
