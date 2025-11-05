@@ -55,7 +55,7 @@ export async function registerAuthor(
 			});
 		},
 		onSuccess: (author) => {
-			logger.info("Author registered successsfully", { author });
+			logger.info("Author registered successfully", { author });
 		},
 		onError: (error) => {
 			logger.error("Failed to register author", { error });
