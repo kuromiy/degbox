@@ -1,4 +1,4 @@
-import VideoThumbnail from "../../../../features/video/ui/VideoThumbnail.js";
+import VideoThumbnail from "../../../../features/video/ui/components/video.thumbnail.component.js";
 import type { Video } from "../../../../features/video/video.model.js";
 
 type SearchResult = {

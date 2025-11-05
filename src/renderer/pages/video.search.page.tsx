@@ -1,7 +1,7 @@
 import { isFailure } from "electron-flow/result";
 import { use, useActionState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import VideoThumbnail from "../../../features/video/ui/VideoThumbnail.js";
+import VideoThumbnail from "../../../features/video/ui/components/video.thumbnail.component.js";
 import { ApiService } from "../autogenerate/register.js";
 
 const client = new ApiService();
