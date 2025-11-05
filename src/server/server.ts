@@ -20,7 +20,11 @@ export function createServer(container: Container): Hono<Env> {
 	app.use(
 		"/*",
 		cors({
-			origin: ["http://localhost:5173", "http://192.168.3.33:8080"],
+			origin: [
+				"http://localhost:5173",
+				"http://192.168.3.33:8080",
+				"http://localhost:8080",
+			],
 			credentials: true,
 		}),
 	);

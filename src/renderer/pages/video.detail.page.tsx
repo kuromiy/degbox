@@ -1,12 +1,8 @@
 import { isFailure } from "electron-flow/result";
 import { Suspense } from "react";
-import {
-	type LoaderFunctionArgs,
-	useLoaderData,
-	useNavigate,
-} from "react-router-dom";
+import { type LoaderFunctionArgs, useLoaderData } from "react-router-dom";
 import { useNavigation } from "../../../features/shared/ui/navigation.context.js";
-import { TagList } from "../../../features/tag/ui/TagList.js";
+import { TagList } from "../../../features/tag/ui/tag.list.component.js";
 import { VideoPlayer } from "../../../features/video/ui/VideoPlayer.js";
 import type { Video } from "../../../features/video/video.model.js";
 import { ApiService } from "../autogenerate/register.js";
@@ -26,7 +22,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
 }
 
 export default function VideoDetailPage() {
-	const navigate = useNavigate();
 	const { Link } = useNavigation();
 	const video = useLoaderData<Video>();
 	const firstContent = video.contents[0];
@@ -54,12 +49,7 @@ export default function VideoDetailPage() {
 				{/* タグ一覧 */}
 				<div className="mb-8">
 					<h2 className="text-xl font-bold mb-4">タグ</h2>
-					<TagList
-						tags={video.tags}
-						onTagClick={(tag) => {
-							navigate(`/?keyword=${encodeURIComponent(tag.name)}`);
-						}}
-					/>
+					<TagList tags={video.tags} urlPrefix="/" />
 				</div>
 
 				{/* 動画情報 */}

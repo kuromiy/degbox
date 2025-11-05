@@ -1,6 +1,6 @@
 import { useNavigation } from "../../../../features/shared/ui/navigation.context.js";
 import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
-import { TagList } from "../../../../features/tag/ui/TagList.js";
+import { TagList } from "../../../../features/tag/ui/tag.list.component.js";
 import { VideoPlayer } from "../../../../features/video/ui/VideoPlayer.js";
 import type { Video } from "../../../../features/video/video.model.js";
 
@@ -43,14 +43,7 @@ function VideoDetailPresentation({ video }: VideoDetailPageProps) {
 			{/* タグ一覧 */}
 			<div className="mb-8">
 				<h2 className="text-xl font-bold mb-4">タグ</h2>
-				<TagList
-					tags={video.tags}
-					onTagClick={(tag) => {
-						// SSRなのでクリックイベントは機能しないが、
-						// クライアント側でハイドレーション後に動作する
-						window.location.href = `/video/search?keyword=${encodeURIComponent(tag.name)}`;
-					}}
-				/>
+				<TagList tags={video.tags} urlPrefix="/video/search" />
 			</div>
 
 			{/* 動画情報 */}
