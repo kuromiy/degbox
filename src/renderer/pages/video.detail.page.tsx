@@ -1,6 +1,11 @@
-import { isSuccess } from "electron-flow/result";
-import { Suspense, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { isFailure } from "electron-flow/result";
+import { Suspense } from "react";
+import {
+	type LoaderFunctionArgs,
+	useLoaderData,
+	useNavigate,
+} from "react-router-dom";
+import { useNavigation } from "../../../features/shared/ui/navigation.context.js";
 import { TagList } from "../../../features/tag/ui/TagList.js";
 import { VideoPlayer } from "../../../features/video/ui/VideoPlayer.js";
 import type { Video } from "../../../features/video/video.model.js";
@@ -8,75 +13,37 @@ import { ApiService } from "../autogenerate/register.js";
 
 const client = new ApiService();
 
+export async function loader({ params }: LoaderFunctionArgs) {
+	const videoId = params.videoId;
+	if (!videoId) {
+		throw new Error("not found videoId");
+	}
+	const response = await client.detailVideo(videoId);
+	if (isFailure(response)) {
+		throw response.value;
+	}
+	return response.value;
+}
+
 export default function VideoDetailPage() {
-	const { videoId } = useParams<{ videoId: string }>();
 	const navigate = useNavigate();
-	const [video, setVideo] = useState<Video | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-
-	useEffect(() => {
-		if (!videoId) {
-			setError("動画IDが指定されていません");
-			setLoading(false);
-			return;
-		}
-
-		async function fetchVideo() {
-			if (!videoId) return;
-
-			try {
-				const result = await client.detailVideo(videoId);
-				if (isSuccess(result)) {
-					setVideo(result.value);
-				} else {
-					setError("動画の読み込みに失敗しました");
-				}
-			} catch (err) {
-				setError("動画の読み込み中にエラーが発生しました");
-				console.error(err);
-			} finally {
-				setLoading(false);
-			}
-		}
-
-		fetchVideo();
-	}, [videoId]);
-
-	if (loading) {
-		return (
-			<div className="container mx-auto pt-10 px-2">
-				<div className="text-center">読み込み中...</div>
-			</div>
-		);
-	}
-
-	if (error || !video) {
-		return (
-			<div className="container mx-auto pt-10 px-2">
-				<div className="text-center text-red-600">
-					{error || "動画が見つかりませんでした"}
-				</div>
-			</div>
-		);
-	}
-
+	const { Link } = useNavigation();
+	const video = useLoaderData<Video>();
 	const firstContent = video.contents[0];
 	const videoSrc = firstContent
-		? `http://localhost:8080/file/${firstContent.path}/index.m3u8`
+		? `http://192.168.3.33:8080/file/${firstContent.path}/index.m3u8`
 		: "";
 
 	return (
 		<Suspense fallback={<div>読み込み中...</div>}>
 			<main className="container mx-auto pt-10 px-2">
 				<div className="mb-6">
-					<button
-						type="button"
-						onClick={() => navigate("/")}
+					<Link
+						to="/"
 						className="text-blue-500 hover:text-blue-700 transition-colors"
 					>
 						← 検索に戻る
-					</button>
+					</Link>
 				</div>
 
 				{/* 動画プレーヤー */}

@@ -1,3 +1,5 @@
+import { useNavigation } from "../../../../features/shared/ui/navigation.context.js";
+import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
 import { TagList } from "../../../../features/tag/ui/TagList.js";
 import { VideoPlayer } from "../../../../features/video/ui/VideoPlayer.js";
 import type { Video } from "../../../../features/video/video.model.js";
@@ -7,21 +9,30 @@ type VideoDetailPageProps = {
 };
 
 export default function VideoDetailPage({ video }: VideoDetailPageProps) {
+	return (
+		<ServerNavigationProvider>
+			<VideoDetailPresentation video={video} />
+		</ServerNavigationProvider>
+	);
+}
+
+function VideoDetailPresentation({ video }: VideoDetailPageProps) {
+	const { Link } = useNavigation();
 	// 最初のコンテンツファイルを動画ソースとして使用
 	const firstContent = video.contents[0];
 	const videoSrc = firstContent
-		? `http://localhost:8080/file/${firstContent.path}/index.m3u8`
+		? `http://192.168.3.33:8080/file/${firstContent.path}/index.m3u8`
 		: "";
 
 	return (
 		<main className="container mx-auto pt-10 px-2">
 			<div className="mb-6">
-				<a
-					href="/video/search"
+				<Link
+					to="/video/search"
 					className="text-blue-500 hover:text-blue-700 transition-colors"
 				>
 					← 検索に戻る
-				</a>
+				</Link>
 			</div>
 
 			{/* 動画プレーヤー */}

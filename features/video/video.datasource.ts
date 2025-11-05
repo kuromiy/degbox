@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { posix } from "node:path";
 import { countDistinct, desc, eq, inArray, like } from "drizzle-orm";
 import type { Logger } from "winston";
+import { buildFileUrl } from "../../src/server/config/index.js";
 import {
 	AUTHORS,
 	CONTENTS,
@@ -202,8 +203,12 @@ export class VideoDataSource implements VideoRepository {
 
 			return {
 				id: videoId,
-				previewGifPath: `http://localhost:8080/file/${posix.join(firstContent.path, "preview.gif")}`,
-				thumbnailPath: `http://localhost:8080/file/${posix.join(firstContent.path, "thumbnail.jpg")}`,
+				previewGifPath: buildFileUrl(
+					posix.join(firstContent.path, "preview.gif"),
+				),
+				thumbnailPath: buildFileUrl(
+					posix.join(firstContent.path, "thumbnail.jpg"),
+				),
 				tags: ts,
 				contents: cs,
 				authors: as,
@@ -256,8 +261,12 @@ export class VideoDataSource implements VideoRepository {
 
 		return {
 			id: videoId,
-			previewGifPath: `http://localhost:8080/file/${posix.join(firstContent.path, "preview.gif")}`,
-			thumbnailPath: `http://localhost:8080/file/${posix.join(firstContent.path, "thumbnail.jpg")}`,
+			previewGifPath: buildFileUrl(
+				posix.join(firstContent.path, "preview.gif"),
+			),
+			thumbnailPath: buildFileUrl(
+				posix.join(firstContent.path, "thumbnail.jpg"),
+			),
 			tags: tags.map((t) => t.tags),
 			contents: contents.map((c) => c.contents),
 			authors: authors.map((a) => a.authors),

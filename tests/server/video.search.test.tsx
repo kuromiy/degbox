@@ -137,9 +137,9 @@ describe("ビデオ検索画面", () => {
 					],
 					authors: [],
 					thumbnailPath:
-						"http://localhost:8080/file/contents/video/thumbnail.jpg",
+						"http://192.168.3.33:8080/file/contents/video/thumbnail.jpg",
 					previewGifPath:
-						"http://localhost:8080/file/contents/video/preview.gif",
+						"http://192.168.3.33:8080/file/contents/video/preview.gif",
 				},
 				{
 					id: "1",
@@ -157,9 +157,9 @@ describe("ビデオ検索画面", () => {
 					],
 					authors: [],
 					thumbnailPath:
-						"http://localhost:8080/file/contents/video/thumbnail.jpg",
+						"http://192.168.3.33:8080/file/contents/video/thumbnail.jpg",
 					previewGifPath:
-						"http://localhost:8080/file/contents/video/preview.gif",
+						"http://192.168.3.33:8080/file/contents/video/preview.gif",
 				},
 			],
 			page: 1,
