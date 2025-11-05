@@ -3,6 +3,9 @@ import { createHashRouter } from "react-router-dom";
 import AuthorRegisterPage, {
 	action as authorRegisterAction,
 } from "./pages/author.register.page.js";
+import AuthorSearchPage, {
+	loader as authorSearchLoader,
+} from "./pages/author.search.page.js";
 import VideoDetailPage, {
 	loader as videoDetailLoader,
 } from "./pages/video.detail.page.js";
@@ -40,6 +43,16 @@ export const route = createHashRouter([
 		path: "/author/register",
 		element: <AuthorRegisterPage />,
 		action: authorRegisterAction,
+		HydrateFallback: () => <div>読み込み中...</div>,
+	},
+	{
+		path: "/author/search",
+		element: (
+			<Suspense fallback={<div>読み込み中...</div>}>
+				<AuthorSearchPage />
+			</Suspense>
+		),
+		loader: authorSearchLoader,
 		HydrateFallback: () => <div>読み込み中...</div>,
 	},
 ]);
