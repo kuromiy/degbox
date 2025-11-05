@@ -24,7 +24,7 @@ const CATEGORY_NAME = "video-detail-server";
 
 describe("ビデオ詳細画面", () => {
 	before(async () => {
-		await rm("./tests/db/video.detail", { recursive: true, force: true });
+		await rm(`./tests/db/${CATEGORY_NAME}`, { recursive: true, force: true });
 	});
 
 	it("VideoDetailPageが正しくレンダリングされる", async () => {
