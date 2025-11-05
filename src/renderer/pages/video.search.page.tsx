@@ -1,40 +1,49 @@
 import { isFailure } from "electron-flow/result";
-import { use, useActionState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+	type LoaderFunctionArgs,
+	useLoaderData,
+	useNavigate,
+} from "react-router-dom";
+import { useNavigation } from "../../../features/shared/ui/navigation.context.js";
 import VideoThumbnail from "../../../features/video/ui/components/video.thumbnail.component.js";
+import type { Video } from "../../../features/video/video.model.js";
 import { ApiService } from "../autogenerate/register.js";
 
 const client = new ApiService();
-async function fetchVideo(keyword?: string, page?: number, size?: number) {
-	const result = await client.searchVideo(keyword, page, size);
-	if (isFailure(result)) {
-		throw result.value;
+
+export async function loader({ request }: LoaderFunctionArgs) {
+	const url = new URL(request.url);
+	console.log(url);
+	const keyword = url.searchParams.get("keyword") ?? undefined;
+
+	// 文字列を数値に変換（nullの場合はundefined）
+	const pageStr = url.searchParams.get("page");
+	const page = pageStr ? Number(pageStr) : undefined;
+
+	const sizeStr = url.searchParams.get("size");
+	const size = sizeStr ? Number(sizeStr) : undefined;
+
+	const response = await client.searchVideo(keyword, page, size);
+	if (isFailure(response)) {
+		throw response.value;
 	}
-	return result.value;
+	return response.value;
 }
-const fetchVideoPromise = fetchVideo();
 
 export default function VideoSearchPage() {
+	const { Link, Form } = useNavigation();
+	const data = useLoaderData<{
+		count: number;
+		result: Video[];
+		page: number;
+		size: number;
+	}>();
 	const navigate = useNavigate();
-	const initData = use(fetchVideoPromise);
-	const [state, action, _] = useActionState<
-		ReturnType<typeof fetchVideo>,
-		FormData
-	>(async (_, formData) => {
-		const keyword = formData.get("keyword")?.toString();
-		const sizeStr = formData.get("size")?.toString();
-		const size = sizeStr ? Number.parseInt(sizeStr, 10) : undefined;
-		if (size !== undefined && (Number.isNaN(size) || size <= 0)) {
-			throw new Error("Invalid size parameter");
-		}
-		const result = await fetchVideo(keyword, undefined, size);
-		return result;
-	}, initData);
 
 	return (
 		<main className="container mx-auto pt-10 px-2 flex flex-col justify-center">
 			<Link to="/register">登録</Link>
-			<form action={action} className="mb-8 flex items-center gap-4">
+			<Form className="mb-8 flex items-center gap-4">
 				<input
 					type="text"
 					name="keyword"
@@ -55,9 +64,9 @@ export default function VideoSearchPage() {
 					<option value="20">20件</option>
 					<option value="30">30件</option>
 				</select>
-			</form>
+			</Form>
 			<div className="grid grid-cols-3 gap-6">
-				{state.result.map((video) => {
+				{data.result.map((video) => {
 					return (
 						<div key={video.id}>
 							<VideoThumbnail
