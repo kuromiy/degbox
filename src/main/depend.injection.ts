@@ -138,7 +138,8 @@ export const depend: DependencyEntry[] = [
 	},
 	{
 		token: TOKENS.VIDEO_SERVICE,
-		provider: (c: Container) => new VideoServiceImpl(c.get(TOKENS.LOGGER)),
+		provider: (c: Container) =>
+			new VideoServiceImpl(c.get(TOKENS.LOGGER), c.get(TOKENS.FILE_SYSTEM)),
 	},
 	{
 		token: TOKENS.TAG_SUGGESTION_SERVICE,

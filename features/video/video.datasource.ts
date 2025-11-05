@@ -185,35 +185,40 @@ export class VideoDataSource implements VideoRepository {
 			.innerJoin(VIDEOS_AUTHORS, eq(AUTHORS.id, VIDEOS_AUTHORS.authorId))
 			.where(inArray(VIDEOS_AUTHORS.videoId, videoIds));
 
-		const result = videoIds.map((videoId) => {
-			const ts = tags
-				.filter((t) => t.videos_tags.videoId === videoId)
-				.map((t) => t.tags);
-			const cs = contents
-				.filter((c) => c.videos_contents.videoId === videoId)
-				.map((c) => c.contents);
-			const as = authors
-				.filter((a) => a.videos_authors.videoId === videoId)
-				.map((a) => a.authors);
+		const result = videoIds
+			.map((videoId) => {
+				const ts = tags
+					.filter((t) => t.videos_tags.videoId === videoId)
+					.map((t) => t.tags);
+				const cs = contents
+					.filter((c) => c.videos_contents.videoId === videoId)
+					.map((c) => c.contents);
+				const as = authors
+					.filter((a) => a.videos_authors.videoId === videoId)
+					.map((a) => a.authors);
 
-			const firstContent = cs[0];
-			if (!firstContent) {
-				throw new Error(`No content found for video: ${videoId}`);
-			}
+				const firstContent = cs[0];
+				if (!firstContent) {
+					this.logger.warn(
+						`No content found for video: ${videoId}, skipping from results`,
+					);
+					return null;
+				}
 
-			return {
-				id: videoId,
-				previewGifPath: buildFileUrl(
-					posix.join(firstContent.path, "preview.gif"),
-				),
-				thumbnailPath: buildFileUrl(
-					posix.join(firstContent.path, "thumbnail.jpg"),
-				),
-				tags: ts,
-				contents: cs,
-				authors: as,
-			};
-		});
+				return {
+					id: videoId,
+					previewGifPath: buildFileUrl(
+						posix.join(firstContent.path, "preview.gif"),
+					),
+					thumbnailPath: buildFileUrl(
+						posix.join(firstContent.path, "thumbnail.jpg"),
+					),
+					tags: ts,
+					contents: cs,
+					authors: as,
+				};
+			})
+			.filter((v): v is Video => v !== null);
 		this.logger.info(`result num: ${result.length}`);
 		return result;
 	}
@@ -256,7 +261,10 @@ export class VideoDataSource implements VideoRepository {
 
 		const firstContent = contents[0]?.contents;
 		if (!firstContent) {
-			throw new Error(`No content found for video: ${videoId}`);
+			this.logger.warn(
+				`No content found for video: ${videoId}, treating as non-existent`,
+			);
+			return null;
 		}
 
 		return {

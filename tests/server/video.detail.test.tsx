@@ -12,6 +12,7 @@ import {
 	VIDEOS_TAGS,
 } from "../../features/shared/database/schema.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
+import { buildFileUrl } from "../../src/server/config/index.js";
 import { createServer } from "../../src/server/server.js";
 import VideoDetailPage from "../../src/server/view/pages/video.detail.page.js";
 import { TestJobQueue } from "../api/testjobqueue.js";
@@ -98,10 +99,8 @@ describe("ビデオ詳細画面", () => {
 				},
 			],
 			authors: [],
-			thumbnailPath:
-				"http://192.168.3.33:8080/file/contents/video/thumbnail.jpg",
-			previewGifPath:
-				"http://192.168.3.33:8080/file/contents/video/preview.gif",
+			thumbnailPath: buildFileUrl("contents/video/thumbnail.jpg"),
+			previewGifPath: buildFileUrl("contents/video/preview.gif"),
 		};
 
 		const expectedHtml = renderToString(
