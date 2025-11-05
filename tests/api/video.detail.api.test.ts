@@ -12,6 +12,7 @@ import {
 import { detailVideo } from "../../src/main/apis/videos/video.detail.api.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createTestDatabase } from "../helpers/createTestDatabase.js";
+import { testLogger } from "../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 
 const CATEGORY_NAME = "video-detail-api";
@@ -33,6 +34,7 @@ describe("ビデオ詳細API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		// データベースインスタンスを上書き
 		container.register(TOKENS.DATABASE, () => database);
 
@@ -103,6 +105,7 @@ describe("ビデオ詳細API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		// データベースインスタンスを上書き
 		container.register(TOKENS.DATABASE, () => database);
 
@@ -144,6 +147,7 @@ describe("ビデオ詳細API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		// データベースインスタンスを上書き
 		container.register(TOKENS.DATABASE, () => database);
 

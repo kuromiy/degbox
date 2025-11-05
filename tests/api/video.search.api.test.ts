@@ -12,6 +12,7 @@ import {
 import { searchVideo } from "../../src/main/apis/videos/video.search.api.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createTestDatabase } from "../helpers/createTestDatabase.js";
+import { testLogger } from "../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 
 const CATEGORY_NAME = "video-search-api";
@@ -33,6 +34,7 @@ describe("ビデオ検索API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		// データベースインスタンスを上書き
 		container.register(TOKENS.DATABASE, () => database);
 

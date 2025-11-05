@@ -7,6 +7,7 @@ import { registerAuthor } from "../../src/main/apis/authors/author.register.api.
 import type { Context } from "../../src/main/context.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createTestDatabase } from "../helpers/createTestDatabase.js";
+import { testLogger } from "../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "./testjobqueue.js";
 
@@ -32,6 +33,7 @@ describe("作者登録API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 
@@ -113,6 +115,7 @@ describe("作者登録API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 
@@ -178,6 +181,7 @@ describe("作者登録API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 

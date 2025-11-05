@@ -24,16 +24,11 @@ export function ClientProvider({
 	const client = useMemo(() => {
 		// サーバーサイドでは undefined を返す
 		if (typeof window === "undefined") {
-			console.log("[ClientProvider] Server-side, returning undefined");
 			return undefined;
 		}
-		console.log("[ClientProvider] Client-side, creating client...");
 		const newClient = createClient();
-		console.log("[ClientProvider] Client created:", newClient);
 		return newClient;
 	}, [createClient]);
-
-	console.log("[ClientProvider] Current client:", client);
 
 	return (
 		<ClientContext.Provider value={client}>{children}</ClientContext.Provider>

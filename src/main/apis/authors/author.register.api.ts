@@ -4,7 +4,7 @@ import type { Context } from "../../context.js";
 import { TOKENS } from "../../depend.injection.js";
 
 export const registerAuthorSchema = z.object({
-	name: z.string(),
+	name: z.string().trim().min(1).max(255),
 	urls: z.string(),
 });
 export type RegisterAuthorRequest = z.infer<typeof registerAuthorSchema>;

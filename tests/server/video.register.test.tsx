@@ -18,7 +18,7 @@ import VideoRegisterPage from "../../src/server/view/pages/video.register.page.j
 import { TestJobQueue } from "../api/testjobqueue.js";
 import { createTestDatabase } from "../helpers/createTestDatabase.js";
 import { normalizeHtml } from "../helpers/normalizeHtml.js";
-import { testLogger } from "./testlogger.js";
+import { testLogger } from "../helpers/testlogger.js";
 
 const CATEGORY_NAME = "video-register-server";
 

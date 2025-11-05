@@ -7,7 +7,7 @@ const BASE_URL = "http://192.168.3.33:8080";
 
 export class FetchClient implements ServiceIF {
 	async registerAuthor(_name: string, _urls: string) {
-		return failure(new Error("pickupVideo is not allowed in FetchClient"));
+		return failure(new Error("registerAuthor is not allowed in FetchClient"));
 	}
 
 	async autocompleteTags(value: string, limit: number | undefined) {

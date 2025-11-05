@@ -7,7 +7,7 @@ import { formValidatorMiddleware } from "../../middleware/formValidator.js";
 import AuthorRegisterPage from "../../view/pages/author.register.page.js";
 
 export const registerAuthorSchema = z.object({
-	name: z.string(),
+	name: z.string().trim().min(1).max(255),
 	urls: z.string(),
 });
 export type RegisterAuthorRequest = z.infer<typeof registerAuthorSchema>;
