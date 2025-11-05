@@ -3,3 +3,7 @@ export type Author = {
 	name: string;
 	urls: Record<string, string>;
 };
+
+export type AuthorWithVideoCount = Author & {
+	videoCount: number;
+};

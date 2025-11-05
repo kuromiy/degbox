@@ -4,6 +4,7 @@ import { ipcMain, type IpcMainInvokeEvent } from "electron";
 import { success, failure } from "electron-flow";
 
 import { registerAuthor } from "../apis/authors/author.register.api.js";
+import { searchAuthor } from "../apis/authors/author.search.api.js";
 import { autocompleteTags } from "../apis/tags/tag.autocomplete.api.js";
 import { suggestRelatedTags } from "../apis/tags/tag.suggest.api.js";
 import { detailVideo } from "../apis/videos/video.detail.api.js";
@@ -16,6 +17,16 @@ export const autoGenerateHandlers = {
         return async (event: IpcMainInvokeEvent, args: any) => {
             try {
                 const result = await registerAuthor({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
+    "searchAuthor": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await searchAuthor({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
                 return failure(e);

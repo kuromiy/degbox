@@ -1,5 +1,6 @@
 // auto generated
 import type { registerAuthor } from "../../main/apis/authors/author.register.api.js";
+import type { searchAuthor } from "../../main/apis/authors/author.search.api.js";
 import type { autocompleteTags } from "../../main/apis/tags/tag.autocomplete.api.js";
 import type { suggestRelatedTags } from "../../main/apis/tags/tag.suggest.api.js";
 import type { detailVideo } from "../../main/apis/videos/video.detail.api.js";
@@ -20,6 +21,7 @@ declare global {
     interface Window {
         api: {
             registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
+            searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, Error>>;
             autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
             suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
             detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -33,6 +35,7 @@ declare global {
 // サービスインターフェース
 export interface ServiceIF {
     registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
+    searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, Error>>;
     autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
     detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -45,6 +48,10 @@ export interface ServiceIF {
 export class ApiService implements ServiceIF {
     async registerAuthor(name: string, urls: string) {
         return window.api.registerAuthor(name, urls);
+    }
+
+    async searchAuthor(name: string | undefined, page: number | undefined, size: number | undefined) {
+        return window.api.searchAuthor(name, page, size);
     }
 
     async autocompleteTags(value: string, limit: number | undefined) {
