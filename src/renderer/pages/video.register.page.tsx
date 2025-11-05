@@ -9,7 +9,7 @@ import {
 	TagInput,
 	useTagInput,
 } from "../../../features/tag/ui/tag.input.component.js";
-import { VideoInput } from "../../../features/video/ui/video.input.component.js";
+import { VideoInput } from "../../../features/video/ui/components/video.input.component.js";
 import { ApiService } from "../autogenerate/register.js";
 
 const client = new ApiService();

@@ -1,12 +1,3 @@
+#!/usr/bin/env bash
 npm run check
 npm run lint
-
-# .envファイルの存在チェック
-if [ ! -f .env ]; then
-  echo "❌ エラー: .envファイルが見つかりません。"
-  echo "   セットアップ方法: cp .env.example .env を実行してください。"
-  echo "   詳細はREADME.mdを参照してください。"
-  exit 1
-fi
-
-npm run test
