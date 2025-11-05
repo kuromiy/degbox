@@ -18,6 +18,7 @@ export default function VideoDetailPage({ video }: VideoDetailPageProps) {
 				video={video}
 				videoSrc={videoSrc}
 				backUrl="/video/search"
+				tagUrlPrefix="/video/search"
 			/>
 		</ServerNavigationProvider>
 	);

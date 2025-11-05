@@ -12,16 +12,11 @@ type SearchResult = {
 
 type VideoSearchPageProps = {
 	searchResult: SearchResult;
-	errors?: Record<string, string[]>;
 };
 
 export default function VideoSearchPage({
 	searchResult,
-	errors,
 }: VideoSearchPageProps) {
-	const queryErrors = errors?.query;
-	const _hasQueryError = !!(queryErrors && queryErrors.length > 0);
-
 	return (
 		<ServerNavigationProvider>
 			<VideoSearchTemplate data={searchResult} urlPrefix="/video/detail" />

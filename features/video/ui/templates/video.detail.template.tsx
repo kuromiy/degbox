@@ -7,10 +7,12 @@ export function VideoDetailTemplate({
 	video,
 	backUrl,
 	videoSrc,
+	tagUrlPrefix = "/",
 }: {
 	video: Video;
 	backUrl: string;
 	videoSrc: string;
+	tagUrlPrefix?: string;
 }) {
 	const { Link } = useNavigation();
 
@@ -33,7 +35,7 @@ export function VideoDetailTemplate({
 			{/* タグ一覧 */}
 			<div className="mb-8">
 				<h2 className="text-xl font-bold mb-4">タグ</h2>
-				<TagList tags={video.tags} urlPrefix="/" />
+				<TagList tags={video.tags} urlPrefix={tagUrlPrefix} />
 			</div>
 
 			{/* 動画情報 */}

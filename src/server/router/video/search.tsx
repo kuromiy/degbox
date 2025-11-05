@@ -34,7 +34,6 @@ app.get("/search", async (c) => {
 					size: 20,
 					keyword: "",
 				}}
-				errors={{ query: ["Invalid search parameters"] }}
 			/>,
 			{ title: "動画検索" },
 		);

@@ -12,7 +12,7 @@ export default function VideoThumbnail({
 	thumbnailPath,
 	previewGifPath,
 	to,
-	alt = "",
+	alt = "動画サムネイル",
 }: VideoThumbnailProps) {
 	const { Link } = useNavigation();
 	const [isHovered, setIsHovered] = useState(false);

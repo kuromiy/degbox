@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # .envファイルの存在チェック
 if [ ! -f .env ]; then
   echo "❌ エラー: .envファイルが見つかりません。"

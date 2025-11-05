@@ -8,7 +8,6 @@ const client = new ApiService();
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
-	console.log(url);
 	const keyword = url.searchParams.get("keyword") ?? undefined;
 
 	// 文字列を数値に変換（nullの場合はundefined）
