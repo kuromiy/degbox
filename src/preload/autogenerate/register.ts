@@ -2,6 +2,7 @@
 import { ipcRenderer } from "electron";
 
 export default {
+    registerAuthor: (name: string, urls: string) => ipcRenderer.invoke("registerAuthor", { name, urls }),
     autocompleteTags: (value: string, limit: number | undefined) => ipcRenderer.invoke("autocompleteTags", { value, limit }),
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => ipcRenderer.invoke("suggestRelatedTags", { tagNames, limit }),
     detailVideo: (videoId: string) => ipcRenderer.invoke("detailVideo", { videoId }),

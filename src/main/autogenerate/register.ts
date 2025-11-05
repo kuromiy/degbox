@@ -3,6 +3,7 @@ import type { Context } from "../context.js";
 import { ipcMain, type IpcMainInvokeEvent } from "electron";
 import { success, failure } from "electron-flow";
 
+import { registerAuthor } from "../apis/authors/author.register.api.js";
 import { autocompleteTags } from "../apis/tags/tag.autocomplete.api.js";
 import { suggestRelatedTags } from "../apis/tags/tag.suggest.api.js";
 import { detailVideo } from "../apis/videos/video.detail.api.js";
@@ -11,6 +12,16 @@ import { registerVideo } from "../apis/videos/video.register.api.js";
 import { searchVideo } from "../apis/videos/video.search.api.js";
 
 export const autoGenerateHandlers = {
+    "registerAuthor": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await registerAuthor({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
     "autocompleteTags": (ctx: Omit<Context, "event">) => {
         return async (event: IpcMainInvokeEvent, args: any) => {
             try {

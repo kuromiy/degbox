@@ -6,6 +6,7 @@ import { TAGS } from "../../features/shared/database/schema.js";
 import { autocompleteTags } from "../../src/main/apis/tags/tag.autocomplete.api.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createTestDatabase } from "../helpers/createTestDatabase.js";
+import { testLogger } from "../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 
 const CATEGORY_NAME = "tag-autocomplete-api";
@@ -30,6 +31,7 @@ describe("タグ自動補完API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		// データベースインスタンスを上書き
 		container.register(TOKENS.DATABASE, () => database);
 
@@ -67,6 +69,7 @@ describe("タグ自動補完API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		// データベースインスタンスを上書き
 		container.register(TOKENS.DATABASE, () => database);
 
@@ -110,6 +113,7 @@ describe("タグ自動補完API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		// データベースインスタンスを上書き
 		container.register(TOKENS.DATABASE, () => database);
 

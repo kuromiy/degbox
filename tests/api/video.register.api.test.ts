@@ -7,6 +7,7 @@ import { registerVideo } from "../../src/main/apis/videos/video.register.api.js"
 import type { Context } from "../../src/main/context.js";
 import { depend, TOKENS } from "../../src/main/depend.injection.js";
 import { createTestDatabase } from "../helpers/createTestDatabase.js";
+import { testLogger } from "../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "./testjobqueue.js";
 
@@ -38,6 +39,7 @@ describe("ビデオ登録API", () => {
 		depend.forEach(({ token, provider }) => {
 			container.register(token, provider);
 		});
+		container.register(TOKENS.LOGGER, () => testLogger);
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container.register(TOKENS.CACHE, () => cache);

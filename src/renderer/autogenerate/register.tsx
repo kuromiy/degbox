@@ -1,4 +1,5 @@
 // auto generated
+import type { registerAuthor } from "../../main/apis/authors/author.register.api.js";
 import type { autocompleteTags } from "../../main/apis/tags/tag.autocomplete.api.js";
 import type { suggestRelatedTags } from "../../main/apis/tags/tag.suggest.api.js";
 import type { detailVideo } from "../../main/apis/videos/video.detail.api.js";
@@ -18,6 +19,7 @@ type ReturnTypeUnwrapped<T> = T extends (...args: infer _Args) => infer R
 declare global {
     interface Window {
         api: {
+            registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
             autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
             suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
             detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -30,6 +32,7 @@ declare global {
 
 // サービスインターフェース
 export interface ServiceIF {
+    registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
     autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
     detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -40,6 +43,10 @@ export interface ServiceIF {
 
 // サービス実装クラス
 export class ApiService implements ServiceIF {
+    async registerAuthor(name: string, urls: string) {
+        return window.api.registerAuthor(name, urls);
+    }
+
     async autocompleteTags(value: string, limit: number | undefined) {
         return window.api.autocompleteTags(value, limit);
     }

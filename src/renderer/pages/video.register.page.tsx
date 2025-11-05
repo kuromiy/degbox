@@ -22,13 +22,13 @@ export async function action({ request }: ActionFunctionArgs) {
 	console.log(`url: ${request.url}, tags: ${tags}, resourceId: ${resourceId}`);
 	if (!resourceId || !tags) {
 		console.log("必須項目が入力されていません");
-		return new Error("必須項目が入力されていません");
+		throw new Error("必須項目が入力されていません");
 	}
 
 	const response = await client.registerVideo(resourceId, tags, undefined);
 	if (isFailure(response)) {
 		console.log(`response error: ${response.value.message}`);
-		return new Error(response.value.message);
+		throw new Error(response.value.message);
 	}
 	return location.reload();
 }
