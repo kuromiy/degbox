@@ -51,7 +51,17 @@ describe("ビデオ検索画面", () => {
 		const $ = load(html);
 		const renderedHtml = $("#app").html();
 
-		const expectedHtml = renderToString(<VideoSearchPage />);
+		const expectedHtml = renderToString(
+			<VideoSearchPage
+				searchResult={{
+					count: 0,
+					result: [],
+					page: 1,
+					size: 20,
+					keyword: "",
+				}}
+			/>,
+		);
 
 		assert.equal(
 			normalizeHtml(renderedHtml || ""),
