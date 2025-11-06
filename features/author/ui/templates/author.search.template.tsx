@@ -1,4 +1,5 @@
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
+import { Pagination } from "../../../shared/ui/pagination.component.js";
 import type { AuthorWithVideoCount } from "../../author.model.js";
 import AuthorCard from "../components/author.card.js";
 
@@ -58,11 +59,21 @@ export function AuthorSearchTemplate({
 					該当する作者が見つかりませんでした
 				</div>
 			) : (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{data.result.map((author) => (
-						<AuthorCard key={author.id} author={author} />
-					))}
-				</div>
+				<>
+					<Pagination
+						currentPage={data.page}
+						totalPages={Math.ceil(data.count / data.size)}
+					/>
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{data.result.map((author) => (
+							<AuthorCard key={author.id} author={author} />
+						))}
+					</div>
+					<Pagination
+						currentPage={data.page}
+						totalPages={Math.ceil(data.count / data.size)}
+					/>
+				</>
 			)}
 		</main>
 	);
