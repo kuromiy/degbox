@@ -11,6 +11,7 @@ export function AuthorSearchTemplate({
 		result: AuthorWithVideoCount[];
 		page: number;
 		size: number;
+		name?: string | undefined;
 	};
 }) {
 	const { Link, Form } = useNavigation();
@@ -63,6 +64,11 @@ export function AuthorSearchTemplate({
 					<Pagination
 						currentPage={data.page}
 						totalPages={Math.ceil(data.count / data.size)}
+						baseUrl="/author/search"
+						queryParams={{
+							...(data.name && { name: data.name }),
+							size: data.size,
+						}}
 					/>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 						{data.result.map((author) => (
@@ -72,6 +78,11 @@ export function AuthorSearchTemplate({
 					<Pagination
 						currentPage={data.page}
 						totalPages={Math.ceil(data.count / data.size)}
+						baseUrl="/author/search"
+						queryParams={{
+							...(data.name && { name: data.name }),
+							size: data.size,
+						}}
 					/>
 				</>
 			)}

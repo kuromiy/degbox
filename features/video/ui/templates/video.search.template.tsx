@@ -12,6 +12,7 @@ export function VideoSearchTemplate({
 		result: Video[];
 		page: number;
 		size: number;
+		keyword?: string | undefined;
 	};
 	urlPrefix: string;
 }) {
@@ -47,6 +48,11 @@ export function VideoSearchTemplate({
 			<Pagination
 				currentPage={data.page}
 				totalPages={Math.ceil(data.count / data.size)}
+				baseUrl="/video/search"
+				queryParams={{
+					...(data.keyword && { keyword: data.keyword }),
+					size: data.size,
+				}}
 			/>
 			<div className="grid grid-cols-3 gap-6">
 				{data.result.map((video) => {
@@ -64,6 +70,11 @@ export function VideoSearchTemplate({
 			<Pagination
 				currentPage={data.page}
 				totalPages={Math.ceil(data.count / data.size)}
+				baseUrl="/video/search"
+				queryParams={{
+					...(data.keyword && { keyword: data.keyword }),
+					size: data.size,
+				}}
 			/>
 		</main>
 	);
