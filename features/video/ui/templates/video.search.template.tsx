@@ -1,4 +1,5 @@
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
+import { Pagination } from "../../../shared/ui/pagination.component.js";
 import type { Video } from "../../video.model.js";
 import VideoThumbnail from "../components/video.thumbnail.component.js";
 
@@ -11,6 +12,7 @@ export function VideoSearchTemplate({
 		result: Video[];
 		page: number;
 		size: number;
+		keyword?: string | undefined;
 	};
 	urlPrefix: string;
 }) {
@@ -43,6 +45,15 @@ export function VideoSearchTemplate({
 					<option value="30">30件</option>
 				</select>
 			</Form>
+			<Pagination
+				currentPage={data.page}
+				totalPages={Math.ceil(data.count / data.size)}
+				baseUrl="/video/search"
+				queryParams={{
+					...(data.keyword && { keyword: data.keyword }),
+					size: data.size,
+				}}
+			/>
 			<div className="grid grid-cols-3 gap-6">
 				{data.result.map((video) => {
 					return (
@@ -56,6 +67,15 @@ export function VideoSearchTemplate({
 					);
 				})}
 			</div>
+			<Pagination
+				currentPage={data.page}
+				totalPages={Math.ceil(data.count / data.size)}
+				baseUrl="/video/search"
+				queryParams={{
+					...(data.keyword && { keyword: data.keyword }),
+					size: data.size,
+				}}
+			/>
 		</main>
 	);
 }
