@@ -73,6 +73,9 @@ export async function getAuthorDetail(
 				id: video.id,
 				title: video.contents[0]?.name || "",
 				thumbnailPath: video.thumbnailPath,
+				...(video.previewGifPath
+					? { previewGifPath: video.previewGifPath }
+					: {}),
 				createdAt: new Date().toISOString(), // TODO: 実際の作成日時を取得
 			})),
 			page: rowPage,

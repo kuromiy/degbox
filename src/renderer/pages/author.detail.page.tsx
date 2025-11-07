@@ -18,7 +18,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
 	const url = new URL(request.url);
 	const videoPageStr =
-		url.searchParams.get("videoPage") ?? url.searchParams.get("page");
+		url.searchParams.get("page") ?? url.searchParams.get("videoPage");
 	const videoPageNum = videoPageStr ? Number(videoPageStr) : Number.NaN;
 	const videoPage = Number.isFinite(videoPageNum) ? videoPageNum : undefined;
 

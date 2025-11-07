@@ -29,7 +29,7 @@ export default function AuthorInfo({ author, onDelete }: AuthorInfoProps) {
 
 	const handleConfirmDelete = () => {
 		setShowDeleteDialog(false);
-		onDelete();
+		void onDelete();
 	};
 
 	const handleCancelDelete = () => {
