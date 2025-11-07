@@ -3,6 +3,10 @@ import { createHashRouter } from "react-router-dom";
 import AuthorDetailPage, {
 	loader as authorDetailLoader,
 } from "./pages/author.detail.page.js";
+import AuthorEditPage, {
+	action as authorEditAction,
+	loader as authorEditLoader,
+} from "./pages/author.edit.page.js";
 import AuthorRegisterPage, {
 	action as authorRegisterAction,
 } from "./pages/author.register.page.js";
@@ -66,6 +70,17 @@ export const route = createHashRouter([
 			</Suspense>
 		),
 		loader: authorDetailLoader,
+		HydrateFallback: () => <div>読み込み中...</div>,
+	},
+	{
+		path: "/author/:authorId/edit",
+		element: (
+			<Suspense fallback={<div>読み込み中...</div>}>
+				<AuthorEditPage />
+			</Suspense>
+		),
+		loader: authorEditLoader,
+		action: authorEditAction,
 		HydrateFallback: () => <div>読み込み中...</div>,
 	},
 ]);

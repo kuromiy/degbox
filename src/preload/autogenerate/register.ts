@@ -6,6 +6,7 @@ export default {
     getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => ipcRenderer.invoke("getAuthorDetail", { authorId, videoPage, videoSize }),
     registerAuthor: (name: string, urls: string) => ipcRenderer.invoke("registerAuthor", { name, urls }),
     searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => ipcRenderer.invoke("searchAuthor", { name, page, size }),
+    updateAuthor: (id: string, name: string, urls: string) => ipcRenderer.invoke("updateAuthor", { id, name, urls }),
     autocompleteTags: (value: string, limit: number | undefined) => ipcRenderer.invoke("autocompleteTags", { value, limit }),
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => ipcRenderer.invoke("suggestRelatedTags", { tagNames, limit }),
     detailVideo: (videoId: string) => ipcRenderer.invoke("detailVideo", { videoId }),
