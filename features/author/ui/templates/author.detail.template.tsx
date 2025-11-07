@@ -18,7 +18,7 @@ interface AuthorDetailTemplateProps {
 		page: number;
 		size: number;
 	};
-	onDelete: () => void;
+	onDelete: () => void | Promise<void>;
 }
 
 export function AuthorDetailTemplate({

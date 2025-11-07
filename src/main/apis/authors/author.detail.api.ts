@@ -19,6 +19,7 @@ export interface AuthorDetailResponse {
 			id: string;
 			title: string;
 			thumbnailPath?: string;
+			previewGifPath?: string;
 			createdAt: string;
 		}>;
 		page: number;

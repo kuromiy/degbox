@@ -4,7 +4,7 @@ import type { Author } from "../../author.model.js";
 
 interface AuthorInfoProps {
 	author: Author;
-	onDelete: () => void;
+	onDelete: () => void | Promise<void>;
 }
 
 // URLのキーに応じてアイコンを表示
