@@ -2,7 +2,10 @@ import { glob } from "node:fs";
 import { run } from "node:test";
 import { spec } from "node:test/reporters";
 
-const files = await getFiles();
+// コマンドライン引数から機能名を取得
+const featureName = process.argv[2];
+
+const files = await getFiles(featureName);
 
 run({
 	files,
@@ -13,9 +16,15 @@ run({
 	.compose(spec)
 	.pipe(process.stdout);
 
-function getFiles() {
+function getFiles(feature?: string) {
+	// 機能名が指定された場合は、そのフォルダ配下のみ検索
+	// 指定されない場合は、すべてのテストを検索
+	const pattern = feature
+		? `./tests/api/${feature}/**/*.test.{ts,tsx}`
+		: "./tests/api/**/*.test.{ts,tsx}";
+
 	return new Promise<string[]>((resolve, reject) => {
-		glob("./tests/api/*.test.{ts,tsx}", (err, matches) => {
+		glob(pattern, (err, matches) => {
 			if (err) {
 				return reject(err);
 			}

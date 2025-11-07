@@ -1,15 +1,15 @@
 import { strict as assert } from "node:assert";
 import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
-import { Container } from "../../features/shared/container/index.js";
-import type { UnmanagedContent } from "../../features/unmanaged-content/unmanagedContent.model.js";
-import { registerVideo } from "../../src/main/apis/videos/video.register.api.js";
-import type { Context } from "../../src/main/context.js";
-import { depend, TOKENS } from "../../src/main/depend.injection.js";
-import { createTestDatabase } from "../helpers/createTestDatabase.js";
-import { testLogger } from "../helpers/testlogger.js";
-import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
-import { TestJobQueue } from "./testjobqueue.js";
+import { Container } from "../../../features/shared/container/index.js";
+import type { UnmanagedContent } from "../../../features/unmanaged-content/unmanagedContent.model.js";
+import { registerVideo } from "../../../src/main/apis/videos/video.register.api.js";
+import type { Context } from "../../../src/main/context.js";
+import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+import { createTestDatabase } from "../../helpers/createTestDatabase.js";
+import { testLogger } from "../../helpers/testlogger.js";
+import { createTestIpcMainInvokeEvent } from "../testIpcMainInvokeEvent.js";
+import { TestJobQueue } from "../testjobqueue.js";
 
 const CATEGORY_NAME = "video-register-api";
 

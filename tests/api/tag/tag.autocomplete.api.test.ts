@@ -1,13 +1,13 @@
 import assert from "node:assert";
 import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
-import { Container } from "../../features/shared/container/index.js";
-import { TAGS } from "../../features/shared/database/schema.js";
-import { autocompleteTags } from "../../src/main/apis/tags/tag.autocomplete.api.js";
-import { depend, TOKENS } from "../../src/main/depend.injection.js";
-import { createTestDatabase } from "../helpers/createTestDatabase.js";
-import { testLogger } from "../helpers/testlogger.js";
-import { createTestIpcMainInvokeEvent } from "./testIpcMainInvokeEvent.js";
+import { Container } from "../../../features/shared/container/index.js";
+import { TAGS } from "../../../features/shared/database/schema.js";
+import { autocompleteTags } from "../../../src/main/apis/tags/tag.autocomplete.api.js";
+import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+import { createTestDatabase } from "../../helpers/createTestDatabase.js";
+import { testLogger } from "../../helpers/testlogger.js";
+import { createTestIpcMainInvokeEvent } from "../testIpcMainInvokeEvent.js";
 
 const CATEGORY_NAME = "tag-autocomplete-api";
 

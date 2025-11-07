@@ -3,22 +3,22 @@ import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
 import { load } from "cheerio";
 import { renderToString } from "react-dom/server";
-import { Container } from "../../features/shared/container/index.js";
+import { Container } from "../../../features/shared/container/index.js";
 import {
 	CONTENTS,
 	TAGS,
 	VIDEOS,
 	VIDEOS_CONTENTS,
 	VIDEOS_TAGS,
-} from "../../features/shared/database/schema.js";
-import { depend, TOKENS } from "../../src/main/depend.injection.js";
-import { buildFileUrl } from "../../src/server/config/index.js";
-import { createServer } from "../../src/server/server.js";
-import VideoSearchPage from "../../src/server/view/pages/video.search.page.js";
-import { TestJobQueue } from "../api/testjobqueue.js";
-import { createTestDatabase } from "../helpers/createTestDatabase.js";
-import { normalizeHtml } from "../helpers/normalizeHtml.js";
-import { testLogger } from "../helpers/testlogger.js";
+} from "../../../features/shared/database/schema.js";
+import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+import { buildFileUrl } from "../../../src/server/config/index.js";
+import { createServer } from "../../../src/server/server.js";
+import VideoSearchPage from "../../../src/server/view/pages/video.search.page.js";
+import { TestJobQueue } from "../../api/testjobqueue.js";
+import { createTestDatabase } from "../../helpers/createTestDatabase.js";
+import { normalizeHtml } from "../../helpers/normalizeHtml.js";
+import { testLogger } from "../../helpers/testlogger.js";
 
 const CATEGORY_NAME = "video-search-server";
 
