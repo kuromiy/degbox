@@ -18,6 +18,18 @@ export class FetchClient implements ServiceIF {
 		return failure(new Error("registerAuthor is not allowed in FetchClient"));
 	}
 
+	async getAuthorDetail(
+		_authorId: string,
+		_videoPage: number | undefined,
+		_videoSize: number | undefined,
+	) {
+		return failure(new Error("getAuthorDetail is not allowed in FetchClient"));
+	}
+
+	async deleteAuthor(_id: string) {
+		return failure(new Error("deleteAuthor is not allowed in FetchClient"));
+	}
+
 	async autocompleteTags(value: string, limit: number | undefined) {
 		try {
 			const params = new URLSearchParams({

@@ -280,4 +280,116 @@ export class VideoDataSource implements VideoRepository {
 			authors: authors.map((a) => a.authors),
 		};
 	}
+
+	async countByAuthorId(authorId: string): Promise<number> {
+		this.logger.info(`VideoDataSource#countByAuthorId. authorId: ${authorId}`);
+
+		const result = await this.db
+			.select({ count: countDistinct(VIDEOS.id) })
+			.from(VIDEOS)
+			.innerJoin(VIDEOS_AUTHORS, eq(VIDEOS.id, VIDEOS_AUTHORS.videoId))
+			.where(eq(VIDEOS_AUTHORS.authorId, authorId))
+			.execute();
+
+		const c = result[0]?.count;
+		if (c === undefined || c === null) {
+			this.logger.warn("count is undefined");
+			return 0;
+		}
+		this.logger.info(`count: ${c}`);
+		return c;
+	}
+
+	async findByAuthorId(
+		authorId: string,
+		page: number,
+		size: number,
+	): Promise<Video[]> {
+		this.logger.info(
+			`VideoDataSource#findByAuthorId. authorId: ${authorId}, page: ${page}, size: ${size}`,
+		);
+
+		// パラメータのバリデーション
+		if (page < 0 || size <= 0 || size > 100) {
+			throw new Error(
+				`Invalid pagination parameters: page=${page}, size=${size}`,
+			);
+		}
+
+		// 作者に紐づいた動画IDを取得
+		const videoIdQuery = this.db
+			.selectDistinct({ id: VIDEOS.id })
+			.from(VIDEOS)
+			.innerJoin(VIDEOS_AUTHORS, eq(VIDEOS.id, VIDEOS_AUTHORS.videoId))
+			.where(eq(VIDEOS_AUTHORS.authorId, authorId))
+			.orderBy(desc(VIDEOS.id))
+			.limit(size)
+			.offset(page * size);
+
+		const videoIdsResult = await videoIdQuery.execute();
+		this.logger.info(`unique videos length: ${videoIdsResult.length}`);
+
+		// 該当するビデオがない場合は早期リターン
+		if (videoIdsResult.length === 0) {
+			this.logger.info("No videos found for author, returning empty result");
+			return [];
+		}
+
+		const videoIds = videoIdsResult.map((v) => v.id);
+
+		const tags = await this.db
+			.select()
+			.from(TAGS)
+			.innerJoin(VIDEOS_TAGS, eq(TAGS.id, VIDEOS_TAGS.tagId))
+			.where(inArray(VIDEOS_TAGS.videoId, videoIds));
+
+		const contents = await this.db
+			.select()
+			.from(CONTENTS)
+			.innerJoin(VIDEOS_CONTENTS, eq(CONTENTS.id, VIDEOS_CONTENTS.contentId))
+			.where(inArray(VIDEOS_CONTENTS.videoId, videoIds));
+
+		const authors = await this.db
+			.select()
+			.from(AUTHORS)
+			.innerJoin(VIDEOS_AUTHORS, eq(AUTHORS.id, VIDEOS_AUTHORS.authorId))
+			.where(inArray(VIDEOS_AUTHORS.videoId, videoIds));
+
+		const result = videoIds
+			.map((videoId) => {
+				const ts = tags
+					.filter((t) => t.videos_tags.videoId === videoId)
+					.map((t) => t.tags);
+				const cs = contents
+					.filter((c) => c.videos_contents.videoId === videoId)
+					.map((c) => c.contents);
+				const as = authors
+					.filter((a) => a.videos_authors.videoId === videoId)
+					.map((a) => a.authors);
+
+				const firstContent = cs[0];
+				if (!firstContent) {
+					this.logger.warn(
+						`No content found for video: ${videoId}, skipping from results`,
+					);
+					return null;
+				}
+
+				return {
+					id: videoId,
+					previewGifPath: buildFileUrl(
+						posix.join(firstContent.path, "preview.gif"),
+					),
+					thumbnailPath: buildFileUrl(
+						posix.join(firstContent.path, "thumbnail.jpg"),
+					),
+					tags: ts,
+					contents: cs,
+					authors: as,
+				};
+			})
+			.filter((v): v is Video => v !== null);
+		this.logger.info(`result num: ${result.length}`);
+		return result;
+	}
 }

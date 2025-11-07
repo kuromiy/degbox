@@ -2,6 +2,8 @@
 import { ipcRenderer } from "electron";
 
 export default {
+    deleteAuthor: (id: string) => ipcRenderer.invoke("deleteAuthor", { id }),
+    getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => ipcRenderer.invoke("getAuthorDetail", { authorId, videoPage, videoSize }),
     registerAuthor: (name: string, urls: string) => ipcRenderer.invoke("registerAuthor", { name, urls }),
     searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => ipcRenderer.invoke("searchAuthor", { name, page, size }),
     autocompleteTags: (value: string, limit: number | undefined) => ipcRenderer.invoke("autocompleteTags", { value, limit }),

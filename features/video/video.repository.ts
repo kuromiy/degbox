@@ -6,4 +6,10 @@ export interface VideoRepository {
 	count(keyword: string): Promise<number>;
 	search(keyword: string, page: number, size: number): Promise<Video[]>;
 	findById(videoId: string): Promise<Video | null>;
+	countByAuthorId(authorId: string): Promise<number>;
+	findByAuthorId(
+		authorId: string,
+		page: number,
+		size: number,
+	): Promise<Video[]>;
 }

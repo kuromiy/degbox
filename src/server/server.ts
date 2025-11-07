@@ -8,6 +8,7 @@ import { renderMiddleware } from "./middleware/renderer.js";
 import { sessionMiddleware } from "./middleware/session.js";
 import tagAutocompleteRouter from "./router/api/tag/autocomplete.js";
 import tagSuggestRouter from "./router/api/tag/suggest.js";
+import authorDetailRouter from "./router/author/detail.js";
 import authorRegisterRouter from "./router/author/register.js";
 import authorSearchRouter from "./router/author/search.js";
 import fileRouter from "./router/file/get.js";
@@ -42,6 +43,7 @@ export function createServer(container: Container): Hono<Env> {
 	app.route("/video", videoDetailRouter);
 	app.route("/author", authorRegisterRouter);
 	app.route("/author", authorSearchRouter);
+	app.route("/author", authorDetailRouter);
 	app.onError((err, c) => {
 		console.log("error", err);
 		return c.text("error", 500);
