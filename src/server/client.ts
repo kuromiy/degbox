@@ -18,6 +18,10 @@ export class FetchClient implements ServiceIF {
 		return failure(new Error("registerAuthor is not allowed in FetchClient"));
 	}
 
+	async updateAuthor(_id: string, _name: string, _urls: string) {
+		return failure(new Error("updateAuthor is not allowed in FetchClient"));
+	}
+
 	async getAuthorDetail(
 		_authorId: string,
 		_videoPage: number | undefined,

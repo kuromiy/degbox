@@ -7,6 +7,7 @@ import { deleteAuthor } from "../apis/authors/author.delete.api.js";
 import { getAuthorDetail } from "../apis/authors/author.detail.api.js";
 import { registerAuthor } from "../apis/authors/author.register.api.js";
 import { searchAuthor } from "../apis/authors/author.search.api.js";
+import { updateAuthor } from "../apis/authors/author.update.api.js";
 import { autocompleteTags } from "../apis/tags/tag.autocomplete.api.js";
 import { suggestRelatedTags } from "../apis/tags/tag.suggest.api.js";
 import { detailVideo } from "../apis/videos/video.detail.api.js";
@@ -49,6 +50,16 @@ export const autoGenerateHandlers = {
         return async (event: IpcMainInvokeEvent, args: any) => {
             try {
                 const result = await searchAuthor({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
+    "updateAuthor": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await updateAuthor({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
                 return failure(e);

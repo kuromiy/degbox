@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { NeutralButton } from "../../../shared/ui/button.component.js";
 
-export function useAuthorUrls() {
-	const [urls, setUrls] = useState<Record<string, string>>({});
+export function useAuthorUrls(initialUrls?: Record<string, string>) {
+	const [urls, setUrls] = useState<Record<string, string>>(initialUrls || {});
 
 	function add(name: string, url: string) {
 		setUrls((prev) => ({
@@ -19,7 +19,7 @@ export function useAuthorUrls() {
 		});
 	}
 
-	return { urls, add, remove };
+	return { urls, add, remove, setUrls };
 }
 
 export function AuthorUrlsInput({
