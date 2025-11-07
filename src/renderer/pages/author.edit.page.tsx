@@ -2,6 +2,7 @@ import { isFailure } from "electron-flow/result";
 import {
 	type ActionFunctionArgs,
 	type LoaderFunctionArgs,
+	redirect,
 	useLoaderData,
 	useNavigate,
 } from "react-router-dom";
@@ -50,7 +51,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	}
 
 	// 更新成功後、作者詳細画面へリダイレクト
-	return location.reload();
+	return redirect(`/author/${authorId}`);
 }
 
 export default function AuthorEditPage() {
