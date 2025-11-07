@@ -5,20 +5,20 @@ import { before, describe, it } from "node:test";
 import { load } from "cheerio";
 import { eq } from "drizzle-orm";
 import { renderToString } from "react-dom/server";
-import { Container } from "../../features/shared/container/index.js";
+import { Container } from "../../../features/shared/container/index.js";
 import {
 	VIDEOS,
 	VIDEOS_CONTENTS,
 	VIDEOS_TAGS,
-} from "../../features/shared/database/schema.js";
-import type { Video } from "../../features/video/video.model.js";
-import { depend, TOKENS } from "../../src/main/depend.injection.js";
-import { createServer } from "../../src/server/server.js";
-import VideoRegisterPage from "../../src/server/view/pages/video.register.page.js";
-import { TestJobQueue } from "../api/testjobqueue.js";
-import { createTestDatabase } from "../helpers/createTestDatabase.js";
-import { normalizeHtml } from "../helpers/normalizeHtml.js";
-import { testLogger } from "../helpers/testlogger.js";
+} from "../../../features/shared/database/schema.js";
+import type { Video } from "../../../features/video/video.model.js";
+import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+import { createServer } from "../../../src/server/server.js";
+import VideoRegisterPage from "../../../src/server/view/pages/video.register.page.js";
+import { TestJobQueue } from "../../api/testjobqueue.js";
+import { createTestDatabase } from "../../helpers/createTestDatabase.js";
+import { normalizeHtml } from "../../helpers/normalizeHtml.js";
+import { testLogger } from "../../helpers/testlogger.js";
 
 const CATEGORY_NAME = "video-register-server";
 

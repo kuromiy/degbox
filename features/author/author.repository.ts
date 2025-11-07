@@ -4,6 +4,7 @@ export interface AuthorRepository {
 	generateId(): Promise<string>;
 	get(id: string): Promise<Author | undefined>;
 	save(author: Author): Promise<Author>;
+	delete(id: string): Promise<boolean>;
 	count(name?: string): Promise<number>;
 	search(
 		name: string | undefined,

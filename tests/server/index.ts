@@ -13,9 +13,15 @@ run({
 	.compose(spec)
 	.pipe(process.stdout);
 
-function getFiles() {
+function getFiles(feature?: string) {
+	// 機能名が指定された場合は、そのフォルダ配下のみ検索
+	// 指定されない場合は、すべてのテストを検索
+	const pattern = feature
+		? `./tests/server/${feature}/**/*.test.{ts,tsx}`
+		: "./tests/server/**/*.test.{ts,tsx}";
+
 	return new Promise<string[]>((resolve, reject) => {
-		glob("./tests/server/*.test.{ts,tsx}", (err, matches) => {
+		glob(pattern, (err, matches) => {
 			if (err) {
 				return reject(err);
 			}

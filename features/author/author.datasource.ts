@@ -47,6 +47,16 @@ export class AuthorDataSource implements AuthorRepository {
 		};
 	}
 
+	async delete(id: string): Promise<boolean> {
+		// 関連する動画との紐付けを削除
+		await this.db.delete(VIDEOS_AUTHORS).where(eq(VIDEOS_AUTHORS.authorId, id));
+
+		// 作者を削除
+		const result = await this.db.delete(AUTHORS).where(eq(AUTHORS.id, id));
+
+		return result.rowsAffected > 0;
+	}
+
 	async count(name?: string): Promise<number> {
 		const trimmedName = name?.trim();
 

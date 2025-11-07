@@ -3,6 +3,8 @@ import type { Context } from "../context.js";
 import { ipcMain, type IpcMainInvokeEvent } from "electron";
 import { success, failure } from "electron-flow";
 
+import { deleteAuthor } from "../apis/authors/author.delete.api.js";
+import { getAuthorDetail } from "../apis/authors/author.detail.api.js";
 import { registerAuthor } from "../apis/authors/author.register.api.js";
 import { searchAuthor } from "../apis/authors/author.search.api.js";
 import { autocompleteTags } from "../apis/tags/tag.autocomplete.api.js";
@@ -13,6 +15,26 @@ import { registerVideo } from "../apis/videos/video.register.api.js";
 import { searchVideo } from "../apis/videos/video.search.api.js";
 
 export const autoGenerateHandlers = {
+    "deleteAuthor": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await deleteAuthor({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
+    "getAuthorDetail": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await getAuthorDetail({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
     "registerAuthor": (ctx: Omit<Context, "event">) => {
         return async (event: IpcMainInvokeEvent, args: any) => {
             try {
