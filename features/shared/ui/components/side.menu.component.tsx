@@ -2,6 +2,18 @@ import { menuItems } from "../menu-items.js";
 import { SideMenuItem } from "./side.menu.item.component.js";
 
 export function SideMenu({ currentPath }: { currentPath: string }) {
+	// クエリパラメータを除去したパス名を取得
+	const pathname = currentPath.split("?")[0] || "";
+
+	// パスがマッチするかを判定する関数
+	const isPathActive = (itemPath: string): boolean => {
+		// 完全一致
+		if (pathname === itemPath) return true;
+		// 子ルートとのマッチ（/video/search と /video/search/123 など）
+		if (pathname.startsWith(`${itemPath}/`)) return true;
+		return false;
+	};
+
 	return (
 		<aside className="h-screen w-60 flex-shrink-0 overflow-y-auto border-gray-200 border-r bg-white">
 			<div className="p-4">
@@ -17,7 +29,7 @@ export function SideMenu({ currentPath }: { currentPath: string }) {
 									<SideMenuItem
 										key={item.to}
 										{...item}
-										isActive={currentPath === item.to}
+										isActive={isPathActive(item.to)}
 									/>
 								))}
 							</div>
