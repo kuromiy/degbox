@@ -20,13 +20,16 @@ export default function VideoThumbnail({
 	const imageSrc = isHovered ? previewGifPath : thumbnailPath;
 
 	return (
-		<Link to={to}>
-			<img
-				src={imageSrc}
-				alt={alt}
-				onMouseEnter={() => setIsHovered(true)}
-				onMouseLeave={() => setIsHovered(false)}
-			/>
+		<Link to={to} className="block">
+			<div className="w-full aspect-[4/3] bg-gray-300 rounded-lg overflow-hidden transition-transform duration-200 hover:scale-105">
+				<img
+					src={imageSrc}
+					alt={alt}
+					onMouseEnter={() => setIsHovered(true)}
+					onMouseLeave={() => setIsHovered(false)}
+					className="w-full h-full object-contain"
+				/>
+			</div>
 		</Link>
 	);
 }
