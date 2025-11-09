@@ -1,5 +1,5 @@
 import { isSuccess } from "electron-flow/result";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useId, useState } from "react";
 import { ClientContext } from "../../../shared/ui/client.context.js";
 import { Modal } from "../../../shared/ui/modal.component.js";
 import type { AuthorWithVideoCount } from "../../author.model.js";
@@ -44,6 +44,7 @@ export function AuthorSelectModal({
 }) {
 	const [selectId, setSelectId] = useState(initialAuthorId ?? "");
 	const { result, setKeyword } = useAuthorSelect();
+	const searchInputId = useId();
 
 	function onClick() {
 		const selectedAuthor = result.find((author) => author.id === selectId);
@@ -56,8 +57,12 @@ export function AuthorSelectModal({
 	return (
 		<Modal onExternal={onClose}>
 			<div>
-				<label htmlFor="">作者名</label>
-				<input type="text" onChange={(e) => setKeyword(e.target.value)}></input>
+				<label htmlFor={searchInputId}>作者名</label>
+				<input
+					id={searchInputId}
+					type="text"
+					onChange={(e) => setKeyword(e.target.value)}
+				></input>
 			</div>
 			<div>
 				{result.length === 0 && <div>作者がいません。</div>}
@@ -77,7 +82,8 @@ export function AuthorSelectModal({
 						}}
 					>
 						<input
-							type="checkbox"
+							type="radio"
+							name="author-select"
 							checked={selectId === value.id}
 							readOnly
 							className="mx-2"

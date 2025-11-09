@@ -86,6 +86,7 @@ function VideoRegisterForm({
 							選択
 						</button>
 					</div>
+					<input type="hidden" name="authorId" value={author?.id ?? ""}></input>
 
 					<div className="flex gap-4">
 						<NeutralButton type="reset">リセット</NeutralButton>
