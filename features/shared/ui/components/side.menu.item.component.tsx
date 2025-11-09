@@ -14,10 +14,8 @@ export function SideMenuItem({
 	return (
 		<Link
 			to={to}
-			className={`block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors ${
-				isActive
-					? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold"
-					: "text-gray-700 dark:text-gray-300"
+			className={`block px-4 py-2 text-sm hover:bg-main-100 rounded transition-colors ${
+				isActive ? "bg-main-100 text-main-700 font-semibold" : "text-gray-700 "
 			}`}
 		>
 			{label}

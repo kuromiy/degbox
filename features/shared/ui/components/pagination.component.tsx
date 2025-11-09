@@ -123,7 +123,7 @@ export function Pagination({
 						to={buildUrl(pageNum)}
 						className={`px-3 py-2 rounded-lg transition-colors ${
 							isCurrentPage
-								? "bg-blue-500 text-white font-semibold cursor-default pointer-events-none"
+								? "bg-main-500 text-white font-semibold cursor-default pointer-events-none"
 								: "text-gray-700 hover:bg-gray-100"
 						}`}
 						aria-label={`ページ${pageNum}`}

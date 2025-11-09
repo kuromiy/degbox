@@ -1,3 +1,4 @@
+import { PositiveButton } from "../../../shared/ui/components/button.component.js";
 import { Pagination } from "../../../shared/ui/components/pagination.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
 import type { AuthorWithVideoCount } from "../../author.model.js";
@@ -14,18 +15,12 @@ export function AuthorSearchTemplate({
 		name?: string | undefined;
 	};
 }) {
-	const { Link, Form } = useNavigation();
+	const { Form } = useNavigation();
 
 	return (
 		<main className="container mx-auto pt-10 px-2 flex flex-col justify-center">
 			<div className="mb-6 flex items-center justify-between">
 				<h1 className="text-2xl font-bold text-gray-800">作者検索</h1>
-				<Link
-					to="/author/register"
-					className="px-6 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors duration-200 shadow-md hover:shadow-lg"
-				>
-					新規作成
-				</Link>
 			</div>
 
 			<Form className="mb-8 flex items-center gap-4">
@@ -35,12 +30,7 @@ export function AuthorSearchTemplate({
 					placeholder="作者名を入力..."
 					className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 				/>
-				<button
-					type="submit"
-					className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors duration-200 shadow-md hover:shadow-lg"
-				>
-					検索
-				</button>
+				<PositiveButton type="submit">検索</PositiveButton>
 				<select
 					name="size"
 					className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"

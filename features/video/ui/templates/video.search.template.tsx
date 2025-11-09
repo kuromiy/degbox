@@ -1,3 +1,4 @@
+import { PositiveButton } from "../../../shared/ui/components/button.component.js";
 import { Pagination } from "../../../shared/ui/components/pagination.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
 import type { Video } from "../../video.model.js";
@@ -30,12 +31,7 @@ export function VideoSearchTemplate({
 					placeholder="キーワードを入力..."
 					className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 				/>
-				<button
-					type="submit"
-					className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors duration-200 shadow-md hover:shadow-lg"
-				>
-					検索
-				</button>
+				<PositiveButton type="submit">検索</PositiveButton>
 				<select
 					name="size"
 					className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
