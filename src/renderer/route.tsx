@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { createHashRouter, Navigate } from "react-router-dom";
-import { Layout } from "../../features/shared/ui/layout.js";
+import { Layout } from "../../features/shared/ui/components/layout.component.js";
 import AuthorDetailPage, {
 	loader as authorDetailLoader,
 } from "./pages/author.detail.page.js";

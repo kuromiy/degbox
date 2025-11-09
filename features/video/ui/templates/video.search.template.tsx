@@ -1,5 +1,5 @@
+import { Pagination } from "../../../shared/ui/components/pagination.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
-import { Pagination } from "../../../shared/ui/pagination.component.js";
 import type { Video } from "../../video.model.js";
 import VideoThumbnail from "../components/video.thumbnail.component.js";
 

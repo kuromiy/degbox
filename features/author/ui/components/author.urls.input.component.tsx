@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NeutralButton } from "../../../shared/ui/button.component.js";
+import { NeutralButton } from "../../../shared/ui/components/button.component.js";
 
 export function useAuthorUrls(initialUrls?: Record<string, string>) {
 	const [urls, setUrls] = useState<Record<string, string>>(initialUrls || {});

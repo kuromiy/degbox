@@ -1,5 +1,5 @@
+import { Pagination } from "../../../shared/ui/components/pagination.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
-import { Pagination } from "../../../shared/ui/pagination.component.js";
 import VideoThumbnail from "../../../video/ui/components/video.thumbnail.component.js";
 import type { Author } from "../../author.model.js";
 import AuthorInfo from "../components/author.info.js";

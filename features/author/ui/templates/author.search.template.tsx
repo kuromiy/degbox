@@ -1,5 +1,5 @@
+import { Pagination } from "../../../shared/ui/components/pagination.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
-import { Pagination } from "../../../shared/ui/pagination.component.js";
 import type { AuthorWithVideoCount } from "../../author.model.js";
 import AuthorCard from "../components/author.card.js";
 

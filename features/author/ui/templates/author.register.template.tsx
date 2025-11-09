@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
 	NeutralButton,
 	PositiveButton,
-} from "../../../shared/ui/button.component.js";
+} from "../../../shared/ui/components/button.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
 import { AuthorModal } from "../components/author.modal.component.js";
 import {

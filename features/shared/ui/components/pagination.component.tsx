@@ -1,4 +1,4 @@
-import { useNavigation } from "./navigation.context.js";
+import { useNavigation } from "../navigation.context.js";
 
 export interface PaginationProps {
 	currentPage: number;

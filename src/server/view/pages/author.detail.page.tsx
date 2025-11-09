@@ -1,5 +1,5 @@
 import { AuthorDetailTemplate } from "../../../../features/author/ui/templates/author.detail.template.js";
-import { LayoutServer } from "../../../../features/shared/ui/layout.server.js";
+import { LayoutServer } from "../../../../features/shared/ui/components/layout.server.component.js";
 import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
 import type { AuthorDetailResponse } from "../../../../src/main/apis/authors/author.detail.api.js";
 

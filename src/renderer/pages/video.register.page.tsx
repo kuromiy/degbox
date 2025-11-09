@@ -6,7 +6,7 @@ import { AuthorSelectModal } from "../../../features/author/ui/components/author
 import {
 	NeutralButton,
 	PositiveButton,
-} from "../../../features/shared/ui/button.component.js";
+} from "../../../features/shared/ui/components/button.component.js";
 import { useNavigation } from "../../../features/shared/ui/navigation.context.js";
 import {
 	TagInput,

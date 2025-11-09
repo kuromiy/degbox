@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react";
 import type { AuthorWithVideoCount } from "../../../../features/author/author.model.js";
 import { AuthorSelectModal } from "../../../../features/author/ui/components/author.select.modal.component.js";
+import { ClientProvider } from "../../../../features/shared/ui/client.context.js";
 import {
 	NeutralButton,
 	PositiveButton,
-} from "../../../../features/shared/ui/button.component.js";
-import { ClientProvider } from "../../../../features/shared/ui/client.context.js";
-import { LayoutServer } from "../../../../features/shared/ui/layout.server.js";
+} from "../../../../features/shared/ui/components/button.component.js";
+import { LayoutServer } from "../../../../features/shared/ui/components/layout.server.component.js";
 import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
 import {
 	TagInput,

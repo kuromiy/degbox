@@ -1,10 +1,7 @@
-import { menuItems } from "./menu-items.js";
-import { SideMenuItemServer } from "./side-menu-item.server.js";
+import { menuItems } from "../menu-items.js";
+import { SideMenuItem } from "./side.menu.item.component.js";
 
-/**
- * サイドメニューコンポーネント（Server側）
- */
-export function SideMenuServer({ currentPath }: { currentPath: string }) {
+export function SideMenu({ currentPath }: { currentPath: string }) {
 	return (
 		<aside className="w-60 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 overflow-y-auto">
 			<div className="p-4">
@@ -19,10 +16,10 @@ export function SideMenuServer({ currentPath }: { currentPath: string }) {
 							</h2>
 							<div className="space-y-1">
 								{category.items.map((item) => (
-									<SideMenuItemServer
+									<SideMenuItem
 										key={item.to}
 										{...item}
-										currentPath={currentPath}
+										isActive={currentPath === item.to}
 									/>
 								))}
 							</div>
