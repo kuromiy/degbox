@@ -7,11 +7,27 @@ const BASE_URL = "http://192.168.3.33:8080";
 
 export class FetchClient implements ServiceIF {
 	async searchAuthor(
-		_name: string | undefined,
-		_page: number | undefined,
-		_size: number | undefined,
+		name: string | undefined,
+		page: number | undefined,
+		size: number | undefined,
 	) {
-		return failure(new Error("searchAuthor is not allowed in FetchClient"));
+		try {
+			const params = new URLSearchParams({
+				...(name !== undefined && { name }),
+				...(page !== undefined && { page: page.toString() }),
+				...(size !== undefined && { size: size.toString() }),
+			});
+			const response = await fetch(`${BASE_URL}/api/author/search?${params}`);
+
+			if (!response.ok) {
+				return failure(new Error(`HTTP error! status: ${response.status}`));
+			}
+
+			const result = await response.json();
+			return success(result);
+		} catch (error) {
+			return failure(error instanceof Error ? error : new Error(String(error)));
+		}
 	}
 
 	async registerAuthor(_name: string, _urls: string) {

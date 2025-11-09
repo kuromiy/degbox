@@ -1,4 +1,6 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+import type { AuthorWithVideoCount } from "../../../../features/author/author.model.js";
+import { AuthorSelectModal } from "../../../../features/author/ui/components/author.select.modal.component.js";
 import {
 	NeutralButton,
 	PositiveButton,
@@ -12,13 +14,14 @@ import { FetchClient } from "../../client.js";
 
 function VideoRegisterForm({
 	fileErrors,
-	authorIdErrors,
 }: {
 	fileErrors?: string[] | undefined;
-	authorIdErrors?: string[] | undefined;
 }) {
 	const hasFileError = !!(fileErrors && fileErrors.length > 0);
-	const hasAuthorIdError = !!(authorIdErrors && authorIdErrors.length > 0);
+	const [isOpen, setIsOpen] = useState(false);
+	const [author, setAuthor] = useState<AuthorWithVideoCount | undefined>(
+		undefined,
+	);
 
 	// ClientProvider の内側で useTagInput を呼び出す
 	const { tags, add, replace, change, autocompleteTags, suggestTags } =
@@ -27,6 +30,13 @@ function VideoRegisterForm({
 	return (
 		<main className="flex justify-center">
 			<div className="w-full max-w-md">
+				{isOpen && (
+					<AuthorSelectModal
+						onClose={() => setIsOpen(false)}
+						onSelected={(author) => setAuthor(author)}
+						{...(author?.id && { initialAuthorId: author.id })}
+					/>
+				)}
 				<form
 					className="flex flex-col gap-4"
 					method="POST"
@@ -66,21 +76,17 @@ function VideoRegisterForm({
 					/>
 
 					{/* 作者ID入力フィールド（オプション） */}
-					<div className="flex flex-col gap-1">
-						<label htmlFor="authorId">作者ID（オプション）</label>
-						<input
-							type="text"
-							name="authorId"
-							className={`border rounded-lg p-2 ${hasAuthorIdError ? "border-red-500" : ""}`}
-						/>
-						{hasAuthorIdError && (
-							<div className="text-red-500 text-sm">
-								{authorIdErrors.map((error) => (
-									<div key={error}>{error}</div>
-								))}
-							</div>
-						)}
+					<div className="flex justify-between divide-x divide-black px-4 py-2 border rounded-lg">
+						<div className="flex-1 pr-4">{author ? author.name : "未選択"}</div>
+						<button
+							type="button"
+							onClick={() => setIsOpen(true)}
+							className="pl-4"
+						>
+							選択
+						</button>
 					</div>
+					<input type="hidden" name="authorId" value={author?.id ?? ""}></input>
 
 					<div className="flex gap-4">
 						<NeutralButton type="reset">リセット</NeutralButton>
@@ -97,16 +103,12 @@ export default function VideoRegisterPage(
 	errors?: Record<string, string[]>,
 ) {
 	const fileErrors = errors?.file;
-	const authorIdErrors = errors?.authorId;
 
 	const createClient = useCallback(() => new FetchClient(), []);
 
 	return (
 		<ClientProvider createClient={createClient}>
-			<VideoRegisterForm
-				fileErrors={fileErrors}
-				authorIdErrors={authorIdErrors}
-			/>
+			<VideoRegisterForm fileErrors={fileErrors} />
 		</ClientProvider>
 	);
 }
