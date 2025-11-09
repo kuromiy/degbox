@@ -37,12 +37,12 @@ export default function AuthorInfo({ author, onDelete }: AuthorInfoProps) {
 	};
 
 	return (
-		<div className="bg-white border border-gray-200 rounded-lg shadow p-6">
+		<div className="rounded-lg border border-gray-200 bg-white p-6 shadow">
 			<div className="flex flex-col gap-4">
-				<h1 className="text-3xl font-bold text-gray-900">{author.name}</h1>
+				<h1 className="font-bold text-3xl text-gray-900">{author.name}</h1>
 
 				<div className="flex flex-col gap-2">
-					<h2 className="text-lg font-semibold text-gray-700">外部リンク</h2>
+					<h2 className="font-semibold text-gray-700 text-lg">外部リンク</h2>
 					{Object.keys(author.urls).length === 0 ? (
 						<div className="text-gray-500">外部リンクなし</div>
 					) : (
@@ -63,17 +63,17 @@ export default function AuthorInfo({ author, onDelete }: AuthorInfoProps) {
 					)}
 				</div>
 
-				<div className="flex gap-2 mt-4">
+				<div className="mt-4 flex gap-2">
 					<Link
 						to={`/author/${author.id}/edit`}
-						className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors duration-200 shadow-md hover:shadow-lg"
+						className="rounded-lg bg-blue-500 px-6 py-2 font-semibold text-white shadow-md transition-colors duration-200 hover:bg-blue-600 hover:shadow-lg"
 					>
 						編集
 					</Link>
 					<button
 						type="button"
 						onClick={handleDeleteClick}
-						className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors duration-200 shadow-md hover:shadow-lg"
+						className="rounded-lg bg-red-500 px-6 py-2 font-semibold text-white shadow-md transition-colors duration-200 hover:bg-red-600 hover:shadow-lg"
 					>
 						削除
 					</button>
@@ -81,25 +81,25 @@ export default function AuthorInfo({ author, onDelete }: AuthorInfoProps) {
 			</div>
 
 			{showDeleteDialog && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-					<div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-						<h3 className="text-xl font-bold text-gray-900 mb-4">作者の削除</h3>
-						<p className="text-gray-700 mb-2">
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+					<div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+						<h3 className="mb-4 font-bold text-gray-900 text-xl">作者の削除</h3>
+						<p className="mb-2 text-gray-700">
 							「{author.name}」を削除しますか?
 						</p>
-						<p className="text-gray-600 mb-6">この操作は取り消せません。</p>
-						<div className="flex gap-2 justify-end">
+						<p className="mb-6 text-gray-600">この操作は取り消せません。</p>
+						<div className="flex justify-end gap-2">
 							<button
 								type="button"
 								onClick={handleCancelDelete}
-								className="px-4 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200"
+								className="rounded-lg bg-gray-300 px-4 py-2 font-semibold text-gray-800 transition-colors duration-200 hover:bg-gray-400"
 							>
 								キャンセル
 							</button>
 							<button
 								type="button"
 								onClick={handleConfirmDelete}
-								className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors duration-200"
+								className="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-red-600"
 							>
 								削除
 							</button>

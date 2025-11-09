@@ -9,16 +9,16 @@ export default function AuthorCard({
 	const { Link } = useNavigation();
 
 	return (
-		<div className="p-6 bg-white border border-gray-200 rounded-lg shadow">
+		<div className="rounded-lg border border-gray-200 bg-white p-6 shadow">
 			<div className="flex flex-col gap-3">
 				<Link
 					to={`/author/${author.id}`}
-					className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200"
+					className="font-semibold text-gray-900 text-xl transition-colors duration-200 hover:text-blue-600"
 				>
 					{author.name}
 				</Link>
 
-				<div className="text-sm text-gray-600">動画数: {author.videoCount}</div>
+				<div className="text-gray-600 text-sm">動画数: {author.videoCount}</div>
 
 				{Object.keys(author.urls).length > 0 && (
 					<div className="flex flex-wrap gap-2">
@@ -28,7 +28,7 @@ export default function AuthorCard({
 								href={url}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+								className="text-blue-600 text-sm hover:text-blue-800 hover:underline"
 							>
 								{platform}
 							</a>

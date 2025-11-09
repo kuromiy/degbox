@@ -34,7 +34,7 @@ export function AuthorUrlsInput({
 	return (
 		<div className="space-y-2">
 			<div>
-				<label htmlFor="urls" className="text-sm font-medium">
+				<label htmlFor="urls" className="font-medium text-sm">
 					URL
 				</label>
 				<NeutralButton type="button" onClick={onAddClick}>
@@ -52,7 +52,7 @@ export function AuthorUrlsInput({
 							<th className="border border-gray-300 px-4 py-2 text-left">
 								URL
 							</th>
-							<th className="border border-gray-300 px-4 py-2 text-center w-24">
+							<th className="w-24 border border-gray-300 px-4 py-2 text-center">
 								操作
 							</th>
 						</tr>
@@ -75,7 +75,7 @@ export function AuthorUrlsInput({
 									<button
 										type="button"
 										onClick={() => onRemoveClick(service)}
-										className="text-red-600 hover:text-red-800 font-medium"
+										className="font-medium text-red-600 hover:text-red-800"
 									>
 										削除
 									</button>
@@ -85,7 +85,7 @@ export function AuthorUrlsInput({
 					</tbody>
 				</table>
 			) : (
-				<p className="text-sm text-gray-500">URLが登録されていません</p>
+				<p className="text-gray-500 text-sm">URLが登録されていません</p>
 			)}
 		</div>
 	);

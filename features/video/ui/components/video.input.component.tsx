@@ -36,20 +36,20 @@ export function VideoInput() {
 		<>
 			{resourceId && (
 				<>
-					<video controls className="w-full aspect-video">
+					<video controls className="aspect-video w-full">
 						<source src={`resources://${resourceId}`} />
 						<track kind="captions" srcLang="ja" label="日本語字幕" />
 					</video>
 					{fileName && (
-						<p className="text-sm text-gray-600">選択: {fileName}</p>
+						<p className="text-gray-600 text-sm">選択: {fileName}</p>
 					)}
 				</>
 			)}
-			<div className="text-sm font-medium">動画</div>
+			<div className="font-medium text-sm">動画</div>
 			<button
 				type="button"
 				onClick={pickupVideo}
-				className="px-4 py-2 border rounded-lg"
+				className="rounded-lg border px-4 py-2"
 			>
 				動画を選択
 			</button>

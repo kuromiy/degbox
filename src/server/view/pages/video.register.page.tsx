@@ -53,7 +53,7 @@ function VideoRegisterForm({
 							type="file"
 							name="file"
 							accept="video/*"
-							className={`border rounded-lg p-2 ${hasFileError ? "border-red-500" : ""}`}
+							className={`rounded-lg border p-2 ${hasFileError ? "border-red-500" : ""}`}
 						/>
 						{hasFileError && (
 							<div className="text-red-500 text-sm">
@@ -78,7 +78,7 @@ function VideoRegisterForm({
 					/>
 
 					{/* 作者ID入力フィールド（オプション） */}
-					<div className="flex justify-between divide-x divide-black px-4 py-2 border rounded-lg">
+					<div className="flex justify-between divide-x divide-black rounded-lg border px-4 py-2">
 						<div className="flex-1 pr-4">{author ? author.name : "未選択"}</div>
 						<button
 							type="button"

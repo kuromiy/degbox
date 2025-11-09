@@ -21,13 +21,13 @@ export default function VideoThumbnail({
 
 	return (
 		<Link to={to} className="block">
-			<div className="w-full aspect-[4/3] bg-gray-300 rounded-lg overflow-hidden transition-transform duration-200 hover:scale-105">
+			<div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-gray-300 transition-transform duration-200 hover:scale-105">
 				<img
 					src={imageSrc}
 					alt={alt}
 					onMouseEnter={() => setIsHovered(true)}
 					onMouseLeave={() => setIsHovered(false)}
-					className="w-full h-full object-contain"
+					className="h-full w-full object-contain"
 				/>
 			</div>
 		</Link>

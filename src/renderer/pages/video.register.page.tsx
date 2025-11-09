@@ -84,7 +84,7 @@ export default function VideoRegisterPage() {
 						autocompleteTags={autocompleteTags}
 						suggestTags={suggestTags}
 					/>
-					<div className="flex justify-between divide-x divide-black px-4 py-2 border rounded-lg">
+					<div className="flex justify-between divide-x divide-black rounded-lg border px-4 py-2">
 						<div className="flex-1 pr-4">{author ? author.name : "未選択"}</div>
 						<button
 							type="button"

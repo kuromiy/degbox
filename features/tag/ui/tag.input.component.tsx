@@ -202,7 +202,7 @@ function TagInputPresention({
 				id={id}
 				name={name}
 				type="text"
-				className="px-4 py-2 border rounded-lg"
+				className="rounded-lg border px-4 py-2"
 				placeholder="タグを入力（スペース区切りで複数入力可）..."
 				autoComplete="off"
 				value={value}
@@ -216,7 +216,7 @@ function TagInputPresention({
 						return (
 							<button
 								type="button"
-								className="px-4 py-2 border"
+								className="border px-4 py-2"
 								key={index.toString()}
 								onMouseDown={(e) => {
 									e.preventDefault();
@@ -241,7 +241,7 @@ function TagInputPresention({
 						return (
 							<button
 								type="button"
-								className="px-4 py-2 border"
+								className="border px-4 py-2"
 								key={index.toString()}
 								onMouseDown={(e) => {
 									e.preventDefault();

@@ -12,7 +12,7 @@ export function Modal({
 			{/* オーバーレイ */}
 			<button
 				type="button"
-				className="absolute inset-0 bg-black/50 cursor-default"
+				className="absolute inset-0 cursor-default bg-black/50"
 				onClick={onExternal}
 				onKeyDown={(e) => {
 					if (e.key === "Escape") {
@@ -23,7 +23,7 @@ export function Modal({
 			/>
 
 			{/* コンテンツ */}
-			<div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
+			<div className="relative mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
 				{children}
 			</div>
 		</div>
