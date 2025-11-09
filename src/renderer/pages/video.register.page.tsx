@@ -6,7 +6,7 @@ import { AuthorSelectModal } from "../../../features/author/ui/components/author
 import {
 	NeutralButton,
 	PositiveButton,
-} from "../../../features/shared/ui/button.component.js";
+} from "../../../features/shared/ui/components/button.component.js";
 import { useNavigation } from "../../../features/shared/ui/navigation.context.js";
 import {
 	TagInput,
@@ -40,7 +40,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function VideoRegisterPage() {
-	const { Link, Form } = useNavigation();
+	const { Form } = useNavigation();
 	const { tags, add, replace, change, autocompleteTags, suggestTags } =
 		useTagInput("");
 	const data = useActionData() as { message: string } | Error | undefined;
@@ -71,7 +71,6 @@ export default function VideoRegisterPage() {
 					{...(author?.id && { initialAuthorId: author.id })}
 				/>
 			)}
-			<Link to="/">検索</Link>
 			<div className="w-full max-w-md">
 				<Form className="flex flex-col gap-4" method="POST">
 					<h1>動画登録</h1>
@@ -85,7 +84,7 @@ export default function VideoRegisterPage() {
 						autocompleteTags={autocompleteTags}
 						suggestTags={suggestTags}
 					/>
-					<div className="flex justify-between divide-x divide-black px-4 py-2 border rounded-lg">
+					<div className="flex justify-between divide-x divide-black rounded-lg border px-4 py-2">
 						<div className="flex-1 pr-4">{author ? author.name : "未選択"}</div>
 						<button
 							type="button"

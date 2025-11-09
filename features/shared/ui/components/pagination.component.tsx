@@ -1,4 +1,4 @@
-import { useNavigation } from "./navigation.context.js";
+import { useNavigation } from "../navigation.context.js";
 
 export interface PaginationProps {
 	currentPage: number;
@@ -70,15 +70,15 @@ export function Pagination({
 
 	return (
 		<nav
-			className="flex items-center justify-center gap-1 mt-8"
+			className="mt-8 flex items-center justify-center gap-1"
 			aria-label="ページネーション"
 		>
 			{/* 最初のページへ */}
 			<Link
 				to={buildUrl(1)}
-				className={`px-3 py-2 rounded-lg transition-colors ${
+				className={`rounded-lg px-3 py-2 transition-colors ${
 					isFirstPage
-						? "text-gray-300 cursor-not-allowed pointer-events-none"
+						? "pointer-events-none cursor-not-allowed text-gray-300"
 						: "text-gray-700 hover:bg-gray-100"
 				}`}
 				aria-label="最初のページ"
@@ -90,9 +90,9 @@ export function Pagination({
 			{/* 前のページへ */}
 			<Link
 				to={buildUrl(currentPage - 1)}
-				className={`px-3 py-2 rounded-lg transition-colors ${
+				className={`rounded-lg px-3 py-2 transition-colors ${
 					isFirstPage
-						? "text-gray-300 cursor-not-allowed pointer-events-none"
+						? "pointer-events-none cursor-not-allowed text-gray-300"
 						: "text-gray-700 hover:bg-gray-100"
 				}`}
 				aria-label="前のページ"
@@ -121,9 +121,9 @@ export function Pagination({
 					<Link
 						key={pageNum}
 						to={buildUrl(pageNum)}
-						className={`px-3 py-2 rounded-lg transition-colors ${
+						className={`rounded-lg px-3 py-2 transition-colors ${
 							isCurrentPage
-								? "bg-blue-500 text-white font-semibold cursor-default pointer-events-none"
+								? "pointer-events-none cursor-default bg-main-500 font-semibold text-white"
 								: "text-gray-700 hover:bg-gray-100"
 						}`}
 						aria-label={`ページ${pageNum}`}
@@ -137,9 +137,9 @@ export function Pagination({
 			{/* 次のページへ */}
 			<Link
 				to={buildUrl(currentPage + 1)}
-				className={`px-3 py-2 rounded-lg transition-colors ${
+				className={`rounded-lg px-3 py-2 transition-colors ${
 					isLastPage
-						? "text-gray-300 cursor-not-allowed pointer-events-none"
+						? "pointer-events-none cursor-not-allowed text-gray-300"
 						: "text-gray-700 hover:bg-gray-100"
 				}`}
 				aria-label="次のページ"
@@ -151,9 +151,9 @@ export function Pagination({
 			{/* 最後のページへ */}
 			<Link
 				to={buildUrl(totalPages)}
-				className={`px-3 py-2 rounded-lg transition-colors ${
+				className={`rounded-lg px-3 py-2 transition-colors ${
 					isLastPage
-						? "text-gray-300 cursor-not-allowed pointer-events-none"
+						? "pointer-events-none cursor-not-allowed text-gray-300"
 						: "text-gray-700 hover:bg-gray-100"
 				}`}
 				aria-label="最後のページ"

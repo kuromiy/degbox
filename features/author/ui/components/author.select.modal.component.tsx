@@ -1,7 +1,7 @@
 import { isSuccess } from "electron-flow/result";
 import { useContext, useEffect, useId, useState } from "react";
 import { ClientContext } from "../../../shared/ui/client.context.js";
-import { Modal } from "../../../shared/ui/modal.component.js";
+import { Modal } from "../../../shared/ui/components/modal.component.js";
 import type { AuthorWithVideoCount } from "../../author.model.js";
 
 function useAuthorSelect() {

@@ -1,5 +1,5 @@
 import { AuthorRegisterTemplate } from "../../../../features/author/ui/templates/author.register.template.js";
-import { LayoutServer } from "../../../../features/shared/ui/layout.server.js";
+import { LayoutServer } from "../../../../features/shared/ui/components/layout.server.component.js";
 import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
 
 export default function AuthorRegisterPage() {

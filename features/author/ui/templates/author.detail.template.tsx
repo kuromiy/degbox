@@ -1,5 +1,5 @@
+import { Pagination } from "../../../shared/ui/components/pagination.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
-import { Pagination } from "../../../shared/ui/pagination.component.js";
 import VideoThumbnail from "../../../video/ui/components/video.thumbnail.component.js";
 import type { Author } from "../../author.model.js";
 import AuthorInfo from "../components/author.info.js";
@@ -29,7 +29,7 @@ export function AuthorDetailTemplate({
 	const { Link } = useNavigation();
 
 	return (
-		<main className="container mx-auto pt-10 px-2 flex flex-col justify-center">
+		<main className="container mx-auto flex flex-col justify-center px-2 pt-10">
 			<div className="mb-6">
 				<Link
 					to="/author/search"
@@ -42,12 +42,12 @@ export function AuthorDetailTemplate({
 			<AuthorInfo author={author} onDelete={onDelete} />
 
 			<div className="mt-8">
-				<h2 className="text-2xl font-bold text-gray-800 mb-4">
+				<h2 className="mb-4 font-bold text-2xl text-gray-800">
 					紐づいた動画一覧
 				</h2>
 
 				{videos.count === 0 ? (
-					<div className="text-center text-gray-500 py-10">
+					<div className="py-10 text-center text-gray-500">
 						この作者に紐づいた動画がありません
 					</div>
 				) : (
@@ -65,7 +65,7 @@ export function AuthorDetailTemplate({
 							}}
 						/>
 
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-6">
+						<div className="my-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 							{videos.result.map((video) => (
 								<div key={video.id} className="flex flex-col gap-2">
 									<VideoThumbnail
@@ -77,11 +77,11 @@ export function AuthorDetailTemplate({
 									<div className="flex flex-col gap-1">
 										<Link
 											to={`/video/${video.id}`}
-											className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 line-clamp-2"
+											className="line-clamp-2 font-semibold text-gray-900 text-sm transition-colors duration-200 hover:text-blue-600"
 										>
 											{video.title}
 										</Link>
-										<div className="text-xs text-gray-600">
+										<div className="text-gray-600 text-xs">
 											{new Date(video.createdAt).toLocaleDateString("ja-JP")}
 										</div>
 									</div>

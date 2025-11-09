@@ -1,6 +1,6 @@
 import type { AuthorWithVideoCount } from "../../../../features/author/author.model.js";
 import { AuthorSearchTemplate } from "../../../../features/author/ui/templates/author.search.template.js";
-import { LayoutServer } from "../../../../features/shared/ui/layout.server.js";
+import { LayoutServer } from "../../../../features/shared/ui/components/layout.server.component.js";
 import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
 
 type SearchResult = {

@@ -60,7 +60,7 @@ async function render(
 						<link rel="stylesheet" href="/public/css/index.css" />
 						<title>{options?.title}</title>
 					</head>
-					<body className="h-full bg-surface-950 text-text-50 font-light">
+					<body className="h-full bg-surface-950 font-light text-text-50">
 						{/* biome-ignore lint/correctness/useUniqueElementIds: SSR root element */}
 						<div id="app" className="h-screen">
 							{page}

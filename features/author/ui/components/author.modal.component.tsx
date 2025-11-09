@@ -2,8 +2,8 @@ import { useState } from "react";
 import {
 	NeutralButton,
 	PositiveButton,
-} from "../../../shared/ui/button.component.js";
-import { Modal } from "../../../shared/ui/modal.component.js";
+} from "../../../shared/ui/components/button.component.js";
+import { Modal } from "../../../shared/ui/components/modal.component.js";
 
 export function AuthorModal({
 	onAddUrl,

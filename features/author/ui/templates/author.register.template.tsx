@@ -2,7 +2,8 @@ import { useState } from "react";
 import {
 	NeutralButton,
 	PositiveButton,
-} from "../../../shared/ui/button.component.js";
+} from "../../../shared/ui/components/button.component.js";
+import { Input } from "../../../shared/ui/components/input.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
 import { AuthorModal } from "../components/author.modal.component.js";
 import {
@@ -25,11 +26,7 @@ export function AuthorRegisterTemplate() {
 					<h1>作者登録</h1>
 					<div>
 						<label htmlFor="name">名前</label>
-						<input
-							name="name"
-							type="text"
-							className="px-4 py-2 border rounded-lg"
-						/>
+						<Input name="name" type="text" />
 					</div>
 					<AuthorUrlsInput
 						urls={urls}

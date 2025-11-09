@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;200;300;400;500;700&display=swap');
 @import "tailwindcss" source(none);
 
 /*
@@ -6,3 +7,23 @@
  */
 @source "src";
 @source "features";
+
+body {
+    font-weight: 300;
+}
+
+@theme {
+    --font-sans: 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif;
+
+    --color-main-50: #fcf7ee;
+    --color-main-100: #f7e9ce;
+    --color-main-200: #eed099;
+    --color-main-300: #e5b364;
+    --color-main-400: #de9941;
+    --color-main-500: #ce7628;
+    --color-main-600: #bd5c22;
+    --color-main-700: #9d4220;
+    --color-main-800: #803520;
+    --color-main-900: #6a2d1d;
+    --color-main-950: #3c150c;
+}
