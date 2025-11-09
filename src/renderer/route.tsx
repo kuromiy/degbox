@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { createHashRouter } from "react-router-dom";
+import { createHashRouter, Navigate } from "react-router-dom";
+import { Layout } from "../../features/shared/ui/layout.js";
 import AuthorDetailPage, {
 	loader as authorDetailLoader,
 } from "./pages/author.detail.page.js";
@@ -25,62 +26,71 @@ import VideoSearchPage, {
 
 export const route = createHashRouter([
 	{
-		path: "/register",
-		element: <VideoRegisterPage />,
-		action: videoRegisterAction,
-		HydrateFallback: () => <div>読み込み中...</div>,
-	},
-	{
-		path: "/",
-		element: (
-			<Suspense fallback={<div>読み込み中...</div>}>
-				<VideoSearchPage />
-			</Suspense>
-		),
-		loader: videoSearchLoader,
-		HydrateFallback: () => <div>読み込み中...</div>,
-	},
-	{
-		path: "/video/:videoId",
-		element: <VideoDetailPage />,
-		loader: videoDetailLoader,
-		HydrateFallback: () => <div>読み込み中...</div>,
-	},
-	{
-		path: "/author/register",
-		element: <AuthorRegisterPage />,
-		action: authorRegisterAction,
-		HydrateFallback: () => <div>読み込み中...</div>,
-	},
-	{
-		path: "/author/search",
-		element: (
-			<Suspense fallback={<div>読み込み中...</div>}>
-				<AuthorSearchPage />
-			</Suspense>
-		),
-		loader: authorSearchLoader,
-		HydrateFallback: () => <div>読み込み中...</div>,
-	},
-	{
-		path: "/author/:authorId",
-		element: (
-			<Suspense fallback={<div>読み込み中...</div>}>
-				<AuthorDetailPage />
-			</Suspense>
-		),
-		loader: authorDetailLoader,
-		HydrateFallback: () => <div>読み込み中...</div>,
-	},
-	{
-		path: "/author/:authorId/edit",
-		element: (
-			<Suspense fallback={<div>読み込み中...</div>}>
-				<AuthorEditPage />
-			</Suspense>
-		),
-		loader: authorEditLoader,
-		action: authorEditAction,
-		HydrateFallback: () => <div>読み込み中...</div>,
+		element: <Layout />,
+		children: [
+			{
+				path: "/",
+				element: <Navigate to="/video/search" replace />,
+			},
+			{
+				path: "/video/search",
+				element: (
+					<Suspense fallback={<div>読み込み中...</div>}>
+						<VideoSearchPage />
+					</Suspense>
+				),
+				loader: videoSearchLoader,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/video/register",
+				element: <VideoRegisterPage />,
+				action: videoRegisterAction,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/video/:videoId",
+				element: <VideoDetailPage />,
+				loader: videoDetailLoader,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/author/register",
+				element: <AuthorRegisterPage />,
+				action: authorRegisterAction,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/author/search",
+				element: (
+					<Suspense fallback={<div>読み込み中...</div>}>
+						<AuthorSearchPage />
+					</Suspense>
+				),
+				loader: authorSearchLoader,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/author/:authorId",
+				element: (
+					<Suspense fallback={<div>読み込み中...</div>}>
+						<AuthorDetailPage />
+					</Suspense>
+				),
+				loader: authorDetailLoader,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/author/:authorId/edit",
+				element: (
+					<Suspense fallback={<div>読み込み中...</div>}>
+						<AuthorEditPage />
+					</Suspense>
+				),
+				loader: authorEditLoader,
+				action: authorEditAction,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+		],
 	},
 ]);
