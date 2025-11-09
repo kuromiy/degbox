@@ -6,6 +6,8 @@ import {
 	PositiveButton,
 } from "../../../../features/shared/ui/button.component.js";
 import { ClientProvider } from "../../../../features/shared/ui/client.context.js";
+import { LayoutServer } from "../../../../features/shared/ui/layout.server.js";
+import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
 import {
 	TagInput,
 	useTagInput,
@@ -107,8 +109,12 @@ export default function VideoRegisterPage(
 	const createClient = useCallback(() => new FetchClient(), []);
 
 	return (
-		<ClientProvider createClient={createClient}>
-			<VideoRegisterForm fileErrors={fileErrors} />
-		</ClientProvider>
+		<ServerNavigationProvider>
+			<LayoutServer currentPath="/video/register">
+				<ClientProvider createClient={createClient}>
+					<VideoRegisterForm fileErrors={fileErrors} />
+				</ClientProvider>
+			</LayoutServer>
+		</ServerNavigationProvider>
 	);
 }

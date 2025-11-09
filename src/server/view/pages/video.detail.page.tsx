@@ -1,3 +1,4 @@
+import { LayoutServer } from "../../../../features/shared/ui/layout.server.js";
 import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
 import { VideoDetailTemplate } from "../../../../features/video/ui/templates/video.detail.template.js";
 import type { Video } from "../../../../features/video/video.model.js";
@@ -14,12 +15,14 @@ export default function VideoDetailPage({ video }: VideoDetailPageProps) {
 
 	return (
 		<ServerNavigationProvider>
-			<VideoDetailTemplate
-				video={video}
-				videoSrc={videoSrc}
-				backUrl="/video/search"
-				tagUrlPrefix="/video/search"
-			/>
+			<LayoutServer currentPath={`/video/detail/${video.id}`}>
+				<VideoDetailTemplate
+					video={video}
+					videoSrc={videoSrc}
+					backUrl="/video/search"
+					tagUrlPrefix="/video/search"
+				/>
+			</LayoutServer>
 		</ServerNavigationProvider>
 	);
 }

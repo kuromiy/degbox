@@ -1,4 +1,5 @@
 import { AuthorEditTemplate } from "../../../../features/author/ui/templates/author.edit.template.js";
+import { LayoutServer } from "../../../../features/shared/ui/layout.server.js";
 import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
 
 type AuthorEditPageProps = {
@@ -17,7 +18,9 @@ export default function AuthorEditPage({ author }: AuthorEditPageProps) {
 
 	return (
 		<ServerNavigationProvider>
-			<AuthorEditTemplate author={author} onCancel={handleCancel} />
+			<LayoutServer currentPath={`/author/${author.id}/edit`}>
+				<AuthorEditTemplate author={author} onCancel={handleCancel} />
+			</LayoutServer>
 		</ServerNavigationProvider>
 	);
 }

@@ -1,3 +1,4 @@
+import { LayoutServer } from "../../../../features/shared/ui/layout.server.js";
 import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
 import { VideoSearchTemplate } from "../../../../features/video/ui/templates/video.search.template.js";
 import type { Video } from "../../../../features/video/video.model.js";
@@ -19,7 +20,9 @@ export default function VideoSearchPage({
 }: VideoSearchPageProps) {
 	return (
 		<ServerNavigationProvider>
-			<VideoSearchTemplate data={searchResult} urlPrefix="/video/detail" />
+			<LayoutServer currentPath="/video/search">
+				<VideoSearchTemplate data={searchResult} urlPrefix="/video/detail" />
+			</LayoutServer>
 		</ServerNavigationProvider>
 	);
 }

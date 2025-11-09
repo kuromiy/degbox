@@ -1,4 +1,5 @@
 import { AuthorDetailTemplate } from "../../../../features/author/ui/templates/author.detail.template.js";
+import { LayoutServer } from "../../../../features/shared/ui/layout.server.js";
 import { ServerNavigationProvider } from "../../../../features/shared/ui/navigation.server.js";
 import type { AuthorDetailResponse } from "../../../../src/main/apis/authors/author.detail.api.js";
 
@@ -16,15 +17,17 @@ export default function AuthorDetailPage({
 
 	return (
 		<ServerNavigationProvider>
-			<AuthorDetailTemplate
-				author={{
-					id: authorDetail.id,
-					name: authorDetail.name,
-					urls: authorDetail.urls,
-				}}
-				videos={authorDetail.videos}
-				onDelete={handleDelete}
-			/>
+			<LayoutServer currentPath={`/author/detail/${authorDetail.id}`}>
+				<AuthorDetailTemplate
+					author={{
+						id: authorDetail.id,
+						name: authorDetail.name,
+						urls: authorDetail.urls,
+					}}
+					videos={authorDetail.videos}
+					onDelete={handleDelete}
+				/>
+			</LayoutServer>
 		</ServerNavigationProvider>
 	);
 }
