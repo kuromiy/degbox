@@ -40,7 +40,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function VideoRegisterPage() {
-	const { Link, Form } = useNavigation();
+	const { Form } = useNavigation();
 	const { tags, add, replace, change, autocompleteTags, suggestTags } =
 		useTagInput("");
 	const data = useActionData() as { message: string } | Error | undefined;
@@ -71,7 +71,6 @@ export default function VideoRegisterPage() {
 					{...(author?.id && { initialAuthorId: author.id })}
 				/>
 			)}
-			<Link to="/">検索</Link>
 			<div className="w-full max-w-md">
 				<Form className="flex flex-col gap-4" method="POST">
 					<h1>動画登録</h1>

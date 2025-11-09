@@ -1,4 +1,5 @@
 import { PositiveButton } from "../../../shared/ui/components/button.component.js";
+import { Input } from "../../../shared/ui/components/input.component.js";
 import { Pagination } from "../../../shared/ui/components/pagination.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
 import type { AuthorWithVideoCount } from "../../author.model.js";
@@ -24,11 +25,11 @@ export function AuthorSearchTemplate({
 			</div>
 
 			<Form className="mb-8 flex items-center gap-4">
-				<input
+				<Input
 					type="text"
 					name="name"
 					placeholder="作者名を入力..."
-					className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+					className="flex-1"
 				/>
 				<PositiveButton type="submit">検索</PositiveButton>
 				<select

@@ -3,6 +3,7 @@ import {
 	NeutralButton,
 	PositiveButton,
 } from "../../../shared/ui/components/button.component.js";
+import { Input } from "../../../shared/ui/components/input.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
 import { AuthorModal } from "../components/author.modal.component.js";
 import {
@@ -35,15 +36,10 @@ export function AuthorEditTemplate({
 			<div className="w-full max-w-md">
 				<Form className="flex flex-col gap-4" method="POST">
 					<h1>作者編集</h1>
-					<input type="hidden" name="id" value={author.id} />
+					<Input type="hidden" name="id" value={author.id} />
 					<div>
 						<label htmlFor="name">名前</label>
-						<input
-							name="name"
-							type="text"
-							defaultValue={author.name}
-							className="px-4 py-2 border rounded-lg"
-						/>
+						<Input name="name" type="text" defaultValue={author.name} />
 					</div>
 					<AuthorUrlsInput
 						urls={urls}

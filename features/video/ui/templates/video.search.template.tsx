@@ -1,4 +1,5 @@
 import { PositiveButton } from "../../../shared/ui/components/button.component.js";
+import { Input } from "../../../shared/ui/components/input.component.js";
 import { Pagination } from "../../../shared/ui/components/pagination.component.js";
 import { useNavigation } from "../../../shared/ui/navigation.context.js";
 import type { Video } from "../../video.model.js";
@@ -17,20 +18,17 @@ export function VideoSearchTemplate({
 	};
 	urlPrefix: string;
 }) {
-	const { Link, Form } = useNavigation();
+	const { Form } = useNavigation();
 
 	return (
 		<main className="container mx-auto pt-10 px-2 flex flex-col justify-center">
-			<Link to="/register">登録</Link>
-			<Link to="/author/register">作者登録</Link>
-			<Link to="/author/search">作者検索</Link>
 			<Form className="mb-8 flex items-center gap-4">
-				<input
+				<Input
 					type="text"
 					name="keyword"
 					placeholder="キーワードを入力..."
-					className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-				/>
+					className="flex-1"
+				></Input>
 				<PositiveButton type="submit">検索</PositiveButton>
 				<select
 					name="size"
