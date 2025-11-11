@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
+import { posix } from "node:path";
 import { asc, countDistinct, desc, eq, inArray, like } from "drizzle-orm";
 import type { Logger } from "winston";
+import { buildFileUrl } from "../../src/server/config/index.js";
 import {
 	AUTHORS,
 	CONTENTS,
@@ -87,21 +89,21 @@ export class IllustDataSource implements IllustRepository {
 		return illust;
 	}
 
-	async count(keyword: string): Promise<number> {
-		this.logger.info(`IllustDataSource#count call. keyword: ${keyword}`);
+	async count(tag?: string): Promise<number> {
+		this.logger.info(`IllustDataSource#count call. tag: ${tag ?? "(none)"}`);
 
-		const trimmedKeyword = keyword.trim();
+		const trimmedTag = tag?.trim();
 
 		const query =
-			trimmedKeyword !== ""
-				? // キーワードがある場合：タグでフィルタリング
+			trimmedTag && trimmedTag !== ""
+				? // タグがある場合：タグで前方一致フィルタリング
 					this.db
 						.select({ count: countDistinct(ILLUSTS.id) })
 						.from(ILLUSTS)
 						.innerJoin(ILLUSTS_TAGS, eq(ILLUSTS.id, ILLUSTS_TAGS.illustId))
 						.innerJoin(TAGS, eq(TAGS.id, ILLUSTS_TAGS.tagId))
-						.where(like(TAGS.name, `%${trimmedKeyword}%`))
-				: // キーワードが空の場合：すべてのイラストをカウント
+						.where(like(TAGS.name, `${trimmedTag}%`))
+				: // タグが空の場合：すべてのイラストをカウント
 					this.db
 						.select({ count: countDistinct(ILLUSTS.id) })
 						.from(ILLUSTS);
@@ -117,51 +119,56 @@ export class IllustDataSource implements IllustRepository {
 		return c;
 	}
 
-	async search(keyword: string, page: number, size: number): Promise<Illust[]> {
+	async search(
+		tag: string | undefined,
+		sortBy: string,
+		order: string,
+		page: number,
+		limit: number,
+	): Promise<Illust[]> {
 		this.logger.info(
-			`IllustDataSource#search. keyword: ${keyword}, page: ${page}, size: ${size}`,
+			`IllustDataSource#search. tag: ${tag ?? "(none)"}, sortBy: ${sortBy}, order: ${order}, page: ${page}, limit: ${limit}`,
 		);
 
 		// パラメータのバリデーション
-		if (page < 0 || size <= 0 || size > 100) {
+		if (page < 0 || limit <= 0 || limit > 100) {
 			throw new Error(
-				`Invalid pagination parameters: page=${page}, size=${size}`,
+				`Invalid pagination parameters: page=${page}, limit=${limit}`,
 			);
 		}
 
-		const trimmedKeyword = keyword.trim();
+		const trimmedTag = tag?.trim();
+		const orderBy = order === "asc" ? asc(ILLUSTS.id) : desc(ILLUSTS.id);
 		let illustIdsResult: { id: string }[];
 
-		if (trimmedKeyword !== "") {
-			// キーワードがある場合：タグでフィルタリング
+		if (trimmedTag && trimmedTag !== "") {
+			// タグがある場合：タグで前方一致フィルタリング
 			const illustIdQuery = this.db
 				.selectDistinct({ id: ILLUSTS.id })
 				.from(ILLUSTS)
 				.innerJoin(ILLUSTS_TAGS, eq(ILLUSTS.id, ILLUSTS_TAGS.illustId))
 				.innerJoin(TAGS, eq(TAGS.id, ILLUSTS_TAGS.tagId))
-				.where(like(TAGS.name, `%${trimmedKeyword}%`))
-				.orderBy(desc(ILLUSTS.id))
-				.limit(size)
-				.offset(page * size);
+				.where(like(TAGS.name, `${trimmedTag}%`))
+				.orderBy(orderBy)
+				.limit(limit)
+				.offset(page * limit);
 
 			illustIdsResult = await illustIdQuery.execute();
 			this.logger.info(`unique illusts length: ${illustIdsResult.length}`);
 
-			// キーワードでフィルタリングした結果、該当するイラストがない場合は早期リターン
+			// タグでフィルタリングした結果、該当するイラストがない場合は早期リターン
 			if (illustIdsResult.length === 0) {
-				this.logger.info(
-					"No illusts found for keyword, returning empty result",
-				);
+				this.logger.info("No illusts found for tag, returning empty result");
 				return [];
 			}
 		} else {
-			// キーワードが空の場合：すべてのイラストを取得
+			// タグが空の場合：すべてのイラストを取得
 			const illustIdQuery = this.db
 				.selectDistinct({ id: ILLUSTS.id })
 				.from(ILLUSTS)
-				.orderBy(desc(ILLUSTS.id))
-				.limit(size)
-				.offset(page * size);
+				.orderBy(orderBy)
+				.limit(limit)
+				.offset(page * limit);
 
 			illustIdsResult = await illustIdQuery.execute();
 			this.logger.info(`unique illusts length: ${illustIdsResult.length}`);
@@ -196,7 +203,10 @@ export class IllustDataSource implements IllustRepository {
 				const cs = contents
 					.filter((c) => c.illusts_contents.illustId === illustId)
 					.map((c) => ({
-						content: c.contents,
+						content: {
+							...c.contents,
+							path: buildFileUrl(posix.join(c.contents.path, c.contents.name)),
+						},
 						order: c.illusts_contents.order,
 					}));
 				const as = authors
@@ -270,7 +280,10 @@ export class IllustDataSource implements IllustRepository {
 			id: illustId,
 			tags: tags.map((t) => t.tags),
 			contents: contents.map((c) => ({
-				content: c.contents,
+				content: {
+					...c.contents,
+					path: buildFileUrl(posix.join(c.contents.path, c.contents.name)),
+				},
 				order: c.illusts_contents.order,
 			})),
 			authors: authors.map((a) => a.authors),
@@ -360,7 +373,10 @@ export class IllustDataSource implements IllustRepository {
 				const cs = contents
 					.filter((c) => c.illusts_contents.illustId === illustId)
 					.map((c) => ({
-						content: c.contents,
+						content: {
+							...c.contents,
+							path: buildFileUrl(posix.join(c.contents.path, c.contents.name)),
+						},
 						order: c.illusts_contents.order,
 					}));
 				const as = authors

@@ -9,6 +9,7 @@ export default {
     updateAuthor: (id: string, name: string, urls: string) => ipcRenderer.invoke("updateAuthor", { id, name, urls }),
     pickupImage: () => ipcRenderer.invoke("pickupImage", {  }),
     registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => ipcRenderer.invoke("registerIllust", { resourceIds, rawTags, authorIds }),
+    searchIllust: (tag: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => ipcRenderer.invoke("searchIllust", { tag, sortBy, order, page, limit }),
     autocompleteTags: (value: string, limit: number | undefined) => ipcRenderer.invoke("autocompleteTags", { value, limit }),
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => ipcRenderer.invoke("suggestRelatedTags", { tagNames, limit }),
     detailVideo: (videoId: string) => ipcRenderer.invoke("detailVideo", { videoId }),

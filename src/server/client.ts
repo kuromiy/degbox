@@ -119,6 +119,16 @@ export class FetchClient implements ServiceIF {
 		return failure(new Error("registerIllust is not allowed in FetchClient"));
 	}
 
+	async searchIllust(
+		_tag: string | undefined,
+		_sortBy: string | undefined,
+		_order: string | undefined,
+		_page: number | undefined,
+		_limit: number | undefined,
+	) {
+		return failure(new Error("searchIllust is not allowed in FetchClient"));
+	}
+
 	async detailVideo(_videoId: string) {
 		return failure(new Error("detailVideo is not allowed in FetchClient"));
 	}
