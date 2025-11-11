@@ -4,6 +4,8 @@ import type { getAuthorDetail } from "../../main/apis/authors/author.detail.api.
 import type { registerAuthor } from "../../main/apis/authors/author.register.api.js";
 import type { searchAuthor } from "../../main/apis/authors/author.search.api.js";
 import type { updateAuthor } from "../../main/apis/authors/author.update.api.js";
+import type { pickupImage } from "../../main/apis/illusts/illust.pickup.api.js";
+import type { registerIllust } from "../../main/apis/illusts/illust.register.api.js";
 import type { autocompleteTags } from "../../main/apis/tags/tag.autocomplete.api.js";
 import type { suggestRelatedTags } from "../../main/apis/tags/tag.suggest.api.js";
 import type { detailVideo } from "../../main/apis/videos/video.detail.api.js";
@@ -28,6 +30,8 @@ declare global {
             registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
             searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, Error>>;
             updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, Error>>;
+            pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, Error>>;
+            registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
             autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
             suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
             detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -45,6 +49,8 @@ export interface ServiceIF {
     registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
     searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, Error>>;
     updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, Error>>;
+    pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, Error>>;
+    registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
     autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
     detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -73,6 +79,14 @@ export class ApiService implements ServiceIF {
 
     async updateAuthor(id: string, name: string, urls: string) {
         return window.api.updateAuthor(id, name, urls);
+    }
+
+    async pickupImage() {
+        return window.api.pickupImage();
+    }
+
+    async registerIllust(resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) {
+        return window.api.registerIllust(resourceIds, rawTags, authorIds);
     }
 
     async autocompleteTags(value: string, limit: number | undefined) {

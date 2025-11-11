@@ -107,6 +107,18 @@ export class FetchClient implements ServiceIF {
 		return failure(new Error("registerVideo is not allowed in FetchClient"));
 	}
 
+	async pickupImage() {
+		return failure(new Error("pickupImage is not allowed in FetchClient"));
+	}
+
+	async registerIllust(
+		_resourceIds: unknown[],
+		_rawTags: string,
+		_authorIds: unknown[] | undefined,
+	) {
+		return failure(new Error("registerIllust is not allowed in FetchClient"));
+	}
+
 	async detailVideo(_videoId: string) {
 		return failure(new Error("detailVideo is not allowed in FetchClient"));
 	}

@@ -2,7 +2,10 @@ import { glob } from "node:fs";
 import { run } from "node:test";
 import { spec } from "node:test/reporters";
 
-const files = await getFiles();
+// コマンドライン引数から機能名を取得
+const featureName = process.argv[2];
+
+const files = await getFiles(featureName);
 
 run({
 	files,

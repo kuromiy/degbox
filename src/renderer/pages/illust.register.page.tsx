@@ -1,0 +1,150 @@
+import { isFailure } from "electron-flow/result";
+import { useState } from "react";
+import { type ActionFunctionArgs, useActionData } from "react-router-dom";
+import type { AuthorWithVideoCount } from "../../../features/author/author.model.js";
+import { AuthorSelectModal } from "../../../features/author/ui/components/author.select.modal.component.js";
+import { IllustContentInput } from "../../../features/illust/ui/components/illust.content.input.component.js";
+import {
+	NegativeButton,
+	NeutralButton,
+	PositiveButton,
+} from "../../../features/shared/ui/components/button.component.js";
+import { useNavigation } from "../../../features/shared/ui/navigation.context.js";
+import {
+	TagInput,
+	useTagInput,
+} from "../../../features/tag/ui/tag.input.component.js";
+import { ApiService } from "../autogenerate/register.js";
+
+const client = new ApiService();
+
+export async function action({ request }: ActionFunctionArgs) {
+	const formData = await request.formData();
+	const tags = formData.get("tags")?.toString() ?? "";
+	const resourceIds =
+		formData.get("resourceIds")?.toString().split(",").filter(Boolean) ?? [];
+	const authorIds = formData.getAll("authorIds").map(String);
+
+	console.log(
+		`url: ${request.url}, tags: ${tags}, resourceIds: ${resourceIds}, authorIds: ${authorIds}`,
+	);
+
+	if (resourceIds.length === 0) {
+		console.log("コンテンツファイルが選択されていません");
+		throw new Error("コンテンツファイルを1枚以上選択してください");
+	}
+
+	const response = await client.registerIllust(resourceIds, tags, authorIds);
+	if (isFailure(response)) {
+		console.log(`response error: ${response.value.message}`);
+		throw new Error(response.value.message);
+	}
+	return location.reload();
+}
+
+export default function IllustRegisterPage() {
+	const { Form } = useNavigation();
+	const { tags, add, replace, change, autocompleteTags, suggestTags } =
+		useTagInput("");
+	const data = useActionData() as { message: string } | Error | undefined;
+	const [isOpen, setIsOpen] = useState(false);
+	const [authors, setAuthors] = useState<AuthorWithVideoCount[]>([]);
+
+	function handleAddAuthor(author: AuthorWithVideoCount) {
+		if (!authors.find((a) => a.id === author.id)) {
+			setAuthors([...authors, author]);
+		}
+		setIsOpen(false);
+	}
+
+	function handleRemoveAuthor(authorId: string) {
+		setAuthors(authors.filter((a) => a.id !== authorId));
+	}
+
+	function handleReset() {
+		setAuthors([]);
+	}
+
+	return (
+		<main className="flex justify-center">
+			{data && (
+				<div className="mb-4">
+					{data instanceof Error ? (
+						<div className="text-red-500">エラー: {data.message}</div>
+					) : (
+						<div className="text-green-500">{data.message}</div>
+					)}
+				</div>
+			)}
+			{isOpen && (
+				<AuthorSelectModal
+					onClose={() => setIsOpen(false)}
+					onSelected={handleAddAuthor}
+				/>
+			)}
+			<div className="w-full max-w-2xl">
+				<Form className="flex flex-col gap-4" method="POST">
+					<h1>イラスト登録</h1>
+
+					<IllustContentInput />
+
+					<div>
+						<TagInput
+							name="tags"
+							value={tags}
+							onAdd={add}
+							onReplace={replace}
+							onChange={change}
+							autocompleteTags={autocompleteTags}
+							suggestTags={suggestTags}
+						/>
+					</div>
+
+					<div>
+						<div className="mb-2 font-medium text-sm">作者（オプション）</div>
+						<NeutralButton type="button" onClick={() => setIsOpen(true)}>
+							作者を追加
+						</NeutralButton>
+
+						{authors.length > 0 && (
+							<div className="mt-4 space-y-2">
+								{authors.map((author) => (
+									<div
+										key={author.id}
+										className="flex items-center justify-between rounded-lg border p-4"
+									>
+										<div>
+											<p className="font-medium">{author.name}</p>
+										</div>
+										<NegativeButton
+											type="button"
+											onClick={() => handleRemoveAuthor(author.id)}
+										>
+											削除
+										</NegativeButton>
+									</div>
+								))}
+							</div>
+						)}
+
+						{authors.map((author) => (
+							<input
+								key={author.id}
+								type="hidden"
+								name="authorIds"
+								value={author.id}
+							/>
+						))}
+					</div>
+
+					<div className="flex gap-4">
+						<NeutralButton type="reset" onClick={handleReset}>
+							リセット
+						</NeutralButton>
+						<PositiveButton type="submit">登録</PositiveButton>
+					</div>
+				</Form>
+			</div>
+		</main>
+	);
+}

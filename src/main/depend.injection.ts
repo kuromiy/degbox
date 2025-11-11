@@ -6,6 +6,9 @@ import { ContentDataSource } from "../../features/content/content.datasource.js"
 import type { ContentRepository } from "../../features/content/content.repository.js";
 import { ContentServiceImpl } from "../../features/content/content.service.impl.js";
 import type { ContentService } from "../../features/content/content.service.js";
+import { IllustAction } from "../../features/illust/illust.action.js";
+import { IllustDataSource } from "../../features/illust/illust.datasource.js";
+import type { IllustRepository } from "../../features/illust/illust.repository.js";
 import {
 	type Container,
 	InjectionToken,
@@ -53,6 +56,7 @@ export const TOKENS = {
 	),
 	AUTHOR_REPOSITORY: new InjectionToken<AuthorRepository>("AuthorRepository"),
 	VIDEO_REPOSITORY: new InjectionToken<VideoRepository>("VideoRepository"),
+	ILLUST_REPOSITORY: new InjectionToken<IllustRepository>("IllustRepository"),
 
 	// service
 	CONTENT_SERVICE: new InjectionToken<ContentService>("ContentService"),
@@ -65,6 +69,7 @@ export const TOKENS = {
 	CONTENT_ACTION: new InjectionToken<ContentAction>("ContentAction"),
 	TAG_ACTION: new InjectionToken<TagAction>("TagAction"),
 	VIDEO_ACTION: new InjectionToken<VideoAction>("VideoAction"),
+	ILLUST_ACTION: new InjectionToken<IllustAction>("IllustAction"),
 };
 
 type DependencyEntry = {
@@ -129,6 +134,11 @@ export const depend: DependencyEntry[] = [
 		provider: (c: Container) =>
 			new VideoDataSource(c.get(TOKENS.LOGGER), c.get(TOKENS.DATABASE)),
 	},
+	{
+		token: TOKENS.ILLUST_REPOSITORY,
+		provider: (c: Container) =>
+			new IllustDataSource(c.get(TOKENS.LOGGER), c.get(TOKENS.DATABASE)),
+	},
 
 	// service
 	{
@@ -174,5 +184,10 @@ export const depend: DependencyEntry[] = [
 				c.get(TOKENS.VIDEO_REPOSITORY),
 				c.get(TOKENS.VIDEO_SERVICE),
 			),
+	},
+	{
+		token: TOKENS.ILLUST_ACTION,
+		provider: (c: Container) =>
+			new IllustAction(c.get(TOKENS.ILLUST_REPOSITORY)),
 	},
 ];
