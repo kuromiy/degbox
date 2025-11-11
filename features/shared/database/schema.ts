@@ -91,3 +91,51 @@ export const TAG_COOCCURRENCES = sqliteTable(
 	},
 	(table) => [primaryKey({ columns: [table.tag1Id, table.tag2Id] })],
 );
+
+// イラスト
+export const ILLUSTS = sqliteTable("illusts", {
+	id: text("id").primaryKey(),
+});
+
+// イラストとコンテンツの中間テーブル（並び順付き）
+export const ILLUSTS_CONTENTS = sqliteTable(
+	"illusts_contents",
+	{
+		illustId: text("illust_id")
+			.notNull()
+			.references(() => ILLUSTS.id),
+		contentId: text("content_id")
+			.notNull()
+			.references(() => CONTENTS.id),
+		order: integer("order").notNull(),
+	},
+	(table) => [primaryKey({ columns: [table.illustId, table.contentId] })],
+);
+
+// イラストとタグの中間テーブル
+export const ILLUSTS_TAGS = sqliteTable(
+	"illusts_tags",
+	{
+		illustId: text("illust_id")
+			.notNull()
+			.references(() => ILLUSTS.id),
+		tagId: text("tag_id")
+			.notNull()
+			.references(() => TAGS.id),
+	},
+	(table) => [primaryKey({ columns: [table.illustId, table.tagId] })],
+);
+
+// イラストと作者の中間テーブル
+export const ILLUSTS_AUTHORS = sqliteTable(
+	"illusts_authors",
+	{
+		illustId: text("illust_id")
+			.notNull()
+			.references(() => ILLUSTS.id),
+		authorId: text("author_id")
+			.notNull()
+			.references(() => AUTHORS.id),
+	},
+	(table) => [primaryKey({ columns: [table.illustId, table.authorId] })],
+);

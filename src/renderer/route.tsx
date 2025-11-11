@@ -14,6 +14,9 @@ import AuthorRegisterPage, {
 import AuthorSearchPage, {
 	loader as authorSearchLoader,
 } from "./pages/author.search.page.js";
+import IllustRegisterPage, {
+	action as illustRegisterAction,
+} from "./pages/illust.register.page.js";
 import VideoDetailPage, {
 	loader as videoDetailLoader,
 } from "./pages/video.detail.page.js";
@@ -52,6 +55,12 @@ export const route = createHashRouter([
 				path: "/video/:videoId",
 				element: <VideoDetailPage />,
 				loader: videoDetailLoader,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/illust/register",
+				element: <IllustRegisterPage />,
+				action: illustRegisterAction,
 				HydrateFallback: () => <div>読み込み中...</div>,
 			},
 			{

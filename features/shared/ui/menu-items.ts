@@ -21,6 +21,10 @@ export const menuItems: MenuCategory[] = [
 		],
 	},
 	{
+		category: "イラスト",
+		items: [{ to: "/illust/register", label: "イラスト登録" }],
+	},
+	{
 		category: "作者",
 		items: [
 			{ to: "/author/search", label: "作者検索" },

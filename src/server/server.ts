@@ -14,6 +14,7 @@ import authorEditRouter from "./router/author/edit.js";
 import authorRegisterRouter from "./router/author/register.js";
 import authorSearchRouter from "./router/author/search.js";
 import fileRouter from "./router/file/get.js";
+import illustRegisterRouter from "./router/illust/register.js";
 import videoDetailRouter from "./router/video/detail.js";
 import videoRouter from "./router/video/register.js";
 import videoSearchRouter from "./router/video/search.js";
@@ -44,6 +45,7 @@ export function createServer(container: Container): Hono<Env> {
 	app.route("/video", videoRouter);
 	app.route("/video", videoSearchRouter);
 	app.route("/video", videoDetailRouter);
+	app.route("/illust", illustRegisterRouter);
 	app.route("/author", authorRegisterRouter);
 	app.route("/author", authorSearchRouter);
 	app.route("/author", authorEditRouter);
