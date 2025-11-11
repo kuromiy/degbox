@@ -10,19 +10,24 @@ import IllustRegisterPage from "../../view/pages/illust.register.page.js";
 
 export const registerIllustSchema = z.object({
 	files: z
-		.array(
+		.union([z.instanceof(File), z.array(z.instanceof(File))])
+		.transform((val) => (Array.isArray(val) ? val : [val]))
+		.pipe(
 			z
-				.instanceof(File)
-				.refine(
-					(file) => file.type.startsWith("image/"),
-					"画像ファイルではありません",
+				.array(
+					z
+						.instanceof(File)
+						.refine(
+							(file) => file.type.startsWith("image/"),
+							"画像ファイルではありません",
+						)
+						.refine(
+							(file) => file.size <= 50 * 1024 * 1024,
+							"ファイルサイズが大きすぎます（50MBまで）",
+						),
 				)
-				.refine(
-					(file) => file.size <= 50 * 1024 * 1024,
-					"ファイルサイズが大きすぎます（50MBまで）",
-				),
-		)
-		.min(1, "最低1枚の画像が必要です"),
+				.min(1, "最低1枚の画像が必要です"),
+		),
 	tags: z.string(),
 	authorIds: z.array(z.string()).optional(),
 });
