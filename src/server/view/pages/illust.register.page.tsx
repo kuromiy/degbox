@@ -139,7 +139,10 @@ export default function IllustRegisterPage(
 	_formData?: Record<string, unknown>,
 	errors?: Record<string, string[]>,
 ) {
-	const fileErrors = errors?.files;
+	// files, files.0, files.1 などのすべてのファイル関連エラーを集約
+	const fileErrors = Object.entries(errors || {})
+		.filter(([key]) => key.startsWith("files"))
+		.flatMap(([, messages]) => messages);
 
 	const createClient = useCallback(() => new FetchClient(), []);
 

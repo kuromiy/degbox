@@ -229,19 +229,13 @@ describe("イラスト登録API", () => {
 			event: mockEvent,
 		};
 
-		// 実行 - エラーが発生するはず
-		try {
-			await registerIllust(context, request);
-			await testJobQueue.waitForCompletion();
-
-			// エラーが発生しない場合、onErrorが呼ばれることを確認
-			// （バリデーションがJobQueue内で行われる場合）
-			if (testJobQueue.errorCallbacks.length > 0) {
-				assert.ok(true, "Error callback was called as expected");
-			}
-		} catch (error) {
-			// バリデーションエラーが即座に発生する場合
-			assert.ok(error, "Should throw validation error");
-		}
+		// 実行 - バリデーションエラーが発生することを検証
+		await assert.rejects(
+			async () => {
+				await registerIllust(context, request);
+			},
+			Error,
+			"resourceIds が空の場合はバリデーションエラーが発生すべき",
+		);
 	});
 });

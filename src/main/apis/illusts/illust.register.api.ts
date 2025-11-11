@@ -5,7 +5,7 @@ import type { Context } from "../../context.js";
 import { TOKENS } from "../../depend.injection.js";
 
 export const registerIllustSchema = z.object({
-	resourceIds: z.array(z.string()),
+	resourceIds: z.array(z.string()).min(1),
 	rawTags: z.string(),
 	authorIds: z.array(z.string()).optional(),
 });
