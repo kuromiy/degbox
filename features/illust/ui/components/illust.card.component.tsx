@@ -29,7 +29,10 @@ export default function IllustCard({ illust, to }: IllustCardProps) {
 
 	return (
 		<Link to={to} className="block">
-			<div className="overflow-hidden rounded-lg border border-gray-200 bg-white transition-transform duration-200 hover:scale-105 hover:shadow-lg">
+			<div
+				data-testid="illust-card"
+				className="overflow-hidden rounded-lg border border-gray-200 bg-white transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+			>
 				{/* サムネイル */}
 				<div className="relative aspect-square w-full overflow-hidden bg-gray-300">
 					<img

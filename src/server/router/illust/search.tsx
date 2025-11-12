@@ -62,8 +62,8 @@ app.get("/search", async (c) => {
 					hasNext: false,
 					hasPrev: false,
 					...(tag && { tag }),
-					...(sortBy && { sortBy }),
-					...(order && { order }),
+					...(sortBy !== "id" && { sortBy }),
+					...(order !== "desc" && { order }),
 				}}
 			/>,
 			{ title: "イラスト検索" },
@@ -81,8 +81,8 @@ app.get("/search", async (c) => {
 				hasNext: hasNext,
 				hasPrev: hasPrev,
 				...(tag && { tag }),
-				...(sortBy && { sortBy }),
-				...(order && { order }),
+				...(sortBy !== "id" && { sortBy }),
+				...(order !== "desc" && { order }),
 			}}
 		/>,
 		{ title: "イラスト検索" },
