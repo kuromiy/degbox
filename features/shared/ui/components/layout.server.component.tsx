@@ -1,4 +1,6 @@
 import type React from "react";
+import { useState } from "react";
+import { Header } from "./header.component.js";
 import { SideMenu } from "./side.menu.component.js";
 
 /**
@@ -12,12 +14,20 @@ export function LayoutServer({
 	children: React.ReactNode;
 	currentPath: string;
 }) {
+	const [isOpen, setIsOpen] = useState(true);
+
 	return (
-		<div className="flex h-screen overflow-hidden">
-			<SideMenu currentPath={currentPath} />
-			<main className="flex-1 overflow-y-auto bg-gray-50">
-				<div className="container mx-auto p-6">{children}</div>
-			</main>
+		<div className="flex h-screen flex-col overflow-hidden">
+			<Header onMenuToggle={() => setIsOpen(!isOpen)} />
+			<div className="flex flex-1 overflow-hidden">
+				{/* サイドメニュー */}
+				<SideMenu currentPath={currentPath} isOpen={isOpen} />
+
+				{/* メインコンテンツ */}
+				<main className="flex-1 overflow-y-auto bg-gray-50">
+					<div className="container mx-auto p-6">{children}</div>
+				</main>
+			</div>
 		</div>
 	);
 }
