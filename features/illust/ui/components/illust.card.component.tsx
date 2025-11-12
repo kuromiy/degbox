@@ -32,6 +32,32 @@ export default function IllustCard({ illust, to }: IllustCardProps) {
 	const hiddenAuthorsCount =
 		illust.authors.length > 2 ? illust.authors.length - 2 : 0;
 
+	// alt属性の生成（スクリーンリーダー用に説明的な内容）
+	const generateAltText = (): string => {
+		const parts: string[] = ["イラスト"];
+
+		// タグ情報を追加（最大2個）
+		if (displayTags.length > 0) {
+			const tagNames = displayTags.map((tag) => tag.name).join(", ");
+			parts.push(`タグ: ${tagNames}`);
+		}
+
+		// 作者情報を追加（最大2名）
+		if (displayAuthors.length > 0) {
+			const authorNames = displayAuthors
+				.map((author) => author.name)
+				.join(", ");
+			parts.push(`作者: ${authorNames}`);
+		}
+
+		// どちらもない場合はIDをフォールバック
+		if (displayTags.length === 0 && displayAuthors.length === 0) {
+			parts.push(illust.id);
+		}
+
+		return parts.join(" — ");
+	};
+
 	return (
 		<Link to={to} className="block">
 			<div
@@ -43,7 +69,7 @@ export default function IllustCard({ illust, to }: IllustCardProps) {
 					{thumbnail ? (
 						<img
 							src={thumbnail.content.path}
-							alt={`イラスト ${illust.id}`}
+							alt={generateAltText()}
 							className="h-full w-full object-cover"
 						/>
 					) : (
