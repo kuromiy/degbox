@@ -90,6 +90,7 @@ export function Pagination({
 			{/* 前のページへ */}
 			<Link
 				to={buildUrl(currentPage - 1)}
+				data-testid="prev-page-link"
 				className={`rounded-lg px-3 py-2 transition-colors ${
 					isFirstPage
 						? "pointer-events-none cursor-not-allowed text-gray-300"
@@ -137,6 +138,7 @@ export function Pagination({
 			{/* 次のページへ */}
 			<Link
 				to={buildUrl(currentPage + 1)}
+				data-testid="next-page-link"
 				className={`rounded-lg px-3 py-2 transition-colors ${
 					isLastPage
 						? "pointer-events-none cursor-not-allowed text-gray-300"

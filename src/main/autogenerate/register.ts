@@ -10,6 +10,7 @@ import { searchAuthor } from "../apis/authors/author.search.api.js";
 import { updateAuthor } from "../apis/authors/author.update.api.js";
 import { pickupImage } from "../apis/illusts/illust.pickup.api.js";
 import { registerIllust } from "../apis/illusts/illust.register.api.js";
+import { searchIllust } from "../apis/illusts/illust.search.api.js";
 import { autocompleteTags } from "../apis/tags/tag.autocomplete.api.js";
 import { suggestRelatedTags } from "../apis/tags/tag.suggest.api.js";
 import { detailVideo } from "../apis/videos/video.detail.api.js";
@@ -82,6 +83,16 @@ export const autoGenerateHandlers = {
         return async (event: IpcMainInvokeEvent, args: any) => {
             try {
                 const result = await registerIllust({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
+    "searchIllust": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await searchIllust({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
                 return failure(e);
