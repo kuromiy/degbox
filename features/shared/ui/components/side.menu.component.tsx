@@ -1,7 +1,13 @@
 import { menuItems } from "../menu-items.js";
 import { SideMenuItem } from "./side.menu.item.component.js";
 
-export function SideMenu({ currentPath }: { currentPath: string }) {
+export function SideMenu({
+	currentPath,
+	isOpen,
+}: {
+	currentPath: string;
+	isOpen: boolean;
+}) {
 	// クエリパラメータを除去したパス名を取得
 	const pathname = currentPath.split("?")[0] || "";
 
@@ -14,10 +20,17 @@ export function SideMenu({ currentPath }: { currentPath: string }) {
 		return false;
 	};
 
+	// レスポンシブ表示制御:
+	// isOpen=false: "hidden md:block"
+	//   - スマホ(<768px): hidden のみ適用 → 非表示
+	//   - PC(≧768px): md:block が hidden を上書き → 表示
+	// isOpen=true: "block"
+	//   - 全画面: 表示
+	const clz = `h-screen w-60 flex-shrink-0 overflow-y-auto border-gray-200 border-r bg-white ${!isOpen ? "hidden md:block" : "block"}`;
+
 	return (
-		<aside className="h-screen w-60 flex-shrink-0 overflow-y-auto border-gray-200 border-r bg-white">
+		<aside className={clz}>
 			<div className="p-4">
-				<h1 className="mb-6 font-bold text-main-500 text-xl">Degbox</h1>
 				<nav className="space-y-6">
 					{menuItems.map((category) => (
 						<div key={category.category}>

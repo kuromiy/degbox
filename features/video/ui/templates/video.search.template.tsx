@@ -48,7 +48,7 @@ export function VideoSearchTemplate({
 					size: data.size,
 				}}
 			/>
-			<div className="grid grid-cols-3 gap-6">
+			<div className="grid gap-6 md:grid-cols-3">
 				{data.result.map((video) => {
 					return (
 						<div key={video.id}>
