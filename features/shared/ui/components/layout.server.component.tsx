@@ -14,7 +14,8 @@ export function LayoutServer({
 	children: React.ReactNode;
 	currentPath: string;
 }) {
-	const [isOpen, setIsOpen] = useState(true);
+	// スマホ: 初期非表示、PC: Tailwindのmd:blockにより初期表示
+	const [isOpen, setIsOpen] = useState(false);
 
 	return (
 		<div className="flex h-screen flex-col overflow-hidden">

@@ -20,7 +20,13 @@ export function SideMenu({
 		return false;
 	};
 
-	const clz = `h-screen w-60 flex-shrink-0 overflow-y-auto border-gray-200 border-r bg-white ${isOpen && "hidden"}`;
+	// レスポンシブ表示制御:
+	// isOpen=false: "hidden md:block"
+	//   - スマホ(<768px): hidden のみ適用 → 非表示
+	//   - PC(≧768px): md:block が hidden を上書き → 表示
+	// isOpen=true: "block"
+	//   - 全画面: 表示
+	const clz = `h-screen w-60 flex-shrink-0 overflow-y-auto border-gray-200 border-r bg-white ${!isOpen ? "hidden md:block" : "block"}`;
 
 	return (
 		<aside className={clz}>
