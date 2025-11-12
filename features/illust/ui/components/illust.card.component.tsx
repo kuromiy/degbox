@@ -10,13 +10,18 @@ export default function IllustCard({ illust, to }: IllustCardProps) {
 	const { Link } = useNavigation();
 
 	// order最小のコンテンツをサムネイルとして表示
-	const thumbnail = illust.contents.reduce((min, current) =>
-		current.order < min.order ? current : min,
-	);
+	// 空配列の場合は undefined を使用
+	const thumbnail =
+		illust.contents.length > 0
+			? illust.contents.reduce((min, current) =>
+					current.order < min.order ? current : min,
+				)
+			: undefined;
 
 	// 複数画像インジケーター
 	const hasMultipleImages = illust.contents.length > 1;
-	const remainingCount = illust.contents.length - 1;
+	const remainingCount =
+		illust.contents.length > 0 ? illust.contents.length - 1 : 0;
 
 	// タグ表示（最大3つ）
 	const displayTags = illust.tags.slice(0, 3);
@@ -35,11 +40,17 @@ export default function IllustCard({ illust, to }: IllustCardProps) {
 			>
 				{/* サムネイル */}
 				<div className="relative aspect-square w-full overflow-hidden bg-gray-300">
-					<img
-						src={thumbnail.content.path}
-						alt={`イラスト ${illust.id}`}
-						className="h-full w-full object-cover"
-					/>
+					{thumbnail ? (
+						<img
+							src={thumbnail.content.path}
+							alt={`イラスト ${illust.id}`}
+							className="h-full w-full object-cover"
+						/>
+					) : (
+						<div className="flex h-full w-full items-center justify-center text-gray-400">
+							画像なし
+						</div>
+					)}
 					{/* 複数画像インジケーター */}
 					{hasMultipleImages && (
 						<div className="absolute right-2 bottom-2 rounded bg-black/70 px-2 py-1 text-sm text-white">
