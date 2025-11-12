@@ -4,7 +4,7 @@ import { TOKENS } from "../../depend.injection.js";
 
 export const searchIllustSchema = z.object({
 	tag: z.string().optional(),
-	sortBy: z.string().optional().default("id"),
+	sortBy: z.string().optional().default("createdAt"),
 	order: z.string().optional().default("desc"),
 	page: z.number().int().min(1).optional().default(1),
 	limit: z.number().int().min(1).max(100).optional().default(20),

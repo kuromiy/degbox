@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { posix } from "node:path";
-import { countDistinct, desc, eq, inArray, like } from "drizzle-orm";
+import { asc, countDistinct, desc, eq, inArray, like } from "drizzle-orm";
 import type { Logger } from "winston";
 import { buildFileUrl } from "../../src/server/config/index.js";
 import {
@@ -117,9 +117,15 @@ export class VideoDataSource implements VideoRepository {
 		return c;
 	}
 
-	async search(keyword: string, page: number, size: number): Promise<Video[]> {
+	async search(
+		keyword: string,
+		sortBy: string,
+		order: string,
+		page: number,
+		size: number,
+	): Promise<Video[]> {
 		this.logger.info(
-			`VideoDataSource#search. keyword: ${keyword}, page: ${page}, size: ${size}`,
+			`VideoDataSource#search. keyword: ${keyword}, sortBy: ${sortBy}, order: ${order}, page: ${page}, size: ${size}`,
 		);
 
 		// パラメータのバリデーション
@@ -130,6 +136,18 @@ export class VideoDataSource implements VideoRepository {
 		}
 
 		const trimmedKeyword = keyword.trim();
+
+		// sortByパラメータのバリデーションとカラム選択
+		const sortColumn =
+			sortBy === "updatedAt"
+				? VIDEOS.updatedAt
+				: sortBy === "id"
+					? VIDEOS.id
+					: VIDEOS.createdAt; // デフォルトはcreatedAt
+
+		// orderパラメータのバリデーション
+		const orderBy = order === "asc" ? asc(sortColumn) : desc(sortColumn);
+
 		let videoIdsResult: { id: string }[];
 
 		if (trimmedKeyword !== "") {
@@ -140,7 +158,7 @@ export class VideoDataSource implements VideoRepository {
 				.innerJoin(VIDEOS_TAGS, eq(VIDEOS.id, VIDEOS_TAGS.videoId))
 				.innerJoin(TAGS, eq(TAGS.id, VIDEOS_TAGS.tagId))
 				.where(like(TAGS.name, `%${trimmedKeyword}%`))
-				.orderBy(desc(VIDEOS.id))
+				.orderBy(orderBy)
 				.limit(size)
 				.offset(page * size);
 
@@ -157,7 +175,7 @@ export class VideoDataSource implements VideoRepository {
 			const videoIdQuery = this.db
 				.selectDistinct({ id: VIDEOS.id })
 				.from(VIDEOS)
-				.orderBy(desc(VIDEOS.id))
+				.orderBy(orderBy)
 				.limit(size)
 				.offset(page * size);
 
@@ -195,7 +213,11 @@ export class VideoDataSource implements VideoRepository {
 					.map((c) => c.contents);
 				const as = authors
 					.filter((a) => a.videos_authors.videoId === videoId)
-					.map((a) => a.authors);
+					.map((a) => ({
+						id: a.authors.id,
+						name: a.authors.name,
+						urls: a.authors.urls,
+					}));
 
 				const firstContent = cs[0];
 				if (!firstContent) {
@@ -277,7 +299,11 @@ export class VideoDataSource implements VideoRepository {
 			),
 			tags: tags.map((t) => t.tags),
 			contents: contents.map((c) => c.contents),
-			authors: authors.map((a) => a.authors),
+			authors: authors.map((a) => ({
+				id: a.authors.id,
+				name: a.authors.name,
+				urls: a.authors.urls,
+			})),
 		};
 	}
 
@@ -365,7 +391,11 @@ export class VideoDataSource implements VideoRepository {
 					.map((c) => c.contents);
 				const as = authors
 					.filter((a) => a.videos_authors.videoId === videoId)
-					.map((a) => a.authors);
+					.map((a) => ({
+						id: a.authors.id,
+						name: a.authors.name,
+						urls: a.authors.urls,
+					}));
 
 				const firstContent = cs[0];
 				if (!firstContent) {

@@ -135,6 +135,8 @@ export class FetchClient implements ServiceIF {
 
 	async searchVideo(
 		_keyword: string | undefined,
+		_sortBy: string | undefined,
+		_order: string | undefined,
 		_page: number | undefined,
 		_size: number | undefined,
 	) {

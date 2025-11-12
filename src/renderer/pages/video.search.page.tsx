@@ -9,6 +9,8 @@ const client = new ApiService();
 export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
 	const keyword = url.searchParams.get("keyword") ?? undefined;
+	const sortBy = url.searchParams.get("sortBy") ?? undefined;
+	const order = url.searchParams.get("order") ?? undefined;
 
 	// 文字列を数値に変換（nullまたは無効な値の場合はundefined）
 	const pageStr = url.searchParams.get("page");
@@ -19,7 +21,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const sizeNum = sizeStr ? Number(sizeStr) : Number.NaN;
 	const size = Number.isFinite(sizeNum) ? sizeNum : undefined;
 
-	const response = await client.searchVideo(keyword, page, size);
+	const response = await client.searchVideo(keyword, sortBy, order, page, size);
 	if (isFailure(response)) {
 		throw response.value;
 	}

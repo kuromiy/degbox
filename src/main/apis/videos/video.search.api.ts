@@ -4,6 +4,8 @@ import { TOKENS } from "../../depend.injection.js";
 
 export const searchVideoSchema = z.object({
 	keyword: z.string().optional().default(""),
+	sortBy: z.string().optional().default("createdAt"),
+	order: z.string().optional().default("desc"),
 	page: z.number().int().min(1).optional().default(1),
 	size: z.number().int().min(1).max(100).optional().default(20),
 });
@@ -21,7 +23,7 @@ export async function searchVideo(ctx: Context, request: SearchVideoRequest) {
 		logger.warn("Invalid request", valid.error);
 		throw new Error("Invalid request");
 	}
-	const { keyword, page: rowPage, size } = valid.data;
+	const { keyword, sortBy, order, page: rowPage, size } = valid.data;
 	const page = rowPage - 1; // 表示は1ベース、処理は0ベースなので-1する
 	const count = await repository.count(keyword);
 	if (count === 0) {
@@ -32,7 +34,7 @@ export async function searchVideo(ctx: Context, request: SearchVideoRequest) {
 			size: size,
 		};
 	}
-	const result = await repository.search(keyword, page, size);
+	const result = await repository.search(keyword, sortBy, order, page, size);
 	return {
 		count: count,
 		result: result,
