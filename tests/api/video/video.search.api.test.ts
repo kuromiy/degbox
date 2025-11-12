@@ -81,6 +81,8 @@ describe("ビデオ検索API", () => {
 		};
 		const request = {
 			keyword: "",
+			sortBy: "createdAt",
+			order: "desc",
 			page: 1,
 			size: 20,
 		};

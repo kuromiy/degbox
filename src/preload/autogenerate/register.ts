@@ -15,5 +15,5 @@ export default {
     detailVideo: (videoId: string) => ipcRenderer.invoke("detailVideo", { videoId }),
     pickupVideo: () => ipcRenderer.invoke("pickupVideo", {  }),
     registerVideo: (resourceId: string, rawTags: string, authorId: string | undefined) => ipcRenderer.invoke("registerVideo", { resourceId, rawTags, authorId }),
-    searchVideo: (keyword: string | undefined, page: number | undefined, size: number | undefined) => ipcRenderer.invoke("searchVideo", { keyword, page, size })
+    searchVideo: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) => ipcRenderer.invoke("searchVideo", { keyword, sortBy, order, page, size })
 };

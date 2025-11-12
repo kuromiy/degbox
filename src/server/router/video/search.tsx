@@ -5,6 +5,8 @@ import VideoSearchPage from "../../view/pages/video.search.page.js";
 
 export const searchVideoSchema = z.object({
 	keyword: z.string().optional().default(""),
+	sortBy: z.string().optional().default("createdAt"),
+	order: z.string().optional().default("desc"),
 	page: z.coerce.number().int().min(1).optional().default(1),
 	size: z.coerce.number().int().min(1).max(100).optional().default(20),
 });
@@ -39,10 +41,10 @@ app.get("/search", async (c) => {
 		);
 	}
 
-	const { keyword, page: rowPage, size } = parsedQuery.data;
+	const { keyword, sortBy, order, page: rowPage, size } = parsedQuery.data;
 	const page = rowPage - 1; // 表示は1ベース、処理は0ベースなので-1する
 
-	logger.info("search video", { keyword, page: rowPage, size });
+	logger.info("search video", { keyword, sortBy, order, page: rowPage, size });
 
 	const count = await repository.count(keyword);
 	if (count === 0) {
@@ -60,7 +62,7 @@ app.get("/search", async (c) => {
 		);
 	}
 
-	const result = await repository.search(keyword, page, size);
+	const result = await repository.search(keyword, sortBy, order, page, size);
 	return c.render(
 		<VideoSearchPage
 			searchResult={{

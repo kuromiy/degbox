@@ -104,9 +104,13 @@ describe("ビデオ検索画面", () => {
 			hash: "content002",
 		});
 
-		// ビデオ
-		await database.insert(VIDEOS).values({ id: "1" });
-		await database.insert(VIDEOS).values({ id: "2" });
+		// ビデオ（createdAtを明示的に指定して、id="2"が新しいことを保証）
+		await database
+			.insert(VIDEOS)
+			.values({ id: "1", createdAt: "2024-01-01 00:00:00" });
+		await database
+			.insert(VIDEOS)
+			.values({ id: "2", createdAt: "2024-01-02 00:00:00" });
 
 		// ビデオタグ
 		await database.insert(VIDEOS_TAGS).values({ videoId: "1", tagId: "1" });

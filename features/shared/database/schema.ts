@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
 	integer,
 	primaryKey,
@@ -12,6 +13,8 @@ import {
 // 動画
 export const VIDEOS = sqliteTable("videos", {
 	id: text("id").primaryKey(),
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 // タグ
@@ -27,6 +30,8 @@ export const AUTHORS = sqliteTable("authors", {
 	urls: text("urls", { mode: "json" })
 		.$type<Record<string, string>>()
 		.notNull(),
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 // コンテンツ
@@ -95,6 +100,8 @@ export const TAG_COOCCURRENCES = sqliteTable(
 // イラスト
 export const ILLUSTS = sqliteTable("illusts", {
 	id: text("id").primaryKey(),
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 // イラストとコンテンツの中間テーブル（並び順付き）

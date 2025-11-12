@@ -138,7 +138,18 @@ export class IllustDataSource implements IllustRepository {
 		}
 
 		const trimmedTag = tag?.trim();
-		const orderBy = order === "asc" ? asc(ILLUSTS.id) : desc(ILLUSTS.id);
+
+		// sortByパラメータのバリデーションとカラム選択
+		const sortColumn =
+			sortBy === "updatedAt"
+				? ILLUSTS.updatedAt
+				: sortBy === "id"
+					? ILLUSTS.id
+					: ILLUSTS.createdAt; // デフォルトはcreatedAt
+
+		// orderパラメータのバリデーション
+		const orderBy = order === "asc" ? asc(sortColumn) : desc(sortColumn);
+
 		let illustIdsResult: { id: string }[];
 
 		if (trimmedTag && trimmedTag !== "") {
@@ -211,7 +222,11 @@ export class IllustDataSource implements IllustRepository {
 					}));
 				const as = authors
 					.filter((a) => a.illusts_authors.illustId === illustId)
-					.map((a) => a.authors);
+					.map((a) => ({
+						id: a.authors.id,
+						name: a.authors.name,
+						urls: a.authors.urls,
+					}));
 
 				if (cs.length === 0) {
 					this.logger.warn(
@@ -286,7 +301,11 @@ export class IllustDataSource implements IllustRepository {
 				},
 				order: c.illusts_contents.order,
 			})),
-			authors: authors.map((a) => a.authors),
+			authors: authors.map((a) => ({
+				id: a.authors.id,
+				name: a.authors.name,
+				urls: a.authors.urls,
+			})),
 		};
 	}
 
@@ -381,7 +400,11 @@ export class IllustDataSource implements IllustRepository {
 					}));
 				const as = authors
 					.filter((a) => a.illusts_authors.illustId === illustId)
-					.map((a) => a.authors);
+					.map((a) => ({
+						id: a.authors.id,
+						name: a.authors.name,
+						urls: a.authors.urls,
+					}));
 
 				if (cs.length === 0) {
 					this.logger.warn(
