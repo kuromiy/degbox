@@ -85,7 +85,7 @@ describe("ビデオ登録画面", () => {
 			type: "video/mp4",
 		});
 
-		formData.append("file", videoFile);
+		formData.append("files", videoFile);
 		formData.append("tags", "tag1 tag2");
 
 		// POSTリクエスト送信（OriginヘッダーでCSRF対策）
@@ -110,6 +110,13 @@ describe("ビデオ登録画面", () => {
 		const html = await getRes.text();
 		const $ = load(html);
 		const renderedHtml = $("#app").html();
+
+		// エラーがあるか確認
+		console.log(
+			"HTML contains error:",
+			html.includes("error") || html.includes("エラー"),
+		);
+
 		const expectedHtml = renderToString(<VideoRegisterPage />);
 
 		assert.equal(
@@ -119,6 +126,12 @@ describe("ビデオ登録画面", () => {
 
 		// JobQueueの完了を待つ
 		await testJobQueue.waitForCompletion();
+
+		// エラーがあれば表示
+		if (testJobQueue.errorCallbacks.length > 0) {
+			console.error("Job errors:", testJobQueue.errorCallbacks);
+		}
+		console.log("Success callbacks:", testJobQueue.successCallbacks);
 
 		// TestJobQueueから登録されたVideoを取得
 		const successCallback = testJobQueue.successCallbacks.find(

@@ -73,7 +73,7 @@ app.get("/:authorId", async (c) => {
 			count: videoCount,
 			result: videos.map((video) => ({
 				id: video.id,
-				title: video.contents[0]?.name || "",
+				title: video.contents[0]?.content.name || "",
 				thumbnailPath: video.thumbnailPath,
 				previewGifPath: video.previewGifPath,
 				createdAt: new Date().toISOString(), // TODO: 実際の作成日時を取得

@@ -12,7 +12,7 @@ import {
 	TagInput,
 	useTagInput,
 } from "../../../features/tag/ui/tag.input.component.js";
-import { VideoInput } from "../../../features/video/ui/components/video.input.component.js";
+import { VideoContentInput } from "../../../features/video/ui/components/video.content.input.component.js";
 import { ApiService } from "../autogenerate/register.js";
 
 const client = new ApiService();
@@ -20,18 +20,27 @@ const client = new ApiService();
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
 	const tags = formData.get("tags")?.toString();
-	const resourceId = formData.get("resourceId")?.toString();
+	const resourceIds = formData.get("resourceIds")?.toString();
 	const authorId = formData.get("authorId")?.toString();
 
 	console.log(
-		`url: ${request.url}, tags: ${tags}, resourceId: ${resourceId}, authorId: ${authorId}`,
+		`url: ${request.url}, tags: ${tags}, resourceIds: ${resourceIds}, authorId: ${authorId}`,
 	);
-	if (!resourceId || !tags) {
+	if (!resourceIds || !tags) {
 		console.log("必須項目が入力されていません");
 		throw new Error("必須項目が入力されていません");
 	}
 
-	const response = await client.registerVideo(resourceId, tags, authorId);
+	// カンマ区切りの文字列を配列に変換
+	const resourceIdArray = resourceIds.split(",").filter((id) => id.trim());
+	// authorIdを配列に変換（存在する場合のみ）
+	const authorIdArray = authorId ? [authorId] : undefined;
+
+	const response = await client.registerVideo(
+		resourceIdArray,
+		tags,
+		authorIdArray,
+	);
 	if (isFailure(response)) {
 		console.log(`response error: ${response.value.message}`);
 		throw new Error(response.value.message);
@@ -74,7 +83,7 @@ export default function VideoRegisterPage() {
 			<div className="w-full max-w-md">
 				<Form className="flex flex-col gap-4" method="POST">
 					<h1>動画登録</h1>
-					<VideoInput />
+					<VideoContentInput />
 					<TagInput
 						name="tags"
 						value={tags}

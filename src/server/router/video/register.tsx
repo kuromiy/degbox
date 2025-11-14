@@ -9,18 +9,22 @@ import { formValidatorMiddleware } from "../../middleware/formValidator.js";
 import VideoRegisterPage from "../../view/pages/video.register.page.js";
 
 export const registerVideoSchema = z.object({
-	file: z
-		.instanceof(File)
-		.refine(
-			(file) => file.type.startsWith("video/"),
-			"動画ファイルではありません",
-		)
-		.refine(
-			(file) => file.size <= 100 * 1024 * 1024,
-			"ファイルサイズが大きすぎます（100MBまで）",
-		),
+	files: z.preprocess(
+		(val) => (Array.isArray(val) ? val : [val]),
+		z
+			.array(z.instanceof(File))
+			.min(1, "少なくとも1つの動画ファイルが必要です")
+			.refine(
+				(files) => files.every((file) => file.type.startsWith("video/")),
+				"動画ファイルではありません",
+			)
+			.refine(
+				(files) => files.every((file) => file.size <= 100 * 1024 * 1024),
+				"ファイルサイズが大きすぎます（100MBまで）",
+			),
+	),
 	tags: z.string(),
-	authorId: z.string().optional(),
+	authorIds: z.array(z.string()).optional(),
 });
 export type RegisterVideoRequest = z.infer<typeof registerVideoSchema>;
 
@@ -54,7 +58,7 @@ app.post(
 			handle: async () => {
 				return database.transaction(async (tx) => {
 					return fileSystem.transaction(async (fs) => {
-						const { file, tags: rawTags, authorId } = valid;
+						const { files, tags: rawTags, authorIds } = valid;
 
 						const scopedContainer = createScopedContainer(
 							container,
@@ -69,14 +73,18 @@ app.post(
 								TOKENS.VIDEO_ACTION,
 							);
 
-						// ファイルアップロード
-						const buffer = await file.bytes();
-						const path = await fs.writeTempFile(buffer, extname(file.name));
+						// 複数ファイルをアップロード
+						const contents = [];
+						for (const file of files) {
+							const buffer = await file.bytes();
+							const path = await fs.writeTempFile(buffer, extname(file.name));
+							logger.info("path", { path });
 
-						// コンテンツの登録
-						logger.info("path", { path });
-						const content = await contentAction.register(path);
-						logger.info("Content", { content });
+							// コンテンツの登録
+							const content = await contentAction.register(path);
+							logger.info("Content", { content });
+							contents.push(content);
+						}
 
 						// タグの登録取得
 						const tagNames = Tag.split(rawTags);
@@ -84,17 +92,20 @@ app.post(
 						logger.info("Tags", { tags });
 
 						// 作者取得
-						const author = authorId
-							? await authorRepository.get(authorId)
-							: undefined;
-						logger.info("Author", { author });
-						// 作者IDが指定されているが見つからない場合はエラー
-						if (authorId && !author) {
-							throw new Error(`Author with ID '${authorId}' not found`);
+						const authors = [];
+						if (authorIds && authorIds.length > 0) {
+							for (const authorId of authorIds) {
+								const author = await authorRepository.get(authorId);
+								if (!author) {
+									throw new Error(`Author with ID '${authorId}' not found`);
+								}
+								authors.push(author);
+							}
 						}
+						logger.info("Authors", { authors });
 
 						// 動画登録
-						const video = await videoAction.register(tags, content, author);
+						const video = await videoAction.register(tags, contents, authors);
 						logger.info("Video", { video });
 
 						return video;

@@ -38,7 +38,7 @@ declare global {
             suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
             detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
             pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, Error>>;
-            registerVideo: (resourceId: string, rawTags: string, authorId: string | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
+            registerVideo: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
             searchVideo: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, Error>>;
         };
     }
@@ -58,7 +58,7 @@ export interface ServiceIF {
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
     detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
     pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, Error>>;
-    registerVideo: (resourceId: string, rawTags: string, authorId: string | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
+    registerVideo: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
     searchVideo: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, Error>>;
 }
 
@@ -112,8 +112,8 @@ export class ApiService implements ServiceIF {
         return window.api.pickupVideo();
     }
 
-    async registerVideo(resourceId: string, rawTags: string, authorId: string | undefined) {
-        return window.api.registerVideo(resourceId, rawTags, authorId);
+    async registerVideo(resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) {
+        return window.api.registerVideo(resourceIds, rawTags, authorIds);
     }
 
     async searchVideo(keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) {

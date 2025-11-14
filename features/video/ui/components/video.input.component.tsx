@@ -4,19 +4,22 @@ import { ApiService } from "../../../../src/renderer/autogenerate/register.js";
 
 const client = new ApiService();
 
+type VideoFile = {
+	id: string;
+	name: string;
+};
+
 export function VideoInput() {
 	const ref = useRef<HTMLInputElement>(null);
 
-	const [resourceId, setResourceId] = useState<string | null>(null);
-	const [fileName, setFileName] = useState<string | null>(null);
+	const [videos, setVideos] = useState<VideoFile[]>([]);
 
 	useEffect(() => {
 		const form = ref.current?.form;
 		if (!form) return;
 
 		function reset() {
-			setResourceId(null);
-			setFileName(null);
+			setVideos([]);
 		}
 
 		form.addEventListener("reset", reset);
@@ -28,22 +31,29 @@ export function VideoInput() {
 		if (isFailure(response)) {
 			return;
 		}
-		setResourceId(response.value.id);
-		setFileName(response.value.name);
+		// 配列として扱う
+		const values = Array.isArray(response.value)
+			? response.value
+			: [response.value];
+		setVideos(values);
 	}
 
 	return (
 		<>
-			{resourceId && (
-				<>
-					<video controls className="aspect-video w-full">
-						<source src={`resources://${resourceId}`} />
-						<track kind="captions" srcLang="ja" label="日本語字幕" />
-					</video>
-					{fileName && (
-						<p className="text-gray-600 text-sm">選択: {fileName}</p>
-					)}
-				</>
+			{videos.length > 0 && (
+				<div className="space-y-2">
+					{videos.map((video, index) => (
+						<div key={video.id}>
+							<video controls className="aspect-video w-full">
+								<source src={`resources://${video.id}`} />
+								<track kind="captions" srcLang="ja" label="日本語字幕" />
+							</video>
+							<p className="text-gray-600 text-sm">
+								{index + 1}. {video.name}
+							</p>
+						</div>
+					))}
+				</div>
 			)}
 			<div className="font-medium text-sm">動画</div>
 			<button
@@ -57,7 +67,7 @@ export function VideoInput() {
 				ref={ref}
 				type="hidden"
 				name="resourceId"
-				value={resourceId ?? ""}
+				value={videos[0]?.id ?? ""}
 			/>
 		</>
 	);

@@ -48,11 +48,12 @@ function VideoRegisterForm({
 
 					{/* ファイル入力フィールド */}
 					<div className="flex flex-col gap-1">
-						<label htmlFor="file">動画</label>
+						<label htmlFor="files">動画（複数選択可）</label>
 						<input
 							type="file"
-							name="file"
+							name="files"
 							accept="video/*"
+							multiple
 							className={`rounded-lg border p-2 ${hasFileError ? "border-red-500" : ""}`}
 						/>
 						{hasFileError && (
@@ -104,7 +105,7 @@ export default function VideoRegisterPage(
 	_formData?: Record<string, unknown>,
 	errors?: Record<string, string[]>,
 ) {
-	const fileErrors = errors?.file;
+	const fileErrors = errors?.files;
 
 	const createClient = useCallback(() => new FetchClient(), []);
 

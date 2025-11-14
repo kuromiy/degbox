@@ -144,10 +144,14 @@ describe("ビデオ検索画面", () => {
 					tags: [{ id: "1", name: "tag001" }],
 					contents: [
 						{
-							id: "2",
-							path: "contents/video",
-							name: "content002",
-							hash: "content002",
+							content: {
+								id: "2",
+								path: "contents/video",
+								name: "content002",
+								hash: "content002",
+							},
+							order: 0,
+							videoUrl: buildFileUrl("contents/video/index.m3u8"),
 						},
 					],
 					authors: [],
@@ -162,10 +166,14 @@ describe("ビデオ検索画面", () => {
 					],
 					contents: [
 						{
-							id: "1",
-							path: "contents/video",
-							name: "content001",
-							hash: "content001",
+							content: {
+								id: "1",
+								path: "contents/video",
+								name: "content001",
+								hash: "content001",
+							},
+							order: 0,
+							videoUrl: buildFileUrl("contents/video/index.m3u8"),
 						},
 					],
 					authors: [],
