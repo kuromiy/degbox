@@ -43,16 +43,18 @@ export function VideoContentInput() {
 		const values = Array.isArray(response.value)
 			? response.value
 			: [response.value];
-		const newFiles = values.map(
-			(item: { id: string; name: string }, index: number) => ({
-				id: crypto.randomUUID(),
-				resourceId: item.id,
-				name: item.name,
-				order: contentFiles.length + index,
-			}),
-		);
 
-		setContentFiles([...contentFiles, ...newFiles]);
+		setContentFiles((prev) => {
+			const newFiles = values.map(
+				(item: { id: string; name: string }, index: number) => ({
+					id: crypto.randomUUID(),
+					resourceId: item.id,
+					name: item.name,
+					order: prev.length + index,
+				}),
+			);
+			return [...prev, ...newFiles];
+		});
 		setError(null);
 	}
 

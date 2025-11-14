@@ -34,6 +34,23 @@ export class VideoDataSource implements VideoRepository {
 		const tags = uniq(video.tags);
 		const authors = uniq(video.authors);
 
+		// コンテンツの重複排除（contentIdベースで最初の出現を保持し、orderを連番で振り直す）
+		const contents = (() => {
+			const seen = new Set<string>();
+			const unique: typeof video.contents = [];
+			for (const vc of video.contents) {
+				if (!seen.has(vc.content.id)) {
+					seen.add(vc.content.id);
+					unique.push(vc);
+				}
+			}
+			// orderを0から連番で振り直す
+			return unique.map((vc, index) => ({
+				...vc,
+				order: index,
+			}));
+		})();
+
 		// ビデオ本体を保存
 		await this.db
 			.insert(VIDEOS)
@@ -54,9 +71,9 @@ export class VideoDataSource implements VideoRepository {
 			.where(eq(VIDEOS_AUTHORS.videoId, video.id));
 
 		// コンテンツの関連を保存（並び順付き）
-		if (video.contents.length > 0) {
+		if (contents.length > 0) {
 			await this.db.insert(VIDEOS_CONTENTS).values(
-				video.contents.map((videoContent) => ({
+				contents.map((videoContent) => ({
 					videoId: video.id,
 					contentId: videoContent.content.id,
 					order: videoContent.order,
