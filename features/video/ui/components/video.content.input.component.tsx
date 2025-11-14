@@ -36,6 +36,11 @@ export function VideoContentInput() {
 	async function pickupVideo() {
 		const response = await client.pickupVideo();
 		if (isFailure(response)) {
+			const errorMessage =
+				response.value instanceof Error
+					? response.value.message
+					: "動画の読み込みに失敗しました";
+			setError(errorMessage);
 			return;
 		}
 
