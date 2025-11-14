@@ -21,14 +21,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function VideoDetailPage() {
 	const video = useLoaderData<Video>();
-	const firstContent = video.contents[0];
-	const videoSrc = firstContent
-		? `http://192.168.3.33:8080/file/${firstContent.path}/index.m3u8`
-		: "";
 
 	return (
 		<Suspense fallback={<div>読み込み中...</div>}>
-			<VideoDetailTemplate video={video} videoSrc={videoSrc} backUrl="/" />
+			<VideoDetailTemplate video={video} backUrl="/" />
 		</Suspense>
 	);
 }

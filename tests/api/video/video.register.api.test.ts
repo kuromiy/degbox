@@ -46,9 +46,9 @@ describe("ビデオ登録API", () => {
 
 		// 準備
 		const request = {
-			resourceId: "sample-resource-id",
+			resourceIds: ["sample-resource-id"],
 			rawTags: "tag1 tag2",
-			// authorId: "author-id-123",
+			// authorIds: ["author-id-123"],
 		};
 
 		// IpcMainInvokeEventのモックを作成

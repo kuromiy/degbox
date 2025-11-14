@@ -108,9 +108,9 @@ describe("ビデオ検索API", () => {
 		assert.ok(video1.tags.some((t) => t.id === "2" && t.name === "tag002"));
 		assert.equal(video1.contents.length, 1);
 		assert.ok(video1.contents[0], "ビデオ1のコンテンツが存在すること");
-		assert.equal(video1.contents[0]?.id, "1");
-		assert.equal(video1.contents[0]?.name, "content001");
-		assert.equal(video1.contents[0]?.path, "contents/video");
+		assert.equal(video1.contents[0]?.content.id, "1");
+		assert.equal(video1.contents[0]?.content.name, "content001");
+		assert.equal(video1.contents[0]?.content.path, "contents/video");
 
 		// ビデオ2の検証
 		const video2 = videos.find((v) => v.id === "2");
@@ -123,8 +123,8 @@ describe("ビデオ検索API", () => {
 		assert.equal(video2.tags[0]?.name, "tag001");
 		assert.equal(video2.contents.length, 1);
 		assert.ok(video2.contents[0], "ビデオ2のコンテンツが存在すること");
-		assert.equal(video2.contents[0]?.id, "2");
-		assert.equal(video2.contents[0]?.name, "content002");
-		assert.equal(video2.contents[0]?.path, "contents/video");
+		assert.equal(video2.contents[0]?.content.id, "2");
+		assert.equal(video2.contents[0]?.content.name, "content002");
+		assert.equal(video2.contents[0]?.content.path, "contents/video");
 	});
 });

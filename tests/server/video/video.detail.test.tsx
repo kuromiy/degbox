@@ -92,10 +92,14 @@ describe("ビデオ詳細画面", () => {
 			],
 			contents: [
 				{
-					id: "1",
-					path: "contents/video",
-					name: "content001",
-					hash: "content001",
+					content: {
+						id: "1",
+						path: "contents/video",
+						name: "content001",
+						hash: "content001",
+					},
+					order: 0,
+					videoUrl: buildFileUrl("contents/video/index.m3u8"),
 				},
 			],
 			authors: [],

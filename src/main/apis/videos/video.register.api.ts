@@ -5,9 +5,9 @@ import type { Context } from "../../context.js";
 import { TOKENS } from "../../depend.injection.js";
 
 export const registerVideoSchema = z.object({
-	resourceId: z.string(),
+	resourceIds: z.array(z.string()).min(1),
 	rawTags: z.string(),
-	authorId: z.string().optional(),
+	authorIds: z.array(z.string()).optional(),
 });
 export type RegisterVideoRequest = z.infer<typeof registerVideoSchema>;
 
@@ -35,7 +35,7 @@ export async function registerVideo(
 		handle: async () => {
 			return database.transaction(async (tx) => {
 				return fileSystem.transaction(async (fs) => {
-					const { resourceId, rawTags, authorId } = valid.data;
+					const { resourceIds, rawTags, authorIds } = valid.data;
 
 					const scopedContainer = createScopedContainer(
 						container,
@@ -57,16 +57,20 @@ export async function registerVideo(
 					);
 
 					// 未管理コンテンツの取得
-					const unmanagedContent =
-						await unmanagedContentRepository.get(resourceId);
-					if (!unmanagedContent) {
-						throw new Error("Unmanaged content not found");
-					}
-					logger.info("Found unmanaged content", { unmanagedContent });
+					const contents = [];
+					for (const resourceId of resourceIds) {
+						const unmanagedContent =
+							await unmanagedContentRepository.get(resourceId);
+						if (!unmanagedContent) {
+							throw new Error(`Unmanaged content not found: ${resourceId}`);
+						}
+						logger.info("Found unmanaged content", { unmanagedContent });
 
-					// コンテンツの登録
-					const content = await contentAction.register(unmanagedContent.path);
-					logger.info("Content", { content });
+						// コンテンツの登録
+						const content = await contentAction.register(unmanagedContent.path);
+						logger.info("Content", { content });
+						contents.push(content);
+					}
 
 					// タグの登録取得
 					const tagNames = Tag.split(rawTags);
@@ -74,17 +78,20 @@ export async function registerVideo(
 					logger.info("Tags", { tags });
 
 					// 作者取得
-					const author = authorId
-						? await authorRepository.get(authorId)
-						: undefined;
-					logger.info("Author", { author });
-					// 作者IDが指定されているが見つからない場合はエラー
-					if (authorId && !author) {
-						throw new Error(`Author with ID '${authorId}' not found`);
+					const authors = [];
+					if (authorIds) {
+						for (const authorId of authorIds) {
+							const author = await authorRepository.get(authorId);
+							if (!author) {
+								throw new Error(`Author with ID '${authorId}' not found`);
+							}
+							authors.push(author);
+						}
 					}
+					logger.info("Authors", { authors });
 
 					// 動画登録
-					const video = await videoAction.register(tags, content, author);
+					const video = await videoAction.register(tags, contents, authors);
 					logger.info("Video", { video });
 
 					// タグ共起行列の更新

@@ -100,9 +100,9 @@ export class FetchClient implements ServiceIF {
 	}
 
 	async registerVideo(
-		_resourceId: string,
+		_resourceIds: unknown[],
 		_rawTags: string,
-		_authorId: string | undefined,
+		_authorIds: unknown[] | undefined,
 	) {
 		return failure(new Error("registerVideo is not allowed in FetchClient"));
 	}

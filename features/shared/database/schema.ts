@@ -78,6 +78,7 @@ export const VIDEOS_CONTENTS = sqliteTable(
 		contentId: text("content_id")
 			.notNull()
 			.references(() => CONTENTS.id),
+		order: integer("order").notNull().default(0),
 	},
 	(table) => [primaryKey({ columns: [table.videoId, table.contentId] })],
 );

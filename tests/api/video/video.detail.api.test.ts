@@ -88,9 +88,9 @@ describe("ビデオ詳細API", () => {
 		// コンテンツの検証
 		assert.equal(video.contents.length, 1);
 		assert.ok(video.contents[0], "ビデオのコンテンツが存在すること");
-		assert.equal(video.contents[0]?.id, "1");
-		assert.equal(video.contents[0]?.name, "content001");
-		assert.equal(video.contents[0]?.path, "contents/video");
+		assert.equal(video.contents[0]?.content.id, "1");
+		assert.equal(video.contents[0]?.content.name, "content001");
+		assert.equal(video.contents[0]?.content.path, "contents/video");
 	});
 
 	it("存在しないビデオIDでエラーになること", async () => {

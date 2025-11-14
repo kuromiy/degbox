@@ -14,6 +14,6 @@ export default {
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => ipcRenderer.invoke("suggestRelatedTags", { tagNames, limit }),
     detailVideo: (videoId: string) => ipcRenderer.invoke("detailVideo", { videoId }),
     pickupVideo: () => ipcRenderer.invoke("pickupVideo", {  }),
-    registerVideo: (resourceId: string, rawTags: string, authorId: string | undefined) => ipcRenderer.invoke("registerVideo", { resourceId, rawTags, authorId }),
+    registerVideo: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => ipcRenderer.invoke("registerVideo", { resourceIds, rawTags, authorIds }),
     searchVideo: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) => ipcRenderer.invoke("searchVideo", { keyword, sortBy, order, page, size })
 };

@@ -6,8 +6,8 @@
 	"scripts": {
 		"dev": "tsx --env-file=.env ./cmd/dev.ts",
 		"build": "tsx --env-file=.env ./cmd/build.ts",
-		"db:generate": "npx drizzle-kit generate",
-		"db:migrate": "npx drizzle-kit migrate",
+		"db:gen": "npx drizzle-kit generate",
+		"db:mig": "npx drizzle-kit migrate",
 		"test": "npm run test:api && npm run test:server",
 		"test:e2e": "npx playwright test",
 		"test:api": "npx tsx --env-file=.env ./tests/api/index.ts",

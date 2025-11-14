@@ -71,7 +71,7 @@ export async function getAuthorDetail(
 			count: videoCount,
 			result: videos.map((video) => ({
 				id: video.id,
-				title: video.contents[0]?.name || "",
+				title: video.contents[0]?.content.name || "",
 				thumbnailPath: video.thumbnailPath,
 				...(video.previewGifPath
 					? { previewGifPath: video.previewGifPath }

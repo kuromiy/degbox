@@ -6,12 +6,10 @@ import { VideoPlayer } from "../components/video.player.component.js";
 export function VideoDetailTemplate({
 	video,
 	backUrl,
-	videoSrc,
 	tagUrlPrefix = "/",
 }: {
 	video: Video;
 	backUrl: string;
-	videoSrc: string;
 	tagUrlPrefix?: string;
 }) {
 	const { Link } = useNavigation();
@@ -27,9 +25,26 @@ export function VideoDetailTemplate({
 				</Link>
 			</div>
 
-			{/* 動画プレーヤー */}
-			<div className="mb-8">
-				<VideoPlayer src={videoSrc} />
+			{/* 動画プレーヤー（複数対応） */}
+			<div className="mb-8 space-y-6">
+				{video.contents.map((videoContent, index) => (
+					<div
+						key={videoContent.content.id}
+						className="rounded-lg border bg-white p-4 shadow-sm"
+					>
+						<div className="mb-3 flex items-center justify-between">
+							<h3 className="font-semibold text-lg">
+								動画 {index + 1}/{video.contents.length}
+							</h3>
+							{index === 0 && (
+								<span className="rounded bg-blue-100 px-2 py-1 text-blue-800 text-xs">
+									サムネイル/GIF生成元
+								</span>
+							)}
+						</div>
+						<VideoPlayer src={videoContent.videoUrl} />
+					</div>
+				))}
 			</div>
 
 			{/* タグ一覧 */}
@@ -69,9 +84,12 @@ export function VideoDetailTemplate({
 							コンテンツファイル
 						</h3>
 						<div className="space-y-1">
-							{video.contents.map((content) => (
-								<div key={content.id} className="text-gray-600 text-sm">
-									{content.path}
+							{video.contents.map((videoContent) => (
+								<div
+									key={videoContent.content.id}
+									className="text-gray-600 text-sm"
+								>
+									{videoContent.content.path}
 								</div>
 							))}
 						</div>

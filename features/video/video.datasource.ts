@@ -31,9 +31,25 @@ export class VideoDataSource implements VideoRepository {
 		const uniq = <T extends { id: string }>(arr: T[]) =>
 			Array.from(new Map(arr.map((x) => [x.id, x])).values());
 
-		const contents = uniq(video.contents);
 		const tags = uniq(video.tags);
 		const authors = uniq(video.authors);
+
+		// コンテンツの重複排除（contentIdベースで最初の出現を保持し、orderを連番で振り直す）
+		const contents = (() => {
+			const seen = new Set<string>();
+			const unique: typeof video.contents = [];
+			for (const vc of video.contents) {
+				if (!seen.has(vc.content.id)) {
+					seen.add(vc.content.id);
+					unique.push(vc);
+				}
+			}
+			// orderを0から連番で振り直す
+			return unique.map((vc, index) => ({
+				...vc,
+				order: index,
+			}));
+		})();
 
 		// ビデオ本体を保存
 		await this.db
@@ -54,12 +70,13 @@ export class VideoDataSource implements VideoRepository {
 			.delete(VIDEOS_AUTHORS)
 			.where(eq(VIDEOS_AUTHORS.videoId, video.id));
 
-		// コンテンツの関連を保存
+		// コンテンツの関連を保存（並び順付き）
 		if (contents.length > 0) {
 			await this.db.insert(VIDEOS_CONTENTS).values(
-				contents.map((content) => ({
+				contents.map((videoContent) => ({
 					videoId: video.id,
-					contentId: content.id,
+					contentId: videoContent.content.id,
+					order: videoContent.order,
 				})),
 			);
 		}
@@ -195,7 +212,8 @@ export class VideoDataSource implements VideoRepository {
 			.select()
 			.from(CONTENTS)
 			.innerJoin(VIDEOS_CONTENTS, eq(CONTENTS.id, VIDEOS_CONTENTS.contentId))
-			.where(inArray(VIDEOS_CONTENTS.videoId, videoIds));
+			.where(inArray(VIDEOS_CONTENTS.videoId, videoIds))
+			.orderBy(asc(VIDEOS_CONTENTS.order));
 
 		const authors = await this.db
 			.select()
@@ -210,7 +228,11 @@ export class VideoDataSource implements VideoRepository {
 					.map((t) => t.tags);
 				const cs = contents
 					.filter((c) => c.videos_contents.videoId === videoId)
-					.map((c) => c.contents);
+					.map((c) => ({
+						content: c.contents,
+						order: c.videos_contents.order,
+						videoUrl: buildFileUrl(posix.join(c.contents.path, "index.m3u8")),
+					}));
 				const as = authors
 					.filter((a) => a.videos_authors.videoId === videoId)
 					.map((a) => ({
@@ -230,10 +252,10 @@ export class VideoDataSource implements VideoRepository {
 				return {
 					id: videoId,
 					previewGifPath: buildFileUrl(
-						posix.join(firstContent.path, "preview.gif"),
+						posix.join(firstContent.content.path, "preview.gif"),
 					),
 					thumbnailPath: buildFileUrl(
-						posix.join(firstContent.path, "thumbnail.jpg"),
+						posix.join(firstContent.content.path, "thumbnail.jpg"),
 					),
 					tags: ts,
 					contents: cs,
@@ -267,12 +289,13 @@ export class VideoDataSource implements VideoRepository {
 			.innerJoin(VIDEOS_TAGS, eq(TAGS.id, VIDEOS_TAGS.tagId))
 			.where(eq(VIDEOS_TAGS.videoId, videoId));
 
-		// コンテンツを取得
+		// コンテンツを取得（並び順でソート）
 		const contents = await this.db
 			.select()
 			.from(CONTENTS)
 			.innerJoin(VIDEOS_CONTENTS, eq(CONTENTS.id, VIDEOS_CONTENTS.contentId))
-			.where(eq(VIDEOS_CONTENTS.videoId, videoId));
+			.where(eq(VIDEOS_CONTENTS.videoId, videoId))
+			.orderBy(asc(VIDEOS_CONTENTS.order));
 
 		// 作者を取得
 		const authors = await this.db
@@ -298,7 +321,11 @@ export class VideoDataSource implements VideoRepository {
 				posix.join(firstContent.path, "thumbnail.jpg"),
 			),
 			tags: tags.map((t) => t.tags),
-			contents: contents.map((c) => c.contents),
+			contents: contents.map((c) => ({
+				content: c.contents,
+				order: c.videos_contents.order,
+				videoUrl: buildFileUrl(posix.join(c.contents.path, "index.m3u8")),
+			})),
 			authors: authors.map((a) => ({
 				id: a.authors.id,
 				name: a.authors.name,
@@ -373,7 +400,8 @@ export class VideoDataSource implements VideoRepository {
 			.select()
 			.from(CONTENTS)
 			.innerJoin(VIDEOS_CONTENTS, eq(CONTENTS.id, VIDEOS_CONTENTS.contentId))
-			.where(inArray(VIDEOS_CONTENTS.videoId, videoIds));
+			.where(inArray(VIDEOS_CONTENTS.videoId, videoIds))
+			.orderBy(asc(VIDEOS_CONTENTS.order));
 
 		const authors = await this.db
 			.select()
@@ -388,7 +416,11 @@ export class VideoDataSource implements VideoRepository {
 					.map((t) => t.tags);
 				const cs = contents
 					.filter((c) => c.videos_contents.videoId === videoId)
-					.map((c) => c.contents);
+					.map((c) => ({
+						content: c.contents,
+						order: c.videos_contents.order,
+						videoUrl: buildFileUrl(posix.join(c.contents.path, "index.m3u8")),
+					}));
 				const as = authors
 					.filter((a) => a.videos_authors.videoId === videoId)
 					.map((a) => ({
@@ -408,10 +440,10 @@ export class VideoDataSource implements VideoRepository {
 				return {
 					id: videoId,
 					previewGifPath: buildFileUrl(
-						posix.join(firstContent.path, "preview.gif"),
+						posix.join(firstContent.content.path, "preview.gif"),
 					),
 					thumbnailPath: buildFileUrl(
-						posix.join(firstContent.path, "thumbnail.jpg"),
+						posix.join(firstContent.content.path, "thumbnail.jpg"),
 					),
 					tags: ts,
 					contents: cs,
