@@ -35,8 +35,11 @@ const MEDIA_TYPE_EXTENSIONS = {
 export class ContentServiceImpl implements ContentService {
 	private readonly baseContentPath: string;
 
-	constructor(private readonly fs: FileSystem) {
-		this.baseContentPath = resolve("content");
+	constructor(
+		private readonly fs: FileSystem,
+		baseContentPath = "content",
+	) {
+		this.baseContentPath = resolve(baseContentPath);
 	}
 
 	async calcHash(path: string): Promise<string> {

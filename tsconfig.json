@@ -1,6 +1,6 @@
 {
 	// Visit https://aka.ms/tsconfig to read more about this file
-	"exclude": ["content/**/*.ts"],
+	"exclude": ["content/**/*.ts", "test-content/**/*.ts"],
 	"compilerOptions": {
 		// File Layout
 		// "rootDir": "./src",
