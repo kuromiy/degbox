@@ -123,6 +123,15 @@ export class FetchClient implements ServiceIF {
 		return failure(new Error("registerIllust is not allowed in FetchClient"));
 	}
 
+	async updateIllust(
+		_id: string,
+		_tags: string,
+		_imageItems: unknown[],
+		_authorIds: unknown[],
+	) {
+		return failure(new Error("updateIllust is not allowed in FetchClient"));
+	}
+
 	async searchIllust(
 		_tag: string | undefined,
 		_sortBy: string | undefined,

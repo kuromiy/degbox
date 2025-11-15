@@ -191,6 +191,10 @@ export const depend: DependencyEntry[] = [
 	{
 		token: TOKENS.ILLUST_ACTION,
 		provider: (c: Container) =>
-			new IllustAction(c.get(TOKENS.ILLUST_REPOSITORY)),
+			new IllustAction(
+				c.get(TOKENS.ILLUST_REPOSITORY),
+				c.get(TOKENS.CONTENT_ACTION),
+				c.get(TOKENS.UNMANAGED_CONTENT_REPOSITORY),
+			),
 	},
 ];

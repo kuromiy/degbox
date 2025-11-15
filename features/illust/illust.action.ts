@@ -1,10 +1,23 @@
 import type { Author } from "../author/author.model.js";
+import type { ContentAction } from "../content/content.action.js";
 import type { Content } from "../content/content.model.js";
 import type { Tag } from "../tag/tag.model.js";
+import type { UnmanagedContentRepository } from "../unmanaged-content/unmanagedContent.repository.js";
+import type { IllustContent } from "./illust.model.js";
 import type { IllustRepository } from "./illust.repository.js";
 
+type IllustContentItem = {
+	content?: Content;
+	order: number;
+	newResourceId?: string;
+};
+
 export class IllustAction {
-	constructor(private readonly repository: IllustRepository) {}
+	constructor(
+		private readonly repository: IllustRepository,
+		private readonly contentAction: ContentAction,
+		private readonly unmanagedContentRepository: UnmanagedContentRepository,
+	) {}
 
 	async register(tags: Tag[], contents: Content[], authors?: Author[]) {
 		// イラストエンティティ作成
@@ -24,6 +37,66 @@ export class IllustAction {
 		};
 
 		// イラストを保存
+		return await this.repository.save(illust);
+	}
+
+	async update(
+		illustId: string,
+		tags: Tag[],
+		contentItems: IllustContentItem[],
+		newResourceIds: string[],
+		authors: Author[],
+	) {
+		// 新規リソースIDからコンテンツを登録（順序を保つためにマップ化）
+		const newContentMap = new Map<string, Content>();
+		for (const resourceId of newResourceIds) {
+			// resourceIdから実際のファイルパスを取得
+			const unmanagedContent =
+				await this.unmanagedContentRepository.get(resourceId);
+			if (!unmanagedContent) {
+				throw new Error(`Unmanaged content not found for ID: ${resourceId}`);
+			}
+			// 実際のファイルパスを使ってコンテンツ登録
+			const content = await this.contentAction.register(unmanagedContent.path);
+			newContentMap.set(resourceId, content);
+		}
+
+		// contentItemsを処理し、最終的なコンテンツ配列を構築
+		const allContents: IllustContent[] = [];
+		for (const item of contentItems) {
+			if (item.content) {
+				// 既存コンテンツ
+				allContents.push({
+					content: item.content,
+					order: allContents.length,
+				});
+			} else if (item.newResourceId) {
+				// 新規コンテンツ
+				const newContent = newContentMap.get(item.newResourceId);
+				if (!newContent) {
+					throw new Error(
+						`New content not found for resource: ${item.newResourceId}`,
+					);
+				}
+				allContents.push({
+					content: newContent,
+					order: allContents.length,
+				});
+			} else {
+				throw new Error(
+					"Invalid content item: must have either content or newResourceId",
+				);
+			}
+		}
+
+		const illust = {
+			id: illustId,
+			tags,
+			contents: allContents,
+			authors,
+		};
+
+		// イラストを保存（既存の関連は削除されて新しいものが保存される）
 		return await this.repository.save(illust);
 	}
 }

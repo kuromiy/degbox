@@ -8,6 +8,7 @@ import type { detailIllust } from "../../main/apis/illusts/illust.detail.api.js"
 import type { pickupImage } from "../../main/apis/illusts/illust.pickup.api.js";
 import type { registerIllust } from "../../main/apis/illusts/illust.register.api.js";
 import type { searchIllust } from "../../main/apis/illusts/illust.search.api.js";
+import type { updateIllust } from "../../main/apis/illusts/illust.update.api.js";
 import type { autocompleteTags } from "../../main/apis/tags/tag.autocomplete.api.js";
 import type { suggestRelatedTags } from "../../main/apis/tags/tag.suggest.api.js";
 import type { detailVideo } from "../../main/apis/videos/video.detail.api.js";
@@ -36,6 +37,7 @@ declare global {
             pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, Error>>;
             registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
             searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
+            updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, Error>>;
             autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
             suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
             detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -57,6 +59,7 @@ export interface ServiceIF {
     pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, Error>>;
     registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
     searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
+    updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, Error>>;
     autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
     detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -101,6 +104,10 @@ export class ApiService implements ServiceIF {
 
     async searchIllust(keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) {
         return window.api.searchIllust(keyword, sortBy, order, page, limit);
+    }
+
+    async updateIllust(id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) {
+        return window.api.updateIllust(id, tags, imageItems, authorIds);
     }
 
     async autocompleteTags(value: string, limit: number | undefined) {

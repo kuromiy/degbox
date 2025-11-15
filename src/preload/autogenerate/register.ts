@@ -11,6 +11,7 @@ export default {
     pickupImage: () => ipcRenderer.invoke("pickupImage", {  }),
     registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => ipcRenderer.invoke("registerIllust", { resourceIds, rawTags, authorIds }),
     searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => ipcRenderer.invoke("searchIllust", { keyword, sortBy, order, page, limit }),
+    updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => ipcRenderer.invoke("updateIllust", { id, tags, imageItems, authorIds }),
     autocompleteTags: (value: string, limit: number | undefined) => ipcRenderer.invoke("autocompleteTags", { value, limit }),
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => ipcRenderer.invoke("suggestRelatedTags", { tagNames, limit }),
     detailVideo: (videoId: string) => ipcRenderer.invoke("detailVideo", { videoId }),
