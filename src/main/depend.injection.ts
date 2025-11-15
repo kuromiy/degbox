@@ -144,7 +144,10 @@ export const depend: DependencyEntry[] = [
 	{
 		token: TOKENS.CONTENT_SERVICE,
 		provider: (c: Container) =>
-			new ContentServiceImpl(c.get(TOKENS.FILE_SYSTEM)),
+			new ContentServiceImpl(
+				c.get(TOKENS.FILE_SYSTEM),
+				process.env.CONTENT_BASE_PATH || "content",
+			),
 	},
 	{
 		token: TOKENS.VIDEO_SERVICE,

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # .envファイルの存在チェック
-if [ ! -f .env ]; then
+if [ ! -f .env.test ]; then
   echo "❌ エラー: .envファイルが見つかりません。"
   echo "   セットアップ方法: cp .env.example .env を実行してください。"
   echo "   詳細はREADME.mdを参照してください。"

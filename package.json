@@ -10,8 +10,8 @@
 		"db:mig": "npx drizzle-kit migrate",
 		"test": "npm run test:api && npm run test:server",
 		"test:e2e": "npx playwright test",
-		"test:api": "npx tsx --env-file=.env ./tests/api/index.ts",
-		"test:server": "npx tsx --env-file=.env ./tests/server/index.ts",
+		"test:api": "npx tsx --env-file=.env.test ./tests/api/index.ts",
+		"test:server": "npx tsx --env-file=.env.test ./tests/server/index.ts",
 		"prepare": "husky",
 		"lint": "npx @biomejs/biome check",
 		"check": "tsc --noEmit"
