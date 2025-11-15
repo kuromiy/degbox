@@ -89,10 +89,12 @@ export class IllustDataSource implements IllustRepository {
 		return illust;
 	}
 
-	async count(tag?: string): Promise<number> {
-		this.logger.info(`IllustDataSource#count call. tag: ${tag ?? "(none)"}`);
+	async count(keyword?: string): Promise<number> {
+		this.logger.info(
+			`IllustDataSource#count call. keyword: ${keyword ?? "(none)"}`,
+		);
 
-		const trimmedTag = tag?.trim();
+		const trimmedTag = keyword?.trim();
 
 		const query =
 			trimmedTag && trimmedTag !== ""
@@ -120,14 +122,14 @@ export class IllustDataSource implements IllustRepository {
 	}
 
 	async search(
-		tag: string | undefined,
+		keyword: string | undefined,
 		sortBy: string,
 		order: string,
 		page: number,
 		limit: number,
 	): Promise<Illust[]> {
 		this.logger.info(
-			`IllustDataSource#search. tag: ${tag ?? "(none)"}, sortBy: ${sortBy}, order: ${order}, page: ${page}, limit: ${limit}`,
+			`IllustDataSource#search. keyword: ${keyword ?? "(none)"}, sortBy: ${sortBy}, order: ${order}, page: ${page}, limit: ${limit}`,
 		);
 
 		// パラメータのバリデーション
@@ -137,7 +139,7 @@ export class IllustDataSource implements IllustRepository {
 			);
 		}
 
-		const trimmedTag = tag?.trim();
+		const trimmedTag = keyword?.trim();
 
 		// sortByパラメータのバリデーションとカラム選択
 		const sortColumn =

@@ -16,7 +16,7 @@ export function IllustSearchTemplate({
 		limit: number;
 		hasNext: boolean;
 		hasPrev: boolean;
-		tag?: string | undefined;
+		keyword?: string | undefined;
 		sortBy?: string;
 		order?: string;
 	};
@@ -30,9 +30,9 @@ export function IllustSearchTemplate({
 			<Form className="mb-8 flex items-center gap-4">
 				<Input
 					type="text"
-					name="tag"
-					placeholder="タグを入力..."
-					defaultValue={data.tag}
+					name="keyword"
+					placeholder="キーワードを入力..."
+					defaultValue={data.keyword}
 					className="flex-1"
 				/>
 				<select
@@ -57,7 +57,7 @@ export function IllustSearchTemplate({
 
 			{/* 検索結果情報 */}
 			<div className="mb-4 text-gray-600 text-sm">
-				全{data.total}件{data.tag && ` - タグ: "${data.tag}"`}
+				全{data.total}件{data.keyword && ` - キーワード: "${data.keyword}"`}
 			</div>
 
 			{/* ページネーション（上） */}
@@ -66,7 +66,7 @@ export function IllustSearchTemplate({
 				totalPages={Math.ceil(data.total / data.limit)}
 				baseUrl="/illust/search"
 				queryParams={{
-					...(data.tag && { tag: data.tag }),
+					...(data.keyword && { keyword: data.keyword }),
 					...(data.sortBy && { sortBy: data.sortBy }),
 					...(data.order && { order: data.order }),
 					limit: data.limit,
@@ -97,7 +97,7 @@ export function IllustSearchTemplate({
 				totalPages={Math.ceil(data.total / data.limit)}
 				baseUrl="/illust/search"
 				queryParams={{
-					...(data.tag && { tag: data.tag }),
+					...(data.keyword && { keyword: data.keyword }),
 					...(data.sortBy && { sortBy: data.sortBy }),
 					...(data.order && { order: data.order }),
 					limit: data.limit,

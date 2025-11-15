@@ -111,6 +111,10 @@ export class FetchClient implements ServiceIF {
 		return failure(new Error("pickupImage is not allowed in FetchClient"));
 	}
 
+	async detailIllust(_illustId: string) {
+		return failure(new Error("detailIllust is not allowed in FetchClient"));
+	}
+
 	async registerIllust(
 		_resourceIds: unknown[],
 		_rawTags: string,
