@@ -17,6 +17,10 @@ import AuthorSearchPage, {
 import IllustDetailPage, {
 	loader as illustDetailLoader,
 } from "./pages/illust.detail.page.js";
+import IllustEditPage, {
+	action as illustEditAction,
+	loader as illustEditLoader,
+} from "./pages/illust.edit.page.js";
 import IllustRegisterPage, {
 	action as illustRegisterAction,
 } from "./pages/illust.register.page.js";
@@ -83,6 +87,17 @@ export const route = createHashRouter([
 				path: "/illust/:illustId",
 				element: <IllustDetailPage />,
 				loader: illustDetailLoader,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/illust/:illustId/edit",
+				element: (
+					<Suspense fallback={<div>読み込み中...</div>}>
+						<IllustEditPage />
+					</Suspense>
+				),
+				loader: illustEditLoader,
+				action: illustEditAction,
 				HydrateFallback: () => <div>読み込み中...</div>,
 			},
 			{

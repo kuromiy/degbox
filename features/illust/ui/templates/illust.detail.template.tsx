@@ -107,14 +107,11 @@ export function IllustDetailTemplate({
 					</div>
 				)}
 
-				{/* 編集・削除ボタン（将来実装） */}
+				{/* 編集・削除ボタン */}
 				<div className="flex gap-4 border-t pt-6">
-					<NeutralButton
-						onClick={() => alert("編集機能は準備中です")}
-						className="flex-1"
-					>
-						編集
-					</NeutralButton>
+					<Link to={`/illust/${illust.id}/edit`} className="flex-1">
+						<NeutralButton className="w-full">編集</NeutralButton>
+					</Link>
 					<NegativeButton
 						onClick={() => alert("削除機能は準備中です")}
 						className="flex-1"
