@@ -3,9 +3,9 @@ import type { Illust } from "./illust.model.js";
 export interface IllustRepository {
 	generateId(): Promise<string>;
 	save(illust: Illust): Promise<Illust>;
-	count(tag?: string): Promise<number>;
+	count(keyword?: string): Promise<number>;
 	search(
-		tag: string | undefined,
+		keyword: string | undefined,
 		sortBy: string,
 		order: string,
 		page: number,

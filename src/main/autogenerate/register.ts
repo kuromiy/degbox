@@ -8,6 +8,7 @@ import { getAuthorDetail } from "../apis/authors/author.detail.api.js";
 import { registerAuthor } from "../apis/authors/author.register.api.js";
 import { searchAuthor } from "../apis/authors/author.search.api.js";
 import { updateAuthor } from "../apis/authors/author.update.api.js";
+import { detailIllust } from "../apis/illusts/illust.detail.api.js";
 import { pickupImage } from "../apis/illusts/illust.pickup.api.js";
 import { registerIllust } from "../apis/illusts/illust.register.api.js";
 import { searchIllust } from "../apis/illusts/illust.search.api.js";
@@ -63,6 +64,16 @@ export const autoGenerateHandlers = {
         return async (event: IpcMainInvokeEvent, args: any) => {
             try {
                 const result = await updateAuthor({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
+    "detailIllust": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await detailIllust({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
                 return failure(e);

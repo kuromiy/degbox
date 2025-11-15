@@ -4,7 +4,7 @@ import { factory } from "../../factory.js";
 import IllustSearchPage from "../../view/pages/illust.search.page.js";
 
 export const searchIllustSchema = z.object({
-	tag: z.string().optional(),
+	keyword: z.string().optional(),
 	sortBy: z.string().optional().default("id"),
 	order: z.string().optional().default("desc"),
 	page: z.coerce.number().int().min(1).optional().default(1),
@@ -42,12 +42,18 @@ app.get("/search", async (c) => {
 		);
 	}
 
-	const { tag, sortBy, order, page: rowPage, limit } = parsedQuery.data;
+	const { keyword, sortBy, order, page: rowPage, limit } = parsedQuery.data;
 	const page = rowPage - 1; // 表示は1ベース、処理は0ベースなので-1する
 
-	logger.info("search illust", { tag, sortBy, order, page: rowPage, limit });
+	logger.info("search illust", {
+		keyword,
+		sortBy,
+		order,
+		page: rowPage,
+		limit,
+	});
 
-	const total = await repository.count(tag);
+	const total = await repository.count(keyword);
 	const hasNext = total > rowPage * limit;
 	const hasPrev = rowPage > 1;
 
@@ -61,7 +67,7 @@ app.get("/search", async (c) => {
 					limit: limit,
 					hasNext: false,
 					hasPrev: false,
-					...(tag && { tag }),
+					...(keyword && { keyword }),
 					...(sortBy !== "id" && { sortBy }),
 					...(order !== "desc" && { order }),
 				}}
@@ -70,7 +76,7 @@ app.get("/search", async (c) => {
 		);
 	}
 
-	const items = await repository.search(tag, sortBy, order, page, limit);
+	const items = await repository.search(keyword, sortBy, order, page, limit);
 	return c.render(
 		<IllustSearchPage
 			searchResult={{
@@ -80,7 +86,7 @@ app.get("/search", async (c) => {
 				limit: limit,
 				hasNext: hasNext,
 				hasPrev: hasPrev,
-				...(tag && { tag }),
+				...(keyword && { keyword }),
 				...(sortBy !== "id" && { sortBy }),
 				...(order !== "desc" && { order }),
 			}}

@@ -10,7 +10,7 @@ type SearchResult = {
 	limit: number;
 	hasNext: boolean;
 	hasPrev: boolean;
-	tag?: string;
+	keyword?: string;
 	sortBy?: string;
 	order?: string;
 };

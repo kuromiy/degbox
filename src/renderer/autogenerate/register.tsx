@@ -4,6 +4,7 @@ import type { getAuthorDetail } from "../../main/apis/authors/author.detail.api.
 import type { registerAuthor } from "../../main/apis/authors/author.register.api.js";
 import type { searchAuthor } from "../../main/apis/authors/author.search.api.js";
 import type { updateAuthor } from "../../main/apis/authors/author.update.api.js";
+import type { detailIllust } from "../../main/apis/illusts/illust.detail.api.js";
 import type { pickupImage } from "../../main/apis/illusts/illust.pickup.api.js";
 import type { registerIllust } from "../../main/apis/illusts/illust.register.api.js";
 import type { searchIllust } from "../../main/apis/illusts/illust.search.api.js";
@@ -31,9 +32,10 @@ declare global {
             registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
             searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, Error>>;
             updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, Error>>;
+            detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, Error>>;
             pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, Error>>;
             registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
-            searchIllust: (tag: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
+            searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
             autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
             suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
             detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -51,9 +53,10 @@ export interface ServiceIF {
     registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
     searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, Error>>;
     updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, Error>>;
+    detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, Error>>;
     pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, Error>>;
     registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
-    searchIllust: (tag: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
+    searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
     autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
     detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -84,6 +87,10 @@ export class ApiService implements ServiceIF {
         return window.api.updateAuthor(id, name, urls);
     }
 
+    async detailIllust(illustId: string) {
+        return window.api.detailIllust(illustId);
+    }
+
     async pickupImage() {
         return window.api.pickupImage();
     }
@@ -92,8 +99,8 @@ export class ApiService implements ServiceIF {
         return window.api.registerIllust(resourceIds, rawTags, authorIds);
     }
 
-    async searchIllust(tag: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) {
-        return window.api.searchIllust(tag, sortBy, order, page, limit);
+    async searchIllust(keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) {
+        return window.api.searchIllust(keyword, sortBy, order, page, limit);
     }
 
     async autocompleteTags(value: string, limit: number | undefined) {

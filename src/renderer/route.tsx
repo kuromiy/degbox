@@ -14,6 +14,9 @@ import AuthorRegisterPage, {
 import AuthorSearchPage, {
 	loader as authorSearchLoader,
 } from "./pages/author.search.page.js";
+import IllustDetailPage, {
+	loader as illustDetailLoader,
+} from "./pages/illust.detail.page.js";
 import IllustRegisterPage, {
 	action as illustRegisterAction,
 } from "./pages/illust.register.page.js";
@@ -74,6 +77,12 @@ export const route = createHashRouter([
 				path: "/illust/register",
 				element: <IllustRegisterPage />,
 				action: illustRegisterAction,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/illust/:illustId",
+				element: <IllustDetailPage />,
+				loader: illustDetailLoader,
 				HydrateFallback: () => <div>読み込み中...</div>,
 			},
 			{

@@ -161,7 +161,7 @@ describe("イラスト検索画面", () => {
 		const app = createServer(container);
 
 		// "landscape" タグで検索
-		const res = await app.request("/illust/search?tag=landscape");
+		const res = await app.request("/illust/search?keyword=landscape");
 		assert.equal(res.status, 200);
 
 		const html = await res.text();
@@ -323,7 +323,7 @@ describe("イラスト検索画面", () => {
 		const app = createServer(container);
 
 		// 存在しないタグで検索
-		const res = await app.request("/illust/search?tag=nonexistent");
+		const res = await app.request("/illust/search?keyword=nonexistent");
 		assert.equal(res.status, 200);
 
 		const html = await res.text();

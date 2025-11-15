@@ -154,7 +154,7 @@ describe("イラスト検索API", () => {
 
 		// "landscape" タグで検索
 		const result = await searchIllust(context, {
-			tag: "landscape",
+			keyword: "landscape",
 			page: 1,
 			limit: 20,
 			sortBy: "id",

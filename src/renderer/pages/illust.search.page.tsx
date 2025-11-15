@@ -8,7 +8,7 @@ const client = new ApiService();
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
-	const tag = url.searchParams.get("tag") ?? undefined;
+	const keyword = url.searchParams.get("keyword") ?? undefined;
 	const sortBy = url.searchParams.get("sortBy") ?? undefined;
 	const order = url.searchParams.get("order") ?? undefined;
 
@@ -25,7 +25,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 		? Math.max(1, Math.min(100, limitNum))
 		: 20;
 
-	const response = await client.searchIllust(tag, sortBy, order, page, limit);
+	const response = await client.searchIllust(
+		keyword,
+		sortBy,
+		order,
+		page,
+		limit,
+	);
 	if (isFailure(response)) {
 		throw response.value;
 	}
@@ -40,7 +46,7 @@ export default function IllustSearchPage() {
 		limit: number;
 		hasNext: boolean;
 		hasPrev: boolean;
-		tag?: string;
+		keyword?: string;
 		sortBy?: string;
 		order?: string;
 	}>();
