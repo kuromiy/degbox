@@ -21,7 +21,7 @@ export function IllustEditTemplate({
 	onCancel,
 }: IllustEditTemplateProps) {
 	const { Form } = useNavigation();
-	const initialTags = illust.tags.map((t) => t.name).join(", ");
+	const initialTags = illust.tags.map((t) => t.name).join(" ");
 	const { tags, add, replace, change, autocompleteTags, suggestTags } =
 		useTagInput(initialTags);
 	const [isOpen, setIsOpen] = useState(false);
