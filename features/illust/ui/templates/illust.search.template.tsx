@@ -57,7 +57,7 @@ export function IllustSearchTemplate({
 
 			{/* 検索結果情報 */}
 			<div className="mb-4 text-gray-600 text-sm">
-				全{data.total}件{data.keyword && ` - タグ: "${data.keyword}"`}
+				全{data.total}件{data.keyword && ` - キーワード: "${data.keyword}"`}
 			</div>
 
 			{/* ページネーション（上） */}

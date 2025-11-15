@@ -45,8 +45,22 @@ app.get("/detail/:illustId", async (c) => {
 		);
 	}
 
+	// ユーザーフレンドリーなタイトルを生成
+	let descriptiveTitle = "詳細";
+
+	// 最初の3つのタグ名を使用
+	if (illust.tags.length > 0) {
+		const tagNames = illust.tags.slice(0, 3).map((tag) => tag.name);
+		descriptiveTitle = tagNames.join("、");
+	}
+	// タグがない場合は著者名を使用
+	else if (illust.authors.length > 0) {
+		const authorNames = illust.authors.slice(0, 2).map((author) => author.name);
+		descriptiveTitle = authorNames.join("、");
+	}
+
 	return c.render(<IllustDetailPage illust={illust} />, {
-		title: `イラスト詳細 - ${illustId}`,
+		title: `イラスト詳細 - ${descriptiveTitle}`,
 	});
 });
 
