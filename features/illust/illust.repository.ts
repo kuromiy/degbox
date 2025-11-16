@@ -18,4 +18,5 @@ export interface IllustRepository {
 		page: number,
 		size: number,
 	): Promise<Illust[]>;
+	delete(illustId: string): Promise<boolean>;
 }

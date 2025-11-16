@@ -142,6 +142,10 @@ export class FetchClient implements ServiceIF {
 		return failure(new Error("searchIllust is not allowed in FetchClient"));
 	}
 
+	async deleteIllust(_illustId: string) {
+		return failure(new Error("deleteIllust is not allowed in FetchClient"));
+	}
+
 	async detailVideo(_videoId: string) {
 		return failure(new Error("detailVideo is not allowed in FetchClient"));
 	}

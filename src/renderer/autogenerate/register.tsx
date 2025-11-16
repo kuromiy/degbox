@@ -4,6 +4,7 @@ import type { getAuthorDetail } from "../../main/apis/authors/author.detail.api.
 import type { registerAuthor } from "../../main/apis/authors/author.register.api.js";
 import type { searchAuthor } from "../../main/apis/authors/author.search.api.js";
 import type { updateAuthor } from "../../main/apis/authors/author.update.api.js";
+import type { deleteIllust } from "../../main/apis/illusts/illust.delete.api.js";
 import type { detailIllust } from "../../main/apis/illusts/illust.detail.api.js";
 import type { pickupImage } from "../../main/apis/illusts/illust.pickup.api.js";
 import type { registerIllust } from "../../main/apis/illusts/illust.register.api.js";
@@ -33,6 +34,7 @@ declare global {
             registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
             searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, Error>>;
             updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, Error>>;
+            deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, Error>>;
             detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, Error>>;
             pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, Error>>;
             registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
@@ -55,6 +57,7 @@ export interface ServiceIF {
     registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
     searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, Error>>;
     updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, Error>>;
+    deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, Error>>;
     detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, Error>>;
     pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, Error>>;
     registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
@@ -88,6 +91,10 @@ export class ApiService implements ServiceIF {
 
     async updateAuthor(id: string, name: string, urls: string) {
         return window.api.updateAuthor(id, name, urls);
+    }
+
+    async deleteIllust(illustId: string) {
+        return window.api.deleteIllust(illustId);
     }
 
     async detailIllust(illustId: string) {

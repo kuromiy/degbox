@@ -195,6 +195,7 @@ export const depend: DependencyEntry[] = [
 				c.get(TOKENS.ILLUST_REPOSITORY),
 				c.get(TOKENS.CONTENT_ACTION),
 				c.get(TOKENS.UNMANAGED_CONTENT_REPOSITORY),
+				c.get(TOKENS.CONTENT_SERVICE),
 			),
 	},
 ];

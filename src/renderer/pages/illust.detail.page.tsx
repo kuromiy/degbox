@@ -1,6 +1,10 @@
 import { isFailure } from "electron-flow/result";
 import { Suspense } from "react";
-import { type LoaderFunctionArgs, useLoaderData } from "react-router-dom";
+import {
+	type LoaderFunctionArgs,
+	useLoaderData,
+	useNavigate,
+} from "react-router-dom";
 import type { Illust } from "../../../features/illust/illust.model.js";
 import { IllustDetailTemplate } from "../../../features/illust/ui/templates/illust.detail.template.js";
 import { ApiService } from "../autogenerate/register.js";
@@ -21,6 +25,18 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function IllustDetailPage() {
 	const illust = useLoaderData<Illust>();
+	const navigate = useNavigate();
+
+	const handleDelete = async () => {
+		const result = await client.deleteIllust(illust.id);
+
+		if (isFailure(result)) {
+			throw new Error("削除に失敗しました");
+		}
+
+		// 検索画面へ遷移
+		navigate("/illust/search");
+	};
 
 	return (
 		<Suspense fallback={<div>読み込み中...</div>}>
@@ -28,6 +44,7 @@ export default function IllustDetailPage() {
 				illust={illust}
 				backUrl="/illust/search"
 				tagUrlPrefix="/illust/search"
+				onDelete={handleDelete}
 			/>
 		</Suspense>
 	);

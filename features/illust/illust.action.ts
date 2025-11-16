@@ -1,6 +1,7 @@
 import type { Author } from "../author/author.model.js";
 import type { ContentAction } from "../content/content.action.js";
 import type { Content } from "../content/content.model.js";
+import type { ContentService } from "../content/content.service.js";
 import type { Tag } from "../tag/tag.model.js";
 import type { UnmanagedContentRepository } from "../unmanaged-content/unmanagedContent.repository.js";
 import type { IllustContent } from "./illust.model.js";
@@ -17,6 +18,7 @@ export class IllustAction {
 		private readonly repository: IllustRepository,
 		private readonly contentAction: ContentAction,
 		private readonly unmanagedContentRepository: UnmanagedContentRepository,
+		private readonly contentService: ContentService,
 	) {}
 
 	async register(tags: Tag[], contents: Content[], authors?: Author[]) {
@@ -98,5 +100,26 @@ export class IllustAction {
 
 		// イラストを保存（既存の関連は削除されて新しいものが保存される）
 		return await this.repository.save(illust);
+	}
+
+	async delete(illustId: string): Promise<boolean> {
+		// イラストデータを取得
+		const illust = await this.repository.findById(illustId);
+		if (!illust) {
+			return false;
+		}
+
+		// 物理ファイルを削除（ContentServiceが利用可能な場合）
+		for (const illustContent of illust.contents) {
+			const content = illustContent.content;
+			// buildFileUrlされたパスからオリジナルのパスを復元
+			// content.pathはURLエンコードされている可能性があるため、
+			// 実際のファイルパスとファイル名を使用
+			console.log(content.path);
+			await this.contentService.deleteContent(content.path, content.name);
+		}
+
+		// データベースから削除
+		return await this.repository.delete(illustId);
 	}
 }

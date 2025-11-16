@@ -426,4 +426,37 @@ export class IllustDataSource implements IllustRepository {
 		this.logger.info(`result num: ${result.length}`);
 		return result;
 	}
+
+	async delete(illustId: string): Promise<boolean> {
+		this.logger.info(`IllustDataSource#delete. illustId: ${illustId}`);
+
+		// イラストが存在するか確認
+		const illustResult = await this.db
+			.select()
+			.from(ILLUSTS)
+			.where(eq(ILLUSTS.id, illustId))
+			.limit(1);
+
+		if (illustResult.length === 0) {
+			this.logger.info(`Illust not found: ${illustId}`);
+			return false;
+		}
+
+		// 中間テーブルのレコードを削除
+		await this.db
+			.delete(ILLUSTS_CONTENTS)
+			.where(eq(ILLUSTS_CONTENTS.illustId, illustId));
+		await this.db
+			.delete(ILLUSTS_TAGS)
+			.where(eq(ILLUSTS_TAGS.illustId, illustId));
+		await this.db
+			.delete(ILLUSTS_AUTHORS)
+			.where(eq(ILLUSTS_AUTHORS.illustId, illustId));
+
+		// イラスト本体を削除
+		await this.db.delete(ILLUSTS).where(eq(ILLUSTS.id, illustId));
+
+		this.logger.info(`Illust deleted: ${illustId}`);
+		return true;
+	}
 }

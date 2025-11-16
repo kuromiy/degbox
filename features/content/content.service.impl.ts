@@ -87,6 +87,11 @@ export class ContentServiceImpl implements ContentService {
 		return destPath;
 	}
 
+	async deleteContent(contentPath: string, contentName: string): Promise<void> {
+		const fullPath = join(this.baseContentPath, contentPath, contentName);
+		await this.fs.delete(fullPath);
+	}
+
 	private getMediaType(filePath: string): MediaType {
 		const ext = extname(filePath).toLowerCase();
 		if (MEDIA_TYPE_EXTENSIONS.videos.has(ext)) {

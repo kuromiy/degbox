@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
 	NegativeButton,
 	NeutralButton,
@@ -10,15 +11,56 @@ export function IllustDetailTemplate({
 	illust,
 	backUrl,
 	tagUrlPrefix = "/",
+	onDelete,
 }: {
 	illust: Illust;
 	backUrl: string;
 	tagUrlPrefix?: string;
+	onDelete?: () => Promise<void>;
 }) {
 	const { Link } = useNavigation();
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+	const handleDelete = () => {
+		setShowDeleteDialog(true);
+	};
+
+	const confirmDelete = async () => {
+		try {
+			if (onDelete) {
+				await onDelete();
+			}
+		} catch (_error) {
+			alert("削除に失敗しました");
+		} finally {
+			setShowDeleteDialog(false);
+		}
+	};
+
+	const cancelDelete = () => {
+		setShowDeleteDialog(false);
+	};
 
 	return (
 		<main className="container mx-auto px-2 pt-10">
+			{/* 削除確認ダイアログ */}
+			{showDeleteDialog && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+					<div className="rounded-lg bg-white p-6 shadow-xl">
+						<h3 className="mb-4 font-bold text-lg">イラストの削除</h3>
+						<p className="mb-6 text-gray-700">
+							このイラストを削除しますか？
+							<br />
+							この操作は取り消せません。
+						</p>
+						<div className="flex justify-end gap-4">
+							<NeutralButton onClick={cancelDelete}>キャンセル</NeutralButton>
+							<NegativeButton onClick={confirmDelete}>削除</NegativeButton>
+						</div>
+					</div>
+				</div>
+			)}
+
 			<div className="mb-6">
 				<Link
 					to={backUrl}
@@ -112,10 +154,7 @@ export function IllustDetailTemplate({
 					<Link to={`/illust/${illust.id}/edit`} className="flex-1">
 						<NeutralButton className="w-full">編集</NeutralButton>
 					</Link>
-					<NegativeButton
-						onClick={() => alert("削除機能は準備中です")}
-						className="flex-1"
-					>
+					<NegativeButton onClick={handleDelete} className="flex-1">
 						削除
 					</NegativeButton>
 				</div>
