@@ -45,18 +45,23 @@ export function IllustEditImageManager({
 		}
 
 		// 複数選択対応
-		const newImages = response.value.map(
-			(item: { id: string; name: string }, index: number) => ({
+		const newImagesData = response.value.map(
+			(item: { id: string; name: string }) => ({
 				id: crypto.randomUUID(),
 				resourceId: item.id,
 				name: item.name,
-				url: `resources://${item.id}`,
-				order: images.length + index,
-				isExisting: false,
 			}),
 		);
 
-		setImages([...images, ...newImages]);
+		setImages((prev) => [
+			...prev,
+			...newImagesData.map((item, index) => ({
+				...item,
+				url: `resources://${item.resourceId}`,
+				order: prev.length + index,
+				isExisting: false,
+			})),
+		]);
 	}
 
 	function moveUp(index: number) {
