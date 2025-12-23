@@ -1,3 +1,4 @@
+import type { Logger } from "winston";
 import type { Author } from "../author/author.model.js";
 import type { ContentAction } from "../content/content.action.js";
 import type { Content } from "../content/content.model.js";
@@ -15,6 +16,7 @@ type IllustContentItem = {
 
 export class IllustAction {
 	constructor(
+		private readonly logger: Logger,
 		private readonly repository: IllustRepository,
 		private readonly contentAction: ContentAction,
 		private readonly unmanagedContentRepository: UnmanagedContentRepository,
@@ -103,9 +105,11 @@ export class IllustAction {
 	}
 
 	async delete(illustId: string): Promise<boolean> {
+		this.logger.info("Illust Action#delete", { illustId });
 		// イラストデータを取得
 		const illust = await this.repository.findById(illustId);
 		if (!illust) {
+			this.logger.info("not found", { illustId });
 			return false;
 		}
 
@@ -115,7 +119,7 @@ export class IllustAction {
 			// buildFileUrlされたパスからオリジナルのパスを復元
 			// content.pathはURLエンコードされている可能性があるため、
 			// 実際のファイルパスとファイル名を使用
-			console.log(content.path);
+			this.logger.info("illust content", { content });
 			await this.contentService.deleteContent(content.path, content.name);
 		}
 

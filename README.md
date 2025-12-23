@@ -31,3 +31,7 @@ npm install
 ```sh
 npm run db:migrate
 ```
+
+```sh
+npx drizzle-kit studio
+```
