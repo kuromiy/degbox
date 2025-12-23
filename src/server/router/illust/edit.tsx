@@ -4,6 +4,7 @@ import { createScopedContainer } from "../../../../features/shared/container/ind
 import { Tag } from "../../../../features/tag/tag.model.js";
 import { TOKENS } from "../../../main/depend.injection.js";
 import { factory } from "../../factory.js";
+import { convertIllustContentPathsToUrls } from "../../helpers/illust.helper.js";
 import { formValidatorMiddleware } from "../../middleware/formValidator.js";
 import IllustEditPage from "../../view/pages/illust.edit.page.js";
 
@@ -48,7 +49,10 @@ app.get("/:illustId/edit", async (c) => {
 		);
 	}
 
-	return c.render(<IllustEditPage illust={illust} />, {
+	// datasource層から取得したパスを完全URLに変換
+	const illustWithUrls = convertIllustContentPathsToUrls(illust);
+
+	return c.render(<IllustEditPage illust={illustWithUrls} />, {
 		title: `イラスト編集`,
 	});
 });

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { convertVideoPathsToUrls } from "../../../server/helpers/video.helper.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../depend.injection.js";
 
@@ -25,5 +26,6 @@ export async function detailVideo(ctx: Context, request: DetailVideoRequest) {
 		logger.warn(`Video not found: ${videoId}`);
 		throw new Error("Video not found");
 	}
-	return video;
+	// datasource層から取得したパスを完全URLに変換
+	return convertVideoPathsToUrls(video);
 }

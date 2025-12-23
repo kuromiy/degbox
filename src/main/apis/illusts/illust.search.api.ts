@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { convertIllustArrayContentPathsToUrls } from "../../../server/helpers/illust.helper.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../depend.injection.js";
 
@@ -41,8 +42,10 @@ export async function searchIllust(ctx: Context, request: SearchIllustRequest) {
 		};
 	}
 	const items = await repository.search(keyword, sortBy, order, page, limit);
+	// datasource層から取得したパスを完全URLに変換
+	const itemsWithUrls = convertIllustArrayContentPathsToUrls(items);
 	return {
-		items: items,
+		items: itemsWithUrls,
 		total: total,
 		page: rowPage,
 		limit: limit,

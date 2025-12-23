@@ -2,7 +2,6 @@ import { randomUUID } from "node:crypto";
 import { posix } from "node:path";
 import { asc, countDistinct, desc, eq, inArray, like } from "drizzle-orm";
 import type { Logger } from "winston";
-import { buildFileUrl } from "../../src/server/config/index.js";
 import {
 	AUTHORS,
 	CONTENTS,
@@ -231,7 +230,7 @@ export class VideoDataSource implements VideoRepository {
 					.map((c) => ({
 						content: c.contents,
 						order: c.videos_contents.order,
-						videoUrl: buildFileUrl(posix.join(c.contents.path, "index.m3u8")),
+						videoUrl: posix.join(c.contents.path, "index.m3u8"),
 					}));
 				const as = authors
 					.filter((a) => a.videos_authors.videoId === videoId)
@@ -251,12 +250,8 @@ export class VideoDataSource implements VideoRepository {
 
 				return {
 					id: videoId,
-					previewGifPath: buildFileUrl(
-						posix.join(firstContent.content.path, "preview.gif"),
-					),
-					thumbnailPath: buildFileUrl(
-						posix.join(firstContent.content.path, "thumbnail.jpg"),
-					),
+					previewGifPath: posix.join(firstContent.content.path, "preview.gif"),
+					thumbnailPath: posix.join(firstContent.content.path, "thumbnail.jpg"),
 					tags: ts,
 					contents: cs,
 					authors: as,
@@ -314,17 +309,13 @@ export class VideoDataSource implements VideoRepository {
 
 		return {
 			id: videoId,
-			previewGifPath: buildFileUrl(
-				posix.join(firstContent.path, "preview.gif"),
-			),
-			thumbnailPath: buildFileUrl(
-				posix.join(firstContent.path, "thumbnail.jpg"),
-			),
+			previewGifPath: posix.join(firstContent.path, "preview.gif"),
+			thumbnailPath: posix.join(firstContent.path, "thumbnail.jpg"),
 			tags: tags.map((t) => t.tags),
 			contents: contents.map((c) => ({
 				content: c.contents,
 				order: c.videos_contents.order,
-				videoUrl: buildFileUrl(posix.join(c.contents.path, "index.m3u8")),
+				videoUrl: posix.join(c.contents.path, "index.m3u8"),
 			})),
 			authors: authors.map((a) => ({
 				id: a.authors.id,
@@ -419,7 +410,7 @@ export class VideoDataSource implements VideoRepository {
 					.map((c) => ({
 						content: c.contents,
 						order: c.videos_contents.order,
-						videoUrl: buildFileUrl(posix.join(c.contents.path, "index.m3u8")),
+						videoUrl: posix.join(c.contents.path, "index.m3u8"),
 					}));
 				const as = authors
 					.filter((a) => a.videos_authors.videoId === videoId)
@@ -439,12 +430,8 @@ export class VideoDataSource implements VideoRepository {
 
 				return {
 					id: videoId,
-					previewGifPath: buildFileUrl(
-						posix.join(firstContent.content.path, "preview.gif"),
-					),
-					thumbnailPath: buildFileUrl(
-						posix.join(firstContent.content.path, "thumbnail.jpg"),
-					),
+					previewGifPath: posix.join(firstContent.content.path, "preview.gif"),
+					thumbnailPath: posix.join(firstContent.content.path, "thumbnail.jpg"),
 					tags: ts,
 					contents: cs,
 					authors: as,

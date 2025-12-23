@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TOKENS } from "../../../main/depend.injection.js";
 import { factory } from "../../factory.js";
+import { convertVideoPathsToUrls } from "../../helpers/video.helper.js";
 import VideoDetailPage from "../../view/pages/video.detail.page.js";
 
 export const detailVideoSchema = z.object({
@@ -45,7 +46,10 @@ app.get("/detail/:videoId", async (c) => {
 		);
 	}
 
-	return c.render(<VideoDetailPage video={video} />, {
+	// datasource層から取得したパスを完全URLに変換
+	const videoWithUrls = convertVideoPathsToUrls(video);
+
+	return c.render(<VideoDetailPage video={videoWithUrls} />, {
 		title: `動画詳細 - ${videoId}`,
 	});
 });

@@ -1,8 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { posix } from "node:path";
 import { asc, countDistinct, desc, eq, inArray, like } from "drizzle-orm";
 import type { Logger } from "winston";
-import { buildFileUrl } from "../../src/server/config/index.js";
 import {
 	AUTHORS,
 	CONTENTS,
@@ -216,10 +214,7 @@ export class IllustDataSource implements IllustRepository {
 				const cs = contents
 					.filter((c) => c.illusts_contents.illustId === illustId)
 					.map((c) => ({
-						content: {
-							...c.contents,
-							path: buildFileUrl(posix.join(c.contents.path, c.contents.name)),
-						},
+						content: c.contents,
 						order: c.illusts_contents.order,
 					}));
 				const as = authors
@@ -297,10 +292,7 @@ export class IllustDataSource implements IllustRepository {
 			id: illustId,
 			tags: tags.map((t) => t.tags),
 			contents: contents.map((c) => ({
-				content: {
-					...c.contents,
-					path: buildFileUrl(posix.join(c.contents.path, c.contents.name)),
-				},
+				content: c.contents,
 				order: c.illusts_contents.order,
 			})),
 			authors: authors.map((a) => ({
@@ -394,10 +386,7 @@ export class IllustDataSource implements IllustRepository {
 				const cs = contents
 					.filter((c) => c.illusts_contents.illustId === illustId)
 					.map((c) => ({
-						content: {
-							...c.contents,
-							path: buildFileUrl(posix.join(c.contents.path, c.contents.name)),
-						},
+						content: c.contents,
 						order: c.illusts_contents.order,
 					}));
 				const as = authors

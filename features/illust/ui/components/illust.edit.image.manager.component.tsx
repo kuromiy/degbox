@@ -1,5 +1,6 @@
 import { isFailure } from "electron-flow/result";
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { ApiService } from "../../../../src/renderer/autogenerate/register.js";
 import {
 	NegativeButton,
@@ -28,7 +29,7 @@ export function IllustEditImageManager({
 }: IllustEditImageManagerProps) {
 	const [images, setImages] = useState<ImageItem[]>(
 		initialContents.map((ic, index) => ({
-			id: crypto.randomUUID(),
+			id: uuidv4(),
 			contentId: ic.content.id,
 			name: ic.content.name,
 			url: ic.content.path,
@@ -47,7 +48,7 @@ export function IllustEditImageManager({
 		// 複数選択対応
 		const newImagesData = response.value.map(
 			(item: { id: string; name: string }) => ({
-				id: crypto.randomUUID(),
+				id: uuidv4(),
 				resourceId: item.id,
 				name: item.name,
 			}),
