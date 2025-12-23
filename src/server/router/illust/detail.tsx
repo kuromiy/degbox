@@ -70,4 +70,35 @@ app.get("/detail/:illustId", async (c) => {
 	});
 });
 
+// 削除エンドポイント
+app.post("/detail/:illustId/delete", async (c) => {
+	const { container } = c.var;
+	const [logger, illustAction] = container.get(
+		TOKENS.LOGGER,
+		TOKENS.ILLUST_ACTION,
+	);
+
+	const illustId = c.req.param("illustId");
+	const parsedParams = detailIllustSchema.safeParse({ illustId });
+
+	if (!parsedParams.success) {
+		logger.warn("Invalid illust ID for delete", parsedParams.error);
+		return c.json({ success: false, error: "無効なイラストIDです" }, 400);
+	}
+
+	logger.info("delete illust", { illustId });
+
+	const success = await illustAction.delete(illustId);
+
+	if (!success) {
+		logger.warn(`Illust not found for delete: ${illustId}`);
+		return c.json(
+			{ success: false, error: "イラストが見つかりませんでした" },
+			404,
+		);
+	}
+
+	return c.json({ success: true });
+});
+
 export default app;

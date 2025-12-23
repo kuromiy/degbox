@@ -29,6 +29,16 @@ export function IllustDetailTemplate({
 		try {
 			if (onDelete) {
 				await onDelete();
+			} else {
+				// サーバー版: 直接APIを呼び出し
+				const response = await fetch(`/illust/detail/${illust.id}/delete`, {
+					method: "POST",
+				});
+				if (!response.ok) {
+					throw new Error("削除に失敗しました");
+				}
+				// 検索画面へ遷移
+				window.location.href = "/illust/search";
 			}
 		} catch (_error) {
 			alert("削除に失敗しました");
