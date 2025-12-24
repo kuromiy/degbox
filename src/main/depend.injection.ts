@@ -1,4 +1,7 @@
 import type { Logger } from "winston";
+import { AppSettingDataSource } from "../../features/appsetting/app.setting.datasource.js";
+import type { AppSetting } from "../../features/appsetting/app.setting.model.js";
+import type { AppSettingRepository } from "../../features/appsetting/app.setting.repository.js";
 import { AuthorDataSource } from "../../features/author/author.datasource.js";
 import type { AuthorRepository } from "../../features/author/author.repository.js";
 import { ContentAction } from "../../features/content/content.action.js";
@@ -15,6 +18,7 @@ import {
 } from "../../features/shared/container/index.js";
 import { createDatabase } from "../../features/shared/database/index.js";
 import type { Database } from "../../features/shared/database/type.js";
+import type { FileStore } from "../../features/shared/filestore/index.js";
 import {
 	type FileSystem,
 	FileSystemImpl,
@@ -42,6 +46,9 @@ export const TOKENS = {
 	JOB_QUEUE: new InjectionToken<JobQueue>("JobQueue"),
 	DATABASE: new InjectionToken<Database>("Database"),
 	CACHE: new InjectionToken<Map<string, UnmanagedContent>>("Cache"),
+	APPSETTING_FILE_STORE: new InjectionToken<FileStore<AppSetting>>(
+		"AppSettingFileStore",
+	),
 
 	// repository
 	UNMANAGED_CONTENT_REPOSITORY: new InjectionToken<UnmanagedContentDataSource>(
@@ -57,6 +64,9 @@ export const TOKENS = {
 	AUTHOR_REPOSITORY: new InjectionToken<AuthorRepository>("AuthorRepository"),
 	VIDEO_REPOSITORY: new InjectionToken<VideoRepository>("VideoRepository"),
 	ILLUST_REPOSITORY: new InjectionToken<IllustRepository>("IllustRepository"),
+	APPSETTING_REPOSITORY: new InjectionToken<AppSettingRepository>(
+		"AppSettingRepository",
+	),
 
 	// service
 	CONTENT_SERVICE: new InjectionToken<ContentService>("ContentService"),
@@ -105,6 +115,12 @@ export const depend: DependencyEntry[] = [
 		token: TOKENS.CACHE,
 		provider: (_: Container) => cache,
 	},
+	{
+		token: TOKENS.APPSETTING_FILE_STORE,
+		provider: (_: Container) => {
+			throw new Error("");
+		},
+	},
 
 	// repository
 	{
@@ -139,6 +155,11 @@ export const depend: DependencyEntry[] = [
 		provider: (c: Container) =>
 			new IllustDataSource(c.get(TOKENS.LOGGER), c.get(TOKENS.DATABASE)),
 	},
+	{
+		token: TOKENS.APPSETTING_REPOSITORY,
+		provider: (c: Container) =>
+			new AppSettingDataSource(c.get(TOKENS.APPSETTING_FILE_STORE)),
+	},
 
 	// service
 	{
@@ -153,7 +174,11 @@ export const depend: DependencyEntry[] = [
 	{
 		token: TOKENS.VIDEO_SERVICE,
 		provider: (c: Container) =>
-			new VideoServiceImpl(c.get(TOKENS.LOGGER), c.get(TOKENS.FILE_SYSTEM)),
+			new VideoServiceImpl(
+				c.get(TOKENS.LOGGER),
+				c.get(TOKENS.FILE_SYSTEM),
+				c.get(TOKENS.APPSETTING_REPOSITORY),
+			),
 	},
 	{
 		token: TOKENS.TAG_SUGGESTION_SERVICE,

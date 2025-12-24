@@ -2,10 +2,19 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { serve } from "@hono/node-server";
 import { app, BrowserWindow, protocol } from "electron";
+import {
+	type AppSetting,
+	AppSettingSchema,
+} from "../../features/appsetting/app.setting.model.js";
 import { Container } from "../../features/shared/container/index.js";
+import {
+	createJsonFileStoreWithFallback,
+	type FileStoreValidationError,
+} from "../../features/shared/filestore/index.js";
+import { logger } from "../../features/shared/logger/index.js";
 import { createServer } from "../server/server.js";
 import { registerAPI, registerProtocol } from "./autogenerate/index.js";
-import { depend } from "./depend.injection.js";
+import { depend, TOKENS } from "./depend.injection.js";
 
 const IS_DEV =
 	process.env.NODE_ENV === "development" ||
@@ -26,10 +35,43 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 app.whenReady().then(async () => {
+	// D:\\tools\\ffmpeg-6.0-full_build\\ffmpeg-6.0-full_build\\bin\\ffmpeg.exe
+	const init: AppSetting = {
+		ffmpeg: "",
+	};
+	const appSettingFileStorePath = app.getPath("userData");
+	const path = join(appSettingFileStorePath, "app_setting.json");
+	const appSettingFileStore = await createJsonFileStoreWithFallback(
+		path,
+		init,
+		AppSettingSchema,
+		{
+			onValidationError: async (error: FileStoreValidationError) => {
+				logger.error(
+					`App setting file is corrupted, resetting to default: ${error.message}`,
+				);
+				// TODO: 将来的にはダイアログでユーザーに確認を取る
+				// const { response } = await dialog.showMessageBox({
+				//   type: "warning",
+				//   buttons: ["Reset to default", "Exit app"],
+				//   message: "Settings file is corrupted",
+				//   detail: error.message,
+				// });
+				// return response === 0;
+				return true; // 初期値にリセット
+			},
+		},
+	);
+
 	const container = new Container();
 	depend.forEach(({ token, provider }) => {
 		container.register(token, provider);
 	});
+	// TODO: 別ファイルにわける？
+	container.register(
+		TOKENS.APPSETTING_FILE_STORE,
+		(_: Container) => appSettingFileStore,
+	);
 
 	const application = createServer(container);
 	serve({

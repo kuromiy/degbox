@@ -2,6 +2,8 @@
 import { ipcRenderer } from "electron";
 
 export default {
+    getAppSetting: () => ipcRenderer.invoke("getAppSetting", {  }),
+    updateAppSetting: (ffmpegPath: string) => ipcRenderer.invoke("updateAppSetting", { ffmpegPath }),
     deleteAuthor: (id: string) => ipcRenderer.invoke("deleteAuthor", { id }),
     getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => ipcRenderer.invoke("getAuthorDetail", { authorId, videoPage, videoSize }),
     registerAuthor: (name: string, urls: string) => ipcRenderer.invoke("registerAuthor", { name, urls }),

@@ -34,4 +34,8 @@ export const menuItems: MenuCategory[] = [
 			{ to: "/author/register", label: "作者登録" },
 		],
 	},
+	{
+		category: "設定",
+		items: [{ to: "/appsettings", label: "アプリ設定" }],
+	},
 ];

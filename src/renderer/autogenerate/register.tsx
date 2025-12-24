@@ -1,4 +1,6 @@
 // auto generated
+import type { getAppSetting } from "../../main/apis/appsettings/app.setting.get.api.js";
+import type { updateAppSetting } from "../../main/apis/appsettings/app.setting.update.api.js";
 import type { deleteAuthor } from "../../main/apis/authors/author.delete.api.js";
 import type { getAuthorDetail } from "../../main/apis/authors/author.detail.api.js";
 import type { registerAuthor } from "../../main/apis/authors/author.register.api.js";
@@ -29,6 +31,8 @@ type ReturnTypeUnwrapped<T> = T extends (...args: infer _Args) => infer R
 declare global {
     interface Window {
         api: {
+            getAppSetting: () => Promise<Result<ReturnTypeUnwrapped<typeof getAppSetting>, Error>>;
+            updateAppSetting: (ffmpegPath: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, Error>>;
             deleteAuthor: (id: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteAuthor>, Error>>;
             getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, Error>>;
             registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
@@ -52,6 +56,8 @@ declare global {
 
 // サービスインターフェース
 export interface ServiceIF {
+    getAppSetting: () => Promise<Result<ReturnTypeUnwrapped<typeof getAppSetting>, Error>>;
+    updateAppSetting: (ffmpegPath: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, Error>>;
     deleteAuthor: (id: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteAuthor>, Error>>;
     getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, Error>>;
     registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
@@ -73,6 +79,14 @@ export interface ServiceIF {
 
 // サービス実装クラス
 export class ApiService implements ServiceIF {
+    async getAppSetting() {
+        return window.api.getAppSetting();
+    }
+
+    async updateAppSetting(ffmpegPath: string) {
+        return window.api.updateAppSetting(ffmpegPath);
+    }
+
     async deleteAuthor(id: string) {
         return window.api.deleteAuthor(id);
     }

@@ -3,6 +3,8 @@ import type { Context } from "../context.js";
 import { ipcMain, type IpcMainInvokeEvent } from "electron";
 import { success, failure } from "electron-flow";
 
+import { getAppSetting } from "../apis/appsettings/app.setting.get.api.js";
+import { updateAppSetting } from "../apis/appsettings/app.setting.update.api.js";
 import { deleteAuthor } from "../apis/authors/author.delete.api.js";
 import { getAuthorDetail } from "../apis/authors/author.detail.api.js";
 import { registerAuthor } from "../apis/authors/author.register.api.js";
@@ -22,6 +24,26 @@ import { registerVideo } from "../apis/videos/video.register.api.js";
 import { searchVideo } from "../apis/videos/video.search.api.js";
 
 export const autoGenerateHandlers = {
+    "getAppSetting": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, _: unknown) => {
+            try {
+                const result = await getAppSetting({ ...ctx, event }, );
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
+    "updateAppSetting": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: any) => {
+            try {
+                const result = await updateAppSetting({ ...ctx, event }, args);
+                return success(result);
+            } catch (e) {
+                return failure(e);
+            }
+        };
+    },
     "deleteAuthor": (ctx: Omit<Context, "event">) => {
         return async (event: IpcMainInvokeEvent, args: any) => {
             try {

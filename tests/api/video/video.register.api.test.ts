@@ -1,6 +1,8 @@
 import { strict as assert } from "node:assert";
 import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
+import type { AppSetting } from "../../../features/appsetting/app.setting.model.js";
+import type { AppSettingRepository } from "../../../features/appsetting/app.setting.repository.js";
 import { Container } from "../../../features/shared/container/index.js";
 import type { UnmanagedContent } from "../../../features/unmanaged-content/unmanagedContent.model.js";
 import { registerVideo } from "../../../src/main/apis/videos/video.register.api.js";
@@ -43,6 +45,20 @@ describe("ビデオ登録API", () => {
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container.register(TOKENS.CACHE, () => cache);
+
+		const mockAppSettingRepository: AppSettingRepository = {
+			get: async (): Promise<AppSetting> => ({
+				ffmpeg:
+					"D:\\tools\\ffmpeg-6.0-full_build\\ffmpeg-6.0-full_build\\bin\\ffmpeg.exe",
+			}),
+			save: (_value: AppSetting): Promise<AppSetting> => {
+				throw new Error("Function not implemented.");
+			},
+		};
+		container.register(
+			TOKENS.APPSETTING_REPOSITORY,
+			() => mockAppSettingRepository,
+		);
 
 		// 準備
 		const request = {

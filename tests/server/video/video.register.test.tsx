@@ -5,6 +5,8 @@ import { before, describe, it } from "node:test";
 import { load } from "cheerio";
 import { eq } from "drizzle-orm";
 import { renderToString } from "react-dom/server";
+import type { AppSetting } from "../../../features/appsetting/app.setting.model.js";
+import type { AppSettingRepository } from "../../../features/appsetting/app.setting.repository.js";
 import { Container } from "../../../features/shared/container/index.js";
 import {
 	VIDEOS,
@@ -74,6 +76,19 @@ describe("ビデオ登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
+		const mockAppSettingRepository: AppSettingRepository = {
+			get: async (): Promise<AppSetting> => ({
+				ffmpeg:
+					"D:\\tools\\ffmpeg-6.0-full_build\\ffmpeg-6.0-full_build\\bin\\ffmpeg.exe",
+			}),
+			save: (_value: AppSetting): Promise<AppSetting> => {
+				throw new Error("Function not implemented.");
+			},
+		};
+		container.register(
+			TOKENS.APPSETTING_REPOSITORY,
+			() => mockAppSettingRepository,
+		);
 		const app = createServer(container);
 
 		const formData = new FormData();
