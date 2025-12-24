@@ -7,7 +7,11 @@ import {
 	AppSettingSchema,
 } from "../../features/appsetting/app.setting.model.js";
 import { Container } from "../../features/shared/container/index.js";
-import { createJsonFileStore } from "../../features/shared/filestore/index.js";
+import {
+	createJsonFileStoreWithFallback,
+	type FileStoreValidationError,
+} from "../../features/shared/filestore/index.js";
+import { logger } from "../../features/shared/logger/index.js";
 import { createServer } from "../server/server.js";
 import { registerAPI, registerProtocol } from "./autogenerate/index.js";
 import { depend, TOKENS } from "./depend.injection.js";
@@ -37,10 +41,26 @@ app.whenReady().then(async () => {
 	};
 	const appSettingFileStorePath = app.getPath("userData");
 	const path = join(appSettingFileStorePath, "app_setting.json");
-	const appSettingFileStore = await createJsonFileStore(
+	const appSettingFileStore = await createJsonFileStoreWithFallback(
 		path,
 		init,
 		AppSettingSchema,
+		{
+			onValidationError: async (error: FileStoreValidationError) => {
+				logger.error(
+					`App setting file is corrupted, resetting to default: ${error.message}`,
+				);
+				// TODO: 将来的にはダイアログでユーザーに確認を取る
+				// const { response } = await dialog.showMessageBox({
+				//   type: "warning",
+				//   buttons: ["Reset to default", "Exit app"],
+				//   message: "Settings file is corrupted",
+				//   detail: error.message,
+				// });
+				// return response === 0;
+				return true; // 初期値にリセット
+			},
+		},
 	);
 
 	const container = new Container();

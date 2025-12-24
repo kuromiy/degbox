@@ -29,6 +29,54 @@ export async function createJsonFileStore<T>(
 	return store;
 }
 
+export interface CreateJsonFileStoreWithFallbackOptions {
+	/**
+	 * バリデーションエラー時のコールバック
+	 * trueを返すと初期値にリセット、falseを返すとエラーを再スロー
+	 */
+	onValidationError?: (error: FileStoreValidationError) => Promise<boolean>;
+}
+
+/**
+ * バリデーションエラー時にフォールバック機能を持つJsonFileStoreを作成
+ * ファイルが破損している場合、初期値にリセットするかエラーをスローするかを選択可能
+ */
+export async function createJsonFileStoreWithFallback<T>(
+	path: string,
+	init: T,
+	schema: ZodSchema<T>,
+	options: CreateJsonFileStoreWithFallbackOptions = {},
+): Promise<FileStore<T>> {
+	const { onValidationError } = options;
+
+	try {
+		return await createJsonFileStore(path, init, schema);
+	} catch (error) {
+		if (error instanceof FileStoreValidationError) {
+			logger.warn(
+				`FileStore: Validation error at ${path}, considering fallback`,
+				{
+					path,
+					error: error.message,
+				},
+			);
+
+			// コールバックがなければデフォルトで初期値にリセット
+			const shouldReset = onValidationError
+				? await onValidationError(error)
+				: true;
+
+			if (shouldReset) {
+				logger.info(`FileStore: Resetting to initial value at ${path}`);
+				const store = new JsonFileStore<T>(path, init, schema);
+				await store.save(init);
+				return store;
+			}
+		}
+		throw error;
+	}
+}
+
 class JsonFileStore<T> implements FileStore<T> {
 	constructor(
 		private readonly path: string,
@@ -70,8 +118,12 @@ class JsonFileStore<T> implements FileStore<T> {
 	}
 
 	async save(value: T): Promise<void> {
-		const content = JSON.stringify(value, null, 2);
+		const result = this.schema.safeParse(value);
+		if (!result.success) {
+			throw new FileStoreValidationError(this.path, result.error);
+		}
+		const content = JSON.stringify(result.data, null, 2);
 		await writeFile(this.path, content, "utf-8");
-		this.cached = value;
+		this.cached = result.data;
 	}
 }
