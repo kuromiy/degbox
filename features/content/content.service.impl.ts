@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { extname, join, resolve } from "node:path";
+import type { Logger } from "winston";
 import type { FileSystem } from "../shared/filesystem/index.js";
 import type { ContentService } from "./content.service.js";
 
@@ -36,6 +37,7 @@ export class ContentServiceImpl implements ContentService {
 	private readonly baseContentPath: string;
 
 	constructor(
+		private readonly logger: Logger,
 		private readonly fs: FileSystem,
 		baseContentPath = "content",
 	) {
@@ -85,6 +87,17 @@ export class ContentServiceImpl implements ContentService {
 		await this.fs.move(sourcePath, destPath);
 
 		return destPath;
+	}
+
+	async deleteContent(contentPath: string, contentName: string): Promise<void> {
+		this.logger.info("content service#deleteContent", {
+			contentPath,
+			contentName,
+		});
+		// const fullPath = join(this.baseContentPath, contentPath, contentName);
+		const fullPath = join(contentPath, contentName);
+		this.logger.info("fullPath", { fullPath });
+		await this.fs.delete(fullPath);
 	}
 
 	private getMediaType(filePath: string): MediaType {

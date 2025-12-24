@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { convertVideoArrayPathsToUrls } from "../../../server/helpers/video.helper.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../depend.injection.js";
 
@@ -35,9 +36,11 @@ export async function searchVideo(ctx: Context, request: SearchVideoRequest) {
 		};
 	}
 	const result = await repository.search(keyword, sortBy, order, page, size);
+	// datasource層から取得したパスを完全URLに変換
+	const resultWithUrls = convertVideoArrayPathsToUrls(result);
 	return {
 		count: count,
-		result: result,
+		result: resultWithUrls,
 		page: rowPage,
 		size: size,
 	};

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { convertIllustContentPathsToUrls } from "../../../server/helpers/illust.helper.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../depend.injection.js";
 
@@ -25,5 +26,6 @@ export async function detailIllust(ctx: Context, request: DetailIllustRequest) {
 		logger.warn(`Illust not found: ${illustId}`);
 		throw new Error("Illust not found");
 	}
-	return illust;
+	// datasource層から取得したパスを完全URLに変換
+	return convertIllustContentPathsToUrls(illust);
 }

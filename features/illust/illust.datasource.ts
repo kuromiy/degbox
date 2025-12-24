@@ -1,8 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { posix } from "node:path";
 import { asc, countDistinct, desc, eq, inArray, like } from "drizzle-orm";
 import type { Logger } from "winston";
-import { buildFileUrl } from "../../src/server/config/index.js";
 import {
 	AUTHORS,
 	CONTENTS,
@@ -216,10 +214,7 @@ export class IllustDataSource implements IllustRepository {
 				const cs = contents
 					.filter((c) => c.illusts_contents.illustId === illustId)
 					.map((c) => ({
-						content: {
-							...c.contents,
-							path: buildFileUrl(posix.join(c.contents.path, c.contents.name)),
-						},
+						content: c.contents,
 						order: c.illusts_contents.order,
 					}));
 				const as = authors
@@ -297,10 +292,7 @@ export class IllustDataSource implements IllustRepository {
 			id: illustId,
 			tags: tags.map((t) => t.tags),
 			contents: contents.map((c) => ({
-				content: {
-					...c.contents,
-					path: buildFileUrl(posix.join(c.contents.path, c.contents.name)),
-				},
+				content: c.contents,
 				order: c.illusts_contents.order,
 			})),
 			authors: authors.map((a) => ({
@@ -394,10 +386,7 @@ export class IllustDataSource implements IllustRepository {
 				const cs = contents
 					.filter((c) => c.illusts_contents.illustId === illustId)
 					.map((c) => ({
-						content: {
-							...c.contents,
-							path: buildFileUrl(posix.join(c.contents.path, c.contents.name)),
-						},
+						content: c.contents,
 						order: c.illusts_contents.order,
 					}));
 				const as = authors
@@ -425,5 +414,38 @@ export class IllustDataSource implements IllustRepository {
 			.filter((v): v is Illust => v !== null);
 		this.logger.info(`result num: ${result.length}`);
 		return result;
+	}
+
+	async delete(illustId: string): Promise<boolean> {
+		this.logger.info(`IllustDataSource#delete. illustId: ${illustId}`);
+
+		// イラストが存在するか確認
+		const illustResult = await this.db
+			.select()
+			.from(ILLUSTS)
+			.where(eq(ILLUSTS.id, illustId))
+			.limit(1);
+
+		if (illustResult.length === 0) {
+			this.logger.info(`Illust not found: ${illustId}`);
+			return false;
+		}
+
+		// 中間テーブルのレコードを削除
+		await this.db
+			.delete(ILLUSTS_CONTENTS)
+			.where(eq(ILLUSTS_CONTENTS.illustId, illustId));
+		await this.db
+			.delete(ILLUSTS_TAGS)
+			.where(eq(ILLUSTS_TAGS.illustId, illustId));
+		await this.db
+			.delete(ILLUSTS_AUTHORS)
+			.where(eq(ILLUSTS_AUTHORS.illustId, illustId));
+
+		// イラスト本体を削除
+		await this.db.delete(ILLUSTS).where(eq(ILLUSTS.id, illustId));
+
+		this.logger.info(`Illust deleted: ${illustId}`);
+		return true;
 	}
 }

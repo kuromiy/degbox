@@ -7,6 +7,7 @@ export default {
     registerAuthor: (name: string, urls: string) => ipcRenderer.invoke("registerAuthor", { name, urls }),
     searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => ipcRenderer.invoke("searchAuthor", { name, page, size }),
     updateAuthor: (id: string, name: string, urls: string) => ipcRenderer.invoke("updateAuthor", { id, name, urls }),
+    deleteIllust: (illustId: string) => ipcRenderer.invoke("deleteIllust", { illustId }),
     detailIllust: (illustId: string) => ipcRenderer.invoke("detailIllust", { illustId }),
     pickupImage: () => ipcRenderer.invoke("pickupImage", {  }),
     registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => ipcRenderer.invoke("registerIllust", { resourceIds, rawTags, authorIds }),

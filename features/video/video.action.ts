@@ -1,5 +1,4 @@
 import { join, posix } from "node:path";
-import { buildFileUrl } from "../../src/server/config/index.js";
 import type { Author } from "../author/author.model.js";
 import type { Content } from "../content/content.model.js";
 import type { Tag } from "../tag/tag.model.js";
@@ -55,7 +54,7 @@ export class VideoAction {
 		const videoContents = contents.map((content, index) => ({
 			content,
 			order: index,
-			videoUrl: buildFileUrl(posix.join(content.path, "index.m3u8")),
+			videoUrl: posix.join(content.path, "index.m3u8"),
 		}));
 
 		const video = {

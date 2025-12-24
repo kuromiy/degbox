@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TOKENS } from "../../../main/depend.injection.js";
 import { factory } from "../../factory.js";
+import { convertVideoArrayPathsToUrls } from "../../helpers/video.helper.js";
 import VideoSearchPage from "../../view/pages/video.search.page.js";
 
 export const searchVideoSchema = z.object({
@@ -63,11 +64,13 @@ app.get("/search", async (c) => {
 	}
 
 	const result = await repository.search(keyword, sortBy, order, page, size);
+	// datasource層から取得したパスを完全URLに変換
+	const resultWithUrls = convertVideoArrayPathsToUrls(result);
 	return c.render(
 		<VideoSearchPage
 			searchResult={{
 				count: count,
-				result: result,
+				result: resultWithUrls,
 				page: rowPage,
 				size: size,
 				keyword: keyword,

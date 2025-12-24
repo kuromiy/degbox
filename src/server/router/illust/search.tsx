@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TOKENS } from "../../../main/depend.injection.js";
 import { factory } from "../../factory.js";
+import { convertIllustArrayContentPathsToUrls } from "../../helpers/illust.helper.js";
 import IllustSearchPage from "../../view/pages/illust.search.page.js";
 
 export const searchIllustSchema = z.object({
@@ -77,10 +78,12 @@ app.get("/search", async (c) => {
 	}
 
 	const items = await repository.search(keyword, sortBy, order, page, limit);
+	// datasource層から取得したパスを完全URLに変換
+	const itemsWithUrls = convertIllustArrayContentPathsToUrls(items);
 	return c.render(
 		<IllustSearchPage
 			searchResult={{
-				items: items,
+				items: itemsWithUrls,
 				total: total,
 				page: rowPage,
 				limit: limit,

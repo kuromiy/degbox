@@ -145,6 +145,7 @@ export const depend: DependencyEntry[] = [
 		token: TOKENS.CONTENT_SERVICE,
 		provider: (c: Container) =>
 			new ContentServiceImpl(
+				c.get(TOKENS.LOGGER),
 				c.get(TOKENS.FILE_SYSTEM),
 				process.env.CONTENT_BASE_PATH || "content",
 			),
@@ -192,9 +193,11 @@ export const depend: DependencyEntry[] = [
 		token: TOKENS.ILLUST_ACTION,
 		provider: (c: Container) =>
 			new IllustAction(
+				c.get(TOKENS.LOGGER),
 				c.get(TOKENS.ILLUST_REPOSITORY),
 				c.get(TOKENS.CONTENT_ACTION),
 				c.get(TOKENS.UNMANAGED_CONTENT_REPOSITORY),
+				c.get(TOKENS.CONTENT_SERVICE),
 			),
 	},
 ];

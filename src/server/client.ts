@@ -142,6 +142,26 @@ export class FetchClient implements ServiceIF {
 		return failure(new Error("searchIllust is not allowed in FetchClient"));
 	}
 
+	async deleteIllust(illustId: string) {
+		try {
+			const response = await fetch(
+				`${BASE_URL}/illust/detail/${illustId}/delete`,
+				{
+					method: "POST",
+				},
+			);
+
+			if (!response.ok) {
+				return failure(new Error(`HTTP error! status: ${response.status}`));
+			}
+
+			const result = await response.json();
+			return success(result);
+		} catch (error) {
+			return failure(error instanceof Error ? error : new Error(String(error)));
+		}
+	}
+
 	async detailVideo(_videoId: string) {
 		return failure(new Error("detailVideo is not allowed in FetchClient"));
 	}
