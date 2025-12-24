@@ -1,4 +1,10 @@
-import { readFile, writeFile } from "node:fs/promises";
+import {
+	type FileHandle,
+	open,
+	readFile,
+	rename,
+	unlink,
+} from "node:fs/promises";
 import type { ZodError, ZodIssue, ZodSchema } from "zod";
 import { logger } from "../logger/index.js";
 
@@ -78,6 +84,8 @@ export async function createJsonFileStoreWithFallback<T>(
 }
 
 class JsonFileStore<T> implements FileStore<T> {
+	private writeQueue: Promise<void> = Promise.resolve();
+
 	constructor(
 		private readonly path: string,
 		private cached: T,
@@ -118,12 +126,59 @@ class JsonFileStore<T> implements FileStore<T> {
 	}
 
 	async save(value: T): Promise<void> {
+		// Promiseチェーンによる並行制御:
+		// writeQueueは常に「最後にキューに追加された書き込み操作」を指す。
+		// .then()で繋げることで、前の操作が完了するまで次の操作は開始されない。
+		//
+		// 例: save(A), save(B), save(C) がほぼ同時に呼ばれた場合
+		//   1. save(A): writeQueue(resolved).then(() => write(A)) → operation_A
+		//   2. save(B): operation_A.then(() => write(B)) → operation_B (Aの完了を待つ)
+		//   3. save(C): operation_B.then(() => write(C)) → operation_C (Bの完了を待つ)
+		// 結果: A → B → C の順に直列実行される
+		const operation = this.writeQueue.then(() =>
+			this.performAtomicWrite(value),
+		);
+
+		// キューを更新。
+		// .catch(() => {}) でエラーを握りつぶすのは、ある書き込みが失敗しても
+		// 後続の書き込みがブロックされないようにするため。
+		// 呼び出し元には operation 経由でエラーが伝播する。
+		this.writeQueue = operation.catch(() => {});
+
+		return operation;
+	}
+
+	private async performAtomicWrite(value: T): Promise<void> {
 		const result = this.schema.safeParse(value);
 		if (!result.success) {
 			throw new FileStoreValidationError(this.path, result.error);
 		}
+
 		const content = JSON.stringify(result.data, null, 2);
-		await writeFile(this.path, content, "utf-8");
-		this.cached = result.data;
+		const tempPath = `${this.path}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`;
+
+		let tempFileHandle: FileHandle | null = null;
+		try {
+			// 一時ファイルに書き込み
+			tempFileHandle = await open(tempPath, "w");
+			await tempFileHandle.writeFile(content, "utf-8");
+			// fsyncでディスクに確実に書き込み
+			await tempFileHandle.sync();
+			await tempFileHandle.close();
+			tempFileHandle = null;
+
+			// アトミックにリネーム
+			await rename(tempPath, this.path);
+
+			// 成功後にキャッシュを更新
+			this.cached = result.data;
+		} catch (error) {
+			// エラー時は一時ファイルをクリーンアップ
+			if (tempFileHandle) {
+				await tempFileHandle.close().catch(() => {});
+			}
+			await unlink(tempPath).catch(() => {});
+			throw error;
+		}
 	}
 }
