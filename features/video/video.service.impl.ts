@@ -1,102 +1,134 @@
 import { spawn } from "node:child_process";
 import { dirname } from "node:path";
 import type { Logger } from "winston";
+import type { AppSettingRepository } from "../appsetting/app.setting.repository.js";
 import type { FileSystem } from "../shared/filesystem/index.js";
 import type { VideoService } from "./video.service.js";
 
-const FFMPEG_PATH = process.env.FFMPEG_PATH || "ffmpeg";
+function createFfmpegNotFoundError(): Error {
+	return new Error(
+		"ffmpegが見つかりません。PATHに追加するか、設定画面でパスを指定してください。",
+	);
+}
 
 export class VideoServiceImpl implements VideoService {
 	constructor(
 		private readonly logger: Logger,
 		private readonly fs: FileSystem,
+		private readonly repository: AppSettingRepository,
 	) {}
 	generateThumbnail(inputPath: string, outputPath: string): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			const process = spawn(FFMPEG_PATH, [
-				"-i",
-				inputPath, // 入力動画ファイル
-				"-vf",
-				"thumbnail=1000", // ビデオフィルタ: 1000フレームごとに最も代表的なフレームを選択
-				"-frames:v",
-				"1", // 出力するフレーム数を1枚に制限
-				outputPath, // 出力画像ファイルパス
-			]);
-			// このイベントでログを出力していると連続処理しているとハングアップして処理が止まるかも？
-			process.stdout.on("data", (data) => {
-				this.logger.debug(`createThumbnails stdout: ${data}`);
-			});
-			process.stderr.on("data", (data) => {
-				this.logger.debug(`createThumbnails stderr: ${data}`);
-			});
+			this.repository
+				.get()
+				.then((value) => {
+					const ffmpegPath = value.ffmpeg || "ffmpeg";
+					const process = spawn(ffmpegPath, [
+						"-i",
+						inputPath, // 入力動画ファイル
+						"-vf",
+						"thumbnail=1000", // ビデオフィルタ: 1000フレームごとに最も代表的なフレームを選択
+						"-frames:v",
+						"1", // 出力するフレーム数を1枚に制限
+						outputPath, // 出力画像ファイルパス
+					]);
+					// このイベントでログを出力していると連続処理しているとハングアップして処理が止まるかも？
+					process.stdout.on("data", (data) => {
+						this.logger.debug(`createThumbnails stdout: ${data}`);
+					});
+					process.stderr.on("data", (data) => {
+						this.logger.debug(`createThumbnails stderr: ${data}`);
+					});
 
-			// 対象動画ファイルが壊れているとこのイベントが発生
-			process.on("error", (err) => {
-				this.logger.error(`createThumbnails process error: ${err.message}`);
-				reject(err);
-			});
+					// 対象動画ファイルが壊れているとこのイベントが発生
+					process.on("error", (err: NodeJS.ErrnoException) => {
+						this.logger.error(`createThumbnails process error: ${err.message}`);
+						if (err.code === "ENOENT") {
+							reject(createFfmpegNotFoundError());
+						} else {
+							reject(err);
+						}
+					});
 
-			process.stdout.on("end", () => {
-				this.logger.debug("createThumbnails stdout ended");
-			});
+					process.stdout.on("end", () => {
+						this.logger.debug("createThumbnails stdout ended");
+					});
 
-			process.stderr.on("end", () => {
-				this.logger.debug("createThumbnails stderr ended");
-			});
+					process.stderr.on("end", () => {
+						this.logger.debug("createThumbnails stderr ended");
+					});
 
-			// 出力ファイル名に拡張子がないとcode: 1, signal: null で終了するためエラー
-			process.once("close", (code, signal) => {
-				if (code === 0) {
-					this.logger.info(`createThumbnails completed successfully`);
-					resolve();
-				} else {
-					this.logger.error(
-						`createThumbnails failed with code: ${code}, signal: ${signal}`,
-					);
-					reject(
-						new Error(`Process exited with code: ${code}, signal: ${signal}`),
-					);
-				}
-			});
+					// 出力ファイル名に拡張子がないとcode: 1, signal: null で終了するためエラー
+					process.once("close", (code, signal) => {
+						if (code === 0) {
+							this.logger.info(`createThumbnails completed successfully`);
+							resolve();
+						} else {
+							this.logger.error(
+								`createThumbnails failed with code: ${code}, signal: ${signal}`,
+							);
+							reject(
+								new Error(
+									`Process exited with code: ${code}, signal: ${signal}`,
+								),
+							);
+						}
+					});
+				})
+				.catch(reject);
 		});
 	}
 	generateThumbnailGif(inputPath: string, outputPath: string): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			const process = spawn(FFMPEG_PATH, [
-				"-y",
-				"-i",
-				inputPath, // 入力動画ファイルパス
-				"-r",
-				"20", // フレームレート: 20fps(1秒間に20フレーム)
-				"-ss",
-				"0", // 開始地点: 0秒から開始
-				"-t",
-				"5", // 切り取り時間: 5秒間のクリップを作成
-				outputPath, // 出力GIFファイルパス
-			]);
-			process.on("error", (err) => {
-				this.logger.error(`createThumbnailsGif process error: ${err.message}`);
-				reject(err);
-			});
-			process.stdout.on("data", (data) => {
-				this.logger.debug(`createThumbnailsGif stdout: ${data}`);
-			});
-			process.stderr.on("data", (data) => {
-				this.logger.debug(`createThumbnailsGif stderr: ${data}`);
-			});
-			process.once("close", (code, signal) => {
-				if (code === 0) {
-					this.logger.info(`createThumbnailsGif completed successfully`);
-					resolve();
-				} else {
-					this.logger.error(
-						`createThumbnailsGif failed with code: ${code}, signal: ${signal}`,
-					);
-					reject(
-						new Error(`Process exited with code: ${code}, signal: ${signal}`),
-					);
-				}
-			});
+			this.repository
+				.get()
+				.then((value) => {
+					const ffmpegPath = value.ffmpeg || "ffmpeg";
+					const process = spawn(ffmpegPath, [
+						"-y",
+						"-i",
+						inputPath, // 入力動画ファイルパス
+						"-r",
+						"20", // フレームレート: 20fps(1秒間に20フレーム)
+						"-ss",
+						"0", // 開始地点: 0秒から開始
+						"-t",
+						"5", // 切り取り時間: 5秒間のクリップを作成
+						outputPath, // 出力GIFファイルパス
+					]);
+					process.on("error", (err: NodeJS.ErrnoException) => {
+						this.logger.error(
+							`createThumbnailsGif process error: ${err.message}`,
+						);
+						if (err.code === "ENOENT") {
+							reject(createFfmpegNotFoundError());
+						} else {
+							reject(err);
+						}
+					});
+					process.stdout.on("data", (data) => {
+						this.logger.debug(`createThumbnailsGif stdout: ${data}`);
+					});
+					process.stderr.on("data", (data) => {
+						this.logger.debug(`createThumbnailsGif stderr: ${data}`);
+					});
+					process.once("close", (code, signal) => {
+						if (code === 0) {
+							this.logger.info(`createThumbnailsGif completed successfully`);
+							resolve();
+						} else {
+							this.logger.error(
+								`createThumbnailsGif failed with code: ${code}, signal: ${signal}`,
+							);
+							reject(
+								new Error(
+									`Process exited with code: ${code}, signal: ${signal}`,
+								),
+							);
+						}
+					});
+				})
+				.catch(reject);
 		});
 	}
 	async generateHls(
@@ -107,9 +139,11 @@ export class VideoServiceImpl implements VideoService {
 		// hlsフォルダを作成（存在しない場合）
 		const segmentDir = dirname(outputTsPath);
 		await this.fs.createDirectory(segmentDir);
+		const appsetting = await this.repository.get();
+		const ffmpegPath = appsetting.ffmpeg || "ffmpeg";
 
 		return new Promise<void>((resolve, reject) => {
-			const process = spawn(FFMPEG_PATH, [
+			const process = spawn(ffmpegPath, [
 				"-y",
 				"-i",
 				inputPath, // 入力動画ファイルパス
@@ -129,9 +163,13 @@ export class VideoServiceImpl implements VideoService {
 				outputTsPath, // セグメントファイル名のパターン（例: segment_%03d.ts）
 				outputM3u8Path, // 出力プレイリストファイル（.m3u8）パス
 			]);
-			process.on("error", (err) => {
+			process.on("error", (err: NodeJS.ErrnoException) => {
 				this.logger.error(`createHLS process error: ${err.message}`);
-				reject(err);
+				if (err.code === "ENOENT") {
+					reject(createFfmpegNotFoundError());
+				} else {
+					reject(err);
+				}
 			});
 			process.stdout.on("data", (data) => {
 				this.logger.debug(`createHLS stdout: ${data}`);

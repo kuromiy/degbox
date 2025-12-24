@@ -2,10 +2,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { serve } from "@hono/node-server";
 import { app, BrowserWindow, protocol } from "electron";
+import type { AppSetting } from "../../features/appsetting/app.setting.model.js";
 import { Container } from "../../features/shared/container/index.js";
+import { createJsonFileStore } from "../../features/shared/filestore/index.js";
 import { createServer } from "../server/server.js";
 import { registerAPI, registerProtocol } from "./autogenerate/index.js";
-import { depend } from "./depend.injection.js";
+import { depend, TOKENS } from "./depend.injection.js";
 
 const IS_DEV =
 	process.env.NODE_ENV === "development" ||
@@ -26,10 +28,23 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 app.whenReady().then(async () => {
+	// D:\\tools\\ffmpeg-6.0-full_build\\ffmpeg-6.0-full_build\\bin\\ffmpeg.exe
+	const init: AppSetting = {
+		ffmpeg: "",
+	};
+	const appSettingFileStorePath = app.getPath("userData");
+	const path = join(appSettingFileStorePath, "app_setting.json");
+	const appSettingFileStore = await createJsonFileStore(path, init);
+
 	const container = new Container();
 	depend.forEach(({ token, provider }) => {
 		container.register(token, provider);
 	});
+	// TODO: 別ファイルにわける？
+	container.register(
+		TOKENS.APPSETTING_FILE_STORE,
+		(_: Container) => appSettingFileStore,
+	);
 
 	const application = createServer(container);
 	serve({

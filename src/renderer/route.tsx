@@ -1,6 +1,10 @@
 import { Suspense } from "react";
 import { createHashRouter, Navigate } from "react-router-dom";
 import { Layout } from "../../features/shared/ui/components/layout.component.js";
+import AppSettingPage, {
+	action as appsettingAction,
+	loader as appsettingLoader,
+} from "./pages/app.setting.page.js";
 import AuthorDetailPage, {
 	loader as authorDetailLoader,
 } from "./pages/author.detail.page.js";
@@ -135,6 +139,17 @@ export const route = createHashRouter([
 				),
 				loader: authorEditLoader,
 				action: authorEditAction,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/appsettings",
+				element: (
+					<Suspense fallback={<div>読み込み中...</div>}>
+						<AppSettingPage />
+					</Suspense>
+				),
+				loader: appsettingLoader,
+				action: appsettingAction,
 				HydrateFallback: () => <div>読み込み中...</div>,
 			},
 		],

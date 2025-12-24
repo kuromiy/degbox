@@ -175,4 +175,12 @@ export class FetchClient implements ServiceIF {
 	) {
 		return failure(new Error("searchVideo is not allowed in FetchClient"));
 	}
+
+	async getAppSetting() {
+		return failure(new Error("getAppSetting is not allowed in FetchClient"));
+	}
+
+	async updateAppSetting(_ffmpegPath: string) {
+		return failure(new Error("updateAppSetting is not allowed in FetchClient"));
+	}
 }
