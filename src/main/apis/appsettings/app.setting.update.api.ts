@@ -21,7 +21,7 @@ export async function updateAppSetting(
 	logger.info("update app settings", request);
 	const valid = updateAppSettingSchema.safeParse(request);
 	if (!valid.success) {
-		logger.warn("Invalidd request", valid.error);
+		logger.warn("Invalid request", valid.error);
 		throw new Error("Invalid Request");
 	}
 

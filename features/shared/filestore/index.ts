@@ -1,15 +1,30 @@
 import { readFile, writeFile } from "node:fs/promises";
+import type { ZodError, ZodIssue, ZodSchema } from "zod";
+import { logger } from "../logger/index.js";
 
 export interface FileStore<T> {
 	get(): Promise<T>;
 	save(value: T): Promise<void>;
 }
 
+export class FileStoreValidationError extends Error {
+	constructor(
+		public readonly path: string,
+		public readonly zodError: ZodError,
+	) {
+		super(
+			`Failed to validate file store at ${path}: ${zodError.issues.map((e: ZodIssue) => `${e.path.join(".")}: ${e.message}`).join(", ")}`,
+		);
+		this.name = "FileStoreValidationError";
+	}
+}
+
 export async function createJsonFileStore<T>(
 	path: string,
 	init: T,
+	schema: ZodSchema<T>,
 ): Promise<FileStore<T>> {
-	const store = new JsonFileStore<T>(path, init);
+	const store = new JsonFileStore<T>(path, init, schema);
 	await store.load();
 	return store;
 }
@@ -18,14 +33,35 @@ class JsonFileStore<T> implements FileStore<T> {
 	constructor(
 		private readonly path: string,
 		private cached: T,
+		private readonly schema: ZodSchema<T>,
 	) {}
 
 	async load() {
 		try {
 			const content = await readFile(this.path, "utf-8");
-			this.cached = JSON.parse(content) as T;
-		} catch {
-			// ファイルがなければ初期値のまま
+			const parsed: unknown = JSON.parse(content);
+			const result = this.schema.safeParse(parsed);
+			if (!result.success) {
+				throw new FileStoreValidationError(this.path, result.error);
+			}
+			this.cached = result.data;
+		} catch (error) {
+			if (error instanceof FileStoreValidationError) {
+				throw error;
+			}
+			// ファイルがなければ初期値のまま（ENOENTエラー等）
+			// ファイル読み取りやJSONパースエラーを記録
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
+			const errorCode =
+				error instanceof Error && "code" in error
+					? (error as NodeJS.ErrnoException).code
+					: undefined;
+			logger.warn(`FileStore: Failed to load file at ${this.path}`, {
+				path: this.path,
+				error: errorMessage,
+				code: errorCode,
+			});
 		}
 	}
 

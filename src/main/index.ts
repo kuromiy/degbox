@@ -2,7 +2,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { serve } from "@hono/node-server";
 import { app, BrowserWindow, protocol } from "electron";
-import type { AppSetting } from "../../features/appsetting/app.setting.model.js";
+import {
+	type AppSetting,
+	AppSettingSchema,
+} from "../../features/appsetting/app.setting.model.js";
 import { Container } from "../../features/shared/container/index.js";
 import { createJsonFileStore } from "../../features/shared/filestore/index.js";
 import { createServer } from "../server/server.js";
@@ -34,7 +37,11 @@ app.whenReady().then(async () => {
 	};
 	const appSettingFileStorePath = app.getPath("userData");
 	const path = join(appSettingFileStorePath, "app_setting.json");
-	const appSettingFileStore = await createJsonFileStore(path, init);
+	const appSettingFileStore = await createJsonFileStore(
+		path,
+		init,
+		AppSettingSchema,
+	);
 
 	const container = new Container();
 	depend.forEach(({ token, provider }) => {
