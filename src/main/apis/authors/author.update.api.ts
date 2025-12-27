@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
 import type { Context } from "../../context.js";
-import { TOKENS } from "../../depend.injection.js";
+import { TOKENS } from "../../di/token.js";
 
 export const updateAuthorSchema = z.object({
 	id: z.string(),

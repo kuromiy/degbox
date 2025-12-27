@@ -11,8 +11,9 @@ import {
 	ILLUSTS,
 	ILLUSTS_CONTENTS,
 	ILLUSTS_TAGS,
-} from "../../../features/shared/database/schema.js";
-import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+} from "../../../features/shared/database/application/schema.js";
+import { depend } from "../../../src/main/di/dependencies.js";
+import { TOKENS } from "../../../src/main/di/token.js";
 import { createServer } from "../../../src/server/server.js";
 import IllustEditPage from "../../../src/server/view/pages/illust.edit.page.js";
 import { TestJobQueue } from "../../api/testjobqueue.js";
@@ -63,7 +64,7 @@ describe("イラスト編集画面", () => {
 		// イラストを作成
 		const illust = await illustAction.register(tags, [content], []);
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request(`/illust/${illust.id}/edit`);
 		assert.equal(res.status, 200);
@@ -116,7 +117,7 @@ describe("イラスト編集画面", () => {
 		// イラストを作成
 		const illust = await illustAction.register(tags, [content], []);
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
 		formData.append("imageItems", `existing:${content.id}`);
@@ -214,7 +215,7 @@ describe("イラスト編集画面", () => {
 		// イラストを作成
 		const illust = await illustAction.register(tags, [content1, content2], []);
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
 		// 順序を逆にする
@@ -315,7 +316,7 @@ describe("イラスト編集画面", () => {
 			path: tempPath2,
 		});
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
 		formData.append("imageItems", `existing:${content1.id}`);
@@ -401,7 +402,7 @@ describe("イラスト編集画面", () => {
 		// イラストを作成（作者なし）
 		const illust = await illustAction.register(tags, [content], []);
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
 		formData.append("imageItems", `existing:${content.id}`);

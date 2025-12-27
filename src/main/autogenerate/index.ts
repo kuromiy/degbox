@@ -2,7 +2,7 @@ import { pathToFileURL } from "node:url";
 import { net, protocol } from "electron";
 import type { Container } from "../../../features/shared/container/index.js";
 import type { Context } from "../context.js";
-import { TOKENS } from "../depend.injection.js";
+import { TOKENS } from "../di/token.js";
 import { registerAutoGenerateAPI, removeAutoGenerateAPI } from "./register.js";
 
 export function registerAPI(ctx: Omit<Context, "event">) {
@@ -36,4 +36,11 @@ export function registerProtocol(container: Container) {
 		logger.info(`Not found in cache. resourceId: ${resourceId}`);
 		return new Response(null, { status: 404 });
 	});
+}
+
+export function removeProtocol() {
+	// 登録されていないと処理が止まるため、登録されているか確認する
+	if (protocol.isProtocolHandled("resources")) {
+		protocol.unhandle("resources");
+	}
 }

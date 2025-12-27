@@ -11,8 +11,9 @@ import {
 	ILLUSTS,
 	ILLUSTS_CONTENTS,
 	ILLUSTS_TAGS,
-} from "../../../features/shared/database/schema.js";
-import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+} from "../../../features/shared/database/application/schema.js";
+import { depend } from "../../../src/main/di/dependencies.js";
+import { TOKENS } from "../../../src/main/di/token.js";
 import { createServer } from "../../../src/server/server.js";
 import IllustRegisterPage from "../../../src/server/view/pages/illust.register.page.js";
 import { TestJobQueue } from "../../api/testjobqueue.js";
@@ -42,7 +43,7 @@ describe("イラスト登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request("/illust/register");
 		assert.equal(res.status, 200);
@@ -74,7 +75,7 @@ describe("イラスト登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
 
@@ -219,7 +220,7 @@ describe("イラスト登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
 

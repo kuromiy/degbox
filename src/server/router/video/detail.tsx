@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TOKENS } from "../../../main/depend.injection.js";
+import { TOKENS } from "../../../main/di/token.js";
 import { factory } from "../../factory.js";
 import { convertVideoPathsToUrls } from "../../helpers/video.helper.js";
 import VideoDetailPage from "../../view/pages/video.detail.page.js";

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { convertIllustArrayContentPathsToUrls } from "../../../server/helpers/illust.helper.js";
 import type { Context } from "../../context.js";
-import { TOKENS } from "../../depend.injection.js";
+import { TOKENS } from "../../di/token.js";
 
 export const searchIllustSchema = z.object({
 	keyword: z.string().optional(),

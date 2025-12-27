@@ -3,7 +3,8 @@ import { readFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { before, describe, it } from "node:test";
 import { Container } from "../../../features/shared/container/index.js";
-import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+import { depend } from "../../../src/main/di/dependencies.js";
+import { TOKENS } from "../../../src/main/di/token.js";
 import { createServer } from "../../../src/server/server.js";
 import { TestJobQueue } from "../../api/testjobqueue.js";
 import { createTestDatabase } from "../../helpers/createTestDatabase.js";
@@ -52,7 +53,7 @@ describe("イラスト削除（サーバー）", () => {
 		// イラストを作成
 		const illust = await illustAction.register(tags, [content], []);
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		// 削除リクエスト送信
 		const deleteRes = await app.request(`/illust/detail/${illust.id}/delete`, {
@@ -93,7 +94,7 @@ describe("イラスト削除（サーバー）", () => {
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		// 存在しないUUID形式のIDで削除リクエスト送信
 		const deleteRes = await app.request(
@@ -133,7 +134,7 @@ describe("イラスト削除（サーバー）", () => {
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		// 不正なUUID形式で削除リクエスト送信
 		const deleteRes = await app.request(

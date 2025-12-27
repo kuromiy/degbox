@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { AppSetting } from "../../../../features/appsetting/app.setting.model.js";
 import type { Context } from "../../context.js";
-import { TOKENS } from "../../depend.injection.js";
+import { TOKENS } from "../../di/token.js";
 
 export const updateAppSettingSchema = z.object({
 	ffmpegPath: z.string(),

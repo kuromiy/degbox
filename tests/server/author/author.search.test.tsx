@@ -8,8 +8,9 @@ import {
 	AUTHORS,
 	VIDEOS,
 	VIDEOS_AUTHORS,
-} from "../../../features/shared/database/schema.js";
-import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+} from "../../../features/shared/database/application/schema.js";
+import { depend } from "../../../src/main/di/dependencies.js";
+import { TOKENS } from "../../../src/main/di/token.js";
 import { createServer } from "../../../src/server/server.js";
 import AuthorSearchPage from "../../../src/server/view/pages/author.search.page.js";
 import { TestJobQueue } from "../../api/testjobqueue.js";
@@ -39,7 +40,7 @@ describe("作者検索画面", () => {
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.LOGGER, () => testLogger);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request("/author/search");
 
@@ -115,7 +116,7 @@ describe("作者検索画面", () => {
 			.insert(VIDEOS_AUTHORS)
 			.values({ videoId: "v2", authorId: "2" });
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		// "田"で検索
 		const res = await app.request("/author/search?name=田");
@@ -180,7 +181,7 @@ describe("作者検索画面", () => {
 			urls: {},
 		});
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		// 存在しない名前で検索
 		const res = await app.request("/author/search?name=存在しない");

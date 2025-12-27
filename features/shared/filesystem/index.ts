@@ -1,6 +1,7 @@
 import { DirectoryCreateCommand } from "./commands/directory/directoryCreate.js";
 import { DirectoryDeleteCommand } from "./commands/directory/directoryDelete.js";
 import { FileCopyCommand } from "./commands/file/fileCopy.js";
+import { FileCreateCommand } from "./commands/file/fileCreate.js";
 import { FileDeleteCommand } from "./commands/file/fileDelete.js";
 import { FileMoveCommand } from "./commands/file/fileMove.js";
 import type { FileSystemOperationCommand } from "./commands/index.js";
@@ -8,6 +9,7 @@ import { TempFileWriteCommand } from "./commands/tempFileWrite.js";
 
 export interface FileSystem {
 	transaction<T>(transaction: (tx: FileSystem) => Promise<T> | T): Promise<T>;
+	create(path: string, content?: string | Buffer): Promise<void>;
 	createDirectory(path: string): Promise<void>;
 	move(src: string, dest: string): Promise<void>;
 	copy(src: string, dest: string): Promise<void>;
@@ -35,6 +37,15 @@ export class FileSystemImpl implements FileSystem {
 			await invoker.undo();
 			throw e;
 		}
+	}
+
+	public async create(
+		path: string,
+		content: string | Buffer = "",
+	): Promise<void> {
+		return this.transaction(async (tx) => {
+			await tx.create(path, content);
+		});
 	}
 
 	public async createDirectory(path: string): Promise<void> {
@@ -96,6 +107,12 @@ class FileSystemInvoker implements FileSystem {
 			await nestedInvoker.undo();
 			throw e;
 		}
+	}
+
+	public async create(path: string, content: string | Buffer = "") {
+		const command = new FileCreateCommand(path, content);
+		await command.execute();
+		this.commands.push(command);
 	}
 
 	public async createDirectory(path: string) {

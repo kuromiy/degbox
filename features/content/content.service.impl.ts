@@ -39,7 +39,7 @@ export class ContentServiceImpl implements ContentService {
 	constructor(
 		private readonly logger: Logger,
 		private readonly fs: FileSystem,
-		baseContentPath = "content",
+		baseContentPath: string,
 	) {
 		this.baseContentPath = resolve(baseContentPath);
 	}

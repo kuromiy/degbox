@@ -12,9 +12,10 @@ import {
 	VIDEOS,
 	VIDEOS_CONTENTS,
 	VIDEOS_TAGS,
-} from "../../../features/shared/database/schema.js";
+} from "../../../features/shared/database/application/schema.js";
 import type { Video } from "../../../features/video/video.model.js";
-import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+import { depend } from "../../../src/main/di/dependencies.js";
+import { TOKENS } from "../../../src/main/di/token.js";
 import { createServer } from "../../../src/server/server.js";
 import VideoRegisterPage from "../../../src/server/view/pages/video.register.page.js";
 import { TestJobQueue } from "../../api/testjobqueue.js";
@@ -44,7 +45,7 @@ describe("ビデオ登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request("/video/register");
 		assert.equal(res.status, 200);
@@ -89,7 +90,7 @@ describe("ビデオ登録画面", () => {
 			TOKENS.APPSETTING_REPOSITORY,
 			() => mockAppSettingRepository,
 		);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
 

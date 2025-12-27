@@ -10,8 +10,8 @@ import {
 	VIDEOS_AUTHORS,
 	VIDEOS_CONTENTS,
 	VIDEOS_TAGS,
-} from "../shared/database/schema.js";
-import type { Database } from "../shared/database/type.js";
+} from "../shared/database/application/schema.js";
+import type { Database } from "../shared/database/application/type.js";
 import type { Video } from "./video.model.js";
 import type { VideoRepository } from "./video.repository.js";
 

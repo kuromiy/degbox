@@ -12,6 +12,8 @@ import type { pickupImage } from "../../main/apis/illusts/illust.pickup.api.js";
 import type { registerIllust } from "../../main/apis/illusts/illust.register.api.js";
 import type { searchIllust } from "../../main/apis/illusts/illust.search.api.js";
 import type { updateIllust } from "../../main/apis/illusts/illust.update.api.js";
+import type { getRecentProject } from "../../main/apis/project/project.recent.get.api.js";
+import type { registerProject } from "../../main/apis/project/project.register.api.js";
 import type { autocompleteTags } from "../../main/apis/tags/tag.autocomplete.api.js";
 import type { suggestRelatedTags } from "../../main/apis/tags/tag.suggest.api.js";
 import type { detailVideo } from "../../main/apis/videos/video.detail.api.js";
@@ -44,6 +46,8 @@ declare global {
             registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
             searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
             updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, Error>>;
+            getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, Error>>;
+            registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, Error>>;
             autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
             suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
             detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -69,6 +73,8 @@ export interface ServiceIF {
     registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
     searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
     updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, Error>>;
+    getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, Error>>;
+    registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, Error>>;
     autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
     detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -129,6 +135,14 @@ export class ApiService implements ServiceIF {
 
     async updateIllust(id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) {
         return window.api.updateIllust(id, tags, imageItems, authorIds);
+    }
+
+    async getRecentProject() {
+        return window.api.getRecentProject();
+    }
+
+    async registerProject() {
+        return window.api.registerProject();
     }
 
     async autocompleteTags(value: string, limit: number | undefined) {

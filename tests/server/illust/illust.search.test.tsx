@@ -10,8 +10,9 @@ import {
 	ILLUSTS_CONTENTS,
 	ILLUSTS_TAGS,
 	TAGS,
-} from "../../../features/shared/database/schema.js";
-import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+} from "../../../features/shared/database/application/schema.js";
+import { depend } from "../../../src/main/di/dependencies.js";
+import { TOKENS } from "../../../src/main/di/token.js";
 import { createServer } from "../../../src/server/server.js";
 import IllustSearchPage from "../../../src/server/view/pages/illust.search.page.js";
 import { TestJobQueue } from "../../api/testjobqueue.js";
@@ -41,7 +42,7 @@ describe("イラスト検索画面", () => {
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.LOGGER, () => testLogger);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request("/illust/search");
 
@@ -158,7 +159,7 @@ describe("イラスト検索画面", () => {
 			contentId: "content-3",
 		});
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		// "landscape" タグで検索
 		const res = await app.request("/illust/search?keyword=landscape");
@@ -211,7 +212,7 @@ describe("イラスト検索画面", () => {
 			});
 		}
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		// 1ページ目を取得（limit=2）
 		const page1Res = await app.request("/illust/search?page=1&limit=2");
@@ -320,7 +321,7 @@ describe("イラスト検索画面", () => {
 		// タグは作成するが、イラストは作成しない
 		await database.insert(TAGS).values({ id: "tag-test", name: "test" });
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		// 存在しないタグで検索
 		const res = await app.request("/illust/search?keyword=nonexistent");
@@ -362,7 +363,7 @@ describe("イラスト検索画面", () => {
 		container.register(TOKENS.LOGGER, () => testLogger);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		// 不正なページ番号（0以下）
 		const res1 = await app.request("/illust/search?page=0");

@@ -1,7 +1,7 @@
 import { basename } from "node:path";
 import { dialog } from "electron";
 import type { Context } from "../../context.js";
-import { TOKENS } from "../../depend.injection.js";
+import { TOKENS } from "../../di/token.js";
 
 export async function pickupVideo(ctx: Context) {
 	const { container } = ctx;

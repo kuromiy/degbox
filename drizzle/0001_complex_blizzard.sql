@@ -1,1 +1,0 @@
-ALTER TABLE `contents` ADD `name` text NOT NULL;

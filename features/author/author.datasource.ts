@@ -1,7 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { countDistinct, desc, eq, like, sql } from "drizzle-orm";
-import { AUTHORS, VIDEOS_AUTHORS } from "../shared/database/schema.js";
-import type { Database } from "../shared/database/type.js";
+import {
+	AUTHORS,
+	VIDEOS_AUTHORS,
+} from "../shared/database/application/schema.js";
+import type { Database } from "../shared/database/application/type.js";
 import type { Author, AuthorWithVideoCount } from "./author.model.js";
 import type { AuthorRepository } from "./author.repository.js";
 

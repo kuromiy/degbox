@@ -1,6 +1,6 @@
 import { and, eq, or, sql } from "drizzle-orm";
-import { TAG_COOCCURRENCES } from "../shared/database/schema.js";
-import type { Database } from "../shared/database/type.js";
+import { TAG_COOCCURRENCES } from "../shared/database/application/schema.js";
+import type { Database } from "../shared/database/application/type.js";
 import type { TagCooccurrence } from "./tag.cooccurrence.model.js";
 import type { TagCooccurrenceRepository } from "./tag.cooccurrence.repository.js";
 

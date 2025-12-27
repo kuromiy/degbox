@@ -14,7 +14,7 @@ import authorDetailRouter from "./router/author/detail.js";
 import authorEditRouter from "./router/author/edit.js";
 import authorRegisterRouter from "./router/author/register.js";
 import authorSearchRouter from "./router/author/search.js";
-import fileRouter from "./router/file/get.js";
+import { createFileRouter } from "./router/file/get.js";
 import illustDetailRouter from "./router/illust/detail.js";
 import illustEditRouter from "./router/illust/edit.js";
 import illustRegisterRouter from "./router/illust/register.js";
@@ -24,7 +24,13 @@ import videoRouter from "./router/video/register.js";
 import videoSearchRouter from "./router/video/search.js";
 import type { Env } from "./types.js";
 
-export function createServer(container: Container): Hono<Env> {
+export interface ServerOptions {
+	container: Container;
+	fileRoot: string;
+}
+
+export function createServer(options: ServerOptions): Hono<Env> {
+	const { container, fileRoot } = options;
 	const app = factory.createApp();
 	// CORSミドルウェア: Renderer(localhost:5173)からのアクセスを許可
 	app.use(
@@ -42,7 +48,7 @@ export function createServer(container: Container): Hono<Env> {
 	app.use(createContainerMiddleware(container));
 	app.use(sessionMiddleware);
 	app.use(renderMiddleware);
-	app.route("/file", fileRouter);
+	app.route("/file", createFileRouter({ fileRoot }));
 	app.route("/api/author", authorSearchApiRouter);
 	app.route("/api/illusts", illustSearchApiRouter);
 	app.route("/api/tag", tagAutocompleteRouter);

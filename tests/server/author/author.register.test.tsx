@@ -6,8 +6,9 @@ import { eq } from "drizzle-orm";
 import { renderToString } from "react-dom/server";
 import type { Author } from "../../../features/author/author.model.js";
 import { Container } from "../../../features/shared/container/index.js";
-import { AUTHORS } from "../../../features/shared/database/schema.js";
-import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+import { AUTHORS } from "../../../features/shared/database/application/schema.js";
+import { depend } from "../../../src/main/di/dependencies.js";
+import { TOKENS } from "../../../src/main/di/token.js";
 import { createServer } from "../../../src/server/server.js";
 import AuthorRegisterPage from "../../../src/server/view/pages/author.register.page.js";
 import { TestJobQueue } from "../../api/testjobqueue.js";
@@ -37,7 +38,7 @@ describe("作者登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request("/author/register");
 		assert.equal(res.status, 200);
@@ -69,7 +70,7 @@ describe("作者登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
 		formData.append("name", "テスト作者");
@@ -148,7 +149,7 @@ describe("作者登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
 		formData.append("name", "テスト作者");
@@ -200,7 +201,7 @@ describe("作者登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
 		formData.append("name", "URLなし作者");

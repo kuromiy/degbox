@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { CONTENTS } from "../shared/database/schema.js";
-import type { Database } from "../shared/database/type.js";
+import { CONTENTS } from "../shared/database/application/schema.js";
+import type { Database } from "../shared/database/application/type.js";
 import type { Content } from "./content.model.js";
 import type { ContentRepository } from "./content.repository.js";
 
