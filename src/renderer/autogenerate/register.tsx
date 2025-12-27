@@ -14,6 +14,7 @@ import type { searchIllust } from "../../main/apis/illusts/illust.search.api.js"
 import type { updateIllust } from "../../main/apis/illusts/illust.update.api.js";
 import type { getRecentProject } from "../../main/apis/project/project.recent.get.api.js";
 import type { registerProject } from "../../main/apis/project/project.register.api.js";
+import type { selectProject } from "../../main/apis/project/project.select.api.js";
 import type { autocompleteTags } from "../../main/apis/tags/tag.autocomplete.api.js";
 import type { suggestRelatedTags } from "../../main/apis/tags/tag.suggest.api.js";
 import type { detailVideo } from "../../main/apis/videos/video.detail.api.js";
@@ -48,6 +49,7 @@ declare global {
             updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, Error>>;
             getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, Error>>;
             registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, Error>>;
+            selectProject: () => Promise<Result<ReturnTypeUnwrapped<typeof selectProject>, Error>>;
             autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
             suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
             detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -75,6 +77,7 @@ export interface ServiceIF {
     updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, Error>>;
     getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, Error>>;
     registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, Error>>;
+    selectProject: () => Promise<Result<ReturnTypeUnwrapped<typeof selectProject>, Error>>;
     autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
     suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
     detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
@@ -143,6 +146,10 @@ export class ApiService implements ServiceIF {
 
     async registerProject() {
         return window.api.registerProject();
+    }
+
+    async selectProject() {
+        return window.api.selectProject();
     }
 
     async autocompleteTags(value: string, limit: number | undefined) {

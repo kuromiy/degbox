@@ -23,6 +23,10 @@ export default function ProjectSelectPage() {
 		await client.registerProject();
 	}
 
+	async function selectProject() {
+		await client.selectProject();
+	}
+
 	return (
 		<main className="container mx-auto flex flex-col justify-center px-2 pt-10">
 			<h1 className="mb-6 font-bold text-2xl">プロジェクト選択</h1>
@@ -57,7 +61,9 @@ export default function ProjectSelectPage() {
 				<PositiveButton onClick={registerProject}>
 					新規プロジェクト作成
 				</PositiveButton>
-				<NeutralButton>既存プロジェクトを開く</NeutralButton>
+				<NeutralButton onClick={selectProject}>
+					既存プロジェクトを開く
+				</NeutralButton>
 			</div>
 		</main>
 	);
