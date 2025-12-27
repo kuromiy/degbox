@@ -12,6 +12,7 @@ import type { pickupImage } from "../../main/apis/illusts/illust.pickup.api.js";
 import type { registerIllust } from "../../main/apis/illusts/illust.register.api.js";
 import type { searchIllust } from "../../main/apis/illusts/illust.search.api.js";
 import type { updateIllust } from "../../main/apis/illusts/illust.update.api.js";
+import type { openProject } from "../../main/apis/project/project.open.api.js";
 import type { getRecentProject } from "../../main/apis/project/project.recent.get.api.js";
 import type { registerProject } from "../../main/apis/project/project.register.api.js";
 import type { selectProject } from "../../main/apis/project/project.select.api.js";
@@ -47,6 +48,7 @@ declare global {
             registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
             searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
             updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, Error>>;
+            openProject: (projectId: string) => Promise<Result<ReturnTypeUnwrapped<typeof openProject>, Error>>;
             getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, Error>>;
             registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, Error>>;
             selectProject: () => Promise<Result<ReturnTypeUnwrapped<typeof selectProject>, Error>>;
@@ -75,6 +77,7 @@ export interface ServiceIF {
     registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
     searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
     updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, Error>>;
+    openProject: (projectId: string) => Promise<Result<ReturnTypeUnwrapped<typeof openProject>, Error>>;
     getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, Error>>;
     registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, Error>>;
     selectProject: () => Promise<Result<ReturnTypeUnwrapped<typeof selectProject>, Error>>;
@@ -138,6 +141,10 @@ export class ApiService implements ServiceIF {
 
     async updateIllust(id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) {
         return window.api.updateIllust(id, tags, imageItems, authorIds);
+    }
+
+    async openProject(projectId: string) {
+        return window.api.openProject(projectId);
     }
 
     async getRecentProject() {

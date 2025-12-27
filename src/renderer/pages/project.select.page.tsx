@@ -27,6 +27,10 @@ export default function ProjectSelectPage() {
 		await client.selectProject();
 	}
 
+	async function handleOpenProject(projectId: string) {
+		await client.openProject(projectId);
+	}
+
 	return (
 		<main className="container mx-auto flex flex-col justify-center px-2 pt-10">
 			<h1 className="mb-6 font-bold text-2xl">プロジェクト選択</h1>
@@ -39,6 +43,12 @@ export default function ProjectSelectPage() {
 						<li
 							key={project.id}
 							className="cursor-pointer rounded-lg border p-4 transition-colors hover:bg-gray-50"
+							onClick={() => handleOpenProject(project.id)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									handleOpenProject(project.id);
+								}
+							}}
 						>
 							<div className="flex items-center justify-between">
 								<div>

@@ -15,6 +15,7 @@ export default {
     registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => ipcRenderer.invoke("registerIllust", { resourceIds, rawTags, authorIds }),
     searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => ipcRenderer.invoke("searchIllust", { keyword, sortBy, order, page, limit }),
     updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => ipcRenderer.invoke("updateIllust", { id, tags, imageItems, authorIds }),
+    openProject: (projectId: string) => ipcRenderer.invoke("openProject", { projectId }),
     getRecentProject: () => ipcRenderer.invoke("getRecentProject", {  }),
     registerProject: () => ipcRenderer.invoke("registerProject", {  }),
     selectProject: () => ipcRenderer.invoke("selectProject", {  }),

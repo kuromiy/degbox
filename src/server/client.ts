@@ -195,4 +195,8 @@ export class FetchClient implements ServiceIF {
 	async selectProject() {
 		return failure(new Error("selectProject is not allowed in FetchClient"));
 	}
+
+	async openProject(_projectId: string) {
+		return failure(new Error("openProject is not allowed in FetchClient"));
+	}
 }
