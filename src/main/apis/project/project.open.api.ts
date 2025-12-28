@@ -26,7 +26,7 @@ export async function openProject(ctx: Context, request: OpenProjectRequest) {
 	const valid = openProjectSchema.safeParse(request);
 	if (!valid.success) {
 		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalidd request");
+		throw new Error("Invalid request");
 	}
 
 	const { projectId } = valid.data;

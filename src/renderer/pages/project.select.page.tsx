@@ -40,29 +40,26 @@ export default function ProjectSelectPage() {
 			) : (
 				<ul className="space-y-3">
 					{data.map((project) => (
-						<li
-							key={project.id}
-							className="cursor-pointer rounded-lg border p-4 transition-colors hover:bg-gray-50"
-							onClick={() => handleOpenProject(project.id)}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									handleOpenProject(project.id);
-								}
-							}}
-						>
-							<div className="flex items-center justify-between">
-								<div>
-									<h2 className="font-semibold text-lg">{project.name}</h2>
-									{project.overview && (
-										<p className="mt-1 text-gray-600 text-sm">
-											{project.overview}
-										</p>
-									)}
+						<li key={project.id}>
+							<button
+								type="button"
+								className="w-full cursor-pointer rounded-lg border p-4 text-left transition-colors hover:bg-gray-50"
+								onClick={() => handleOpenProject(project.id)}
+							>
+								<div className="flex items-center justify-between">
+									<div>
+										<h2 className="font-semibold text-lg">{project.name}</h2>
+										{project.overview && (
+											<p className="mt-1 text-gray-600 text-sm">
+												{project.overview}
+											</p>
+										)}
+									</div>
+									<span className="text-gray-400 text-sm">
+										{new Date(project.openedAt).toLocaleDateString("ja-JP")}
+									</span>
 								</div>
-								<span className="text-gray-400 text-sm">
-									{new Date(project.openedAt).toLocaleDateString("ja-JP")}
-								</span>
-							</div>
+							</button>
 						</li>
 					))}
 				</ul>

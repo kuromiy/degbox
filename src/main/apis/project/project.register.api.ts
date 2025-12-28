@@ -68,6 +68,7 @@ export async function registerProject(ctx: Context) {
 		container.register(TOKENS.DATABASE, () => db);
 	} catch (err) {
 		logger.error(err);
+		return false;
 	}
 
 	// PROJECT_PATH をコンテナに登録

@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { eq } from "drizzle-orm";
 import { BrowserWindow, dialog } from "electron";
 import { createDatabase } from "../../../../features/shared/database/application/index.js";
 import { PROJECTS } from "../../../../features/shared/database/user/schema.js";
@@ -52,7 +53,7 @@ export async function selectProject(ctx: Context) {
 			id: projectData.id,
 			name: projectData.name,
 			overview: projectData.overview,
-			path: projectFilePath,
+			path: foldPath,
 			openedAt: new Date().toISOString(),
 		})
 		.onConflictDoUpdate({
@@ -71,6 +72,11 @@ export async function selectProject(ctx: Context) {
 		container.register(TOKENS.DATABASE, () => db);
 	} catch (err) {
 		logger.error(err);
+		// upsert したレコードを削除してクリーンアップ
+		await database.delete(PROJECTS).where(eq(PROJECTS.id, projectData.id));
+		logger.info("cleaned up project record after database creation failure", {
+			projectId: projectData.id,
+		});
 		return false;
 	}
 
@@ -83,14 +89,24 @@ export async function selectProject(ctx: Context) {
 
 	logger.info("create window");
 	const window = BrowserWindow.fromWebContents(event.sender);
-	window?.hide();
+	if (!window) {
+		logger.error("failed to get original window from event sender");
+		return false;
+	}
+
+	window.hide();
 
 	// メインウィンドウ開く
-	await createMainWindow(
-		appConfig.isDev,
-		appConfig.preloadPath,
-		appConfig.rendererPath,
-	);
-
-	window?.destroy();
+	try {
+		await createMainWindow(
+			appConfig.isDev,
+			appConfig.preloadPath,
+			appConfig.rendererPath,
+		);
+		window.destroy();
+	} catch (err) {
+		logger.error("failed to create main window", { error: err });
+		window.show();
+		return false;
+	}
 }
