@@ -11,6 +11,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /**
+ * テスト用のプロジェクトパスを取得する
+ * @returns テスト用プロジェクトパス
+ */
+export function getTestProjectPath(): string {
+	return join(__dirname, "../db");
+}
+
+/**
  * テスト用のデータベースを作成する
  * @param dbName データベースファイル名（例: "search.test"）
  * @returns データベースインスタンス
@@ -29,7 +37,7 @@ export async function createTestDatabase(categories: string[], dbName: string) {
 	const database = drizzle({ client, schema });
 
 	// マイグレーションを実行(絶対パスを使用)
-	const migrationsFolder = join(__dirname, "../../drizzle");
+	const migrationsFolder = join(__dirname, "../../drizzle/application");
 	await migrate(database, { migrationsFolder });
 
 	return database;

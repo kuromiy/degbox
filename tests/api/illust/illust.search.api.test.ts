@@ -8,7 +8,10 @@ import { searchIllust } from "../../../src/main/apis/illusts/illust.search.api.j
 import type { Context } from "../../../src/main/context.js";
 import { depend } from "../../../src/main/di/dependencies.js";
 import { TOKENS } from "../../../src/main/di/token.js";
-import { createTestDatabase } from "../../helpers/createTestDatabase.js";
+import {
+	createTestDatabase,
+	getTestProjectPath,
+} from "../../helpers/createTestDatabase.js";
 import { testLogger } from "../../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "../testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "../testjobqueue.js";
@@ -50,6 +53,7 @@ describe("イラスト検索API", () => {
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container.register(TOKENS.CACHE, () => cache);
+		container.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
 
 		// IpcMainInvokeEventのモックを作成
 		const mockEvent = createTestIpcMainInvokeEvent();
@@ -124,6 +128,7 @@ describe("イラスト検索API", () => {
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container.register(TOKENS.CACHE, () => cache);
+		container.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
 
 		// IpcMainInvokeEventのモックを作成
 		const mockEvent = createTestIpcMainInvokeEvent();
@@ -210,6 +215,7 @@ describe("イラスト検索API", () => {
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container.register(TOKENS.CACHE, () => cache);
+		container.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
 
 		// IpcMainInvokeEventのモックを作成
 		const mockEvent = createTestIpcMainInvokeEvent();
@@ -290,6 +296,7 @@ describe("イラスト検索API", () => {
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container.register(TOKENS.CACHE, () => cache);
+		container.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
 
 		// IpcMainInvokeEventのモックを作成
 		const mockEvent = createTestIpcMainInvokeEvent();
@@ -336,6 +343,7 @@ describe("イラスト検索API", () => {
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container.register(TOKENS.CACHE, () => cache);
+		container.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
 
 		// IpcMainInvokeEventのモックを作成
 		const mockEvent = createTestIpcMainInvokeEvent();
@@ -381,6 +389,7 @@ describe("イラスト検索API", () => {
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container.register(TOKENS.CACHE, () => cache);
+		container.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
 
 		// IpcMainInvokeEventのモックを作成
 		const mockEvent = createTestIpcMainInvokeEvent();
