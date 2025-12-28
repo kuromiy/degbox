@@ -41,10 +41,18 @@ app.whenReady().then(async () => {
 	const userDatabasePath = IS_DEV
 		? join(cwd(), "user.db")
 		: join(app.getPath("userData"), "user.db");
-	const userDatabase = await createUserDatabase(
-		`file:${userDatabasePath}`,
-		"./",
-	);
+
+	let userDatabase: Awaited<ReturnType<typeof createUserDatabase>>;
+	try {
+		userDatabase = await createUserDatabase(`file:${userDatabasePath}`, "./");
+	} catch (error) {
+		console.error("Failed to initialize user database:", error);
+		if (error && typeof error === "object" && "details" in error) {
+			console.error("Details:", (error as { details: unknown }).details);
+		}
+		app.quit();
+		return;
+	}
 	const container = new Container();
 	depend.forEach(({ token, provider }) => {
 		container.register(token, provider);

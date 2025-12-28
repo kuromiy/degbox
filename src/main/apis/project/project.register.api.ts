@@ -27,8 +27,17 @@ export async function registerProject(ctx: Context) {
 	if (!foldPath) {
 		return false;
 	}
+	const IGNORED_FILES = [".DS_Store", "Thumbs.db", "desktop.ini", ".gitkeep"];
 	const files = await readdir(foldPath);
-	if (files.length > 0) {
+	const visibleFiles = files.filter(
+		(file) => !file.startsWith(".") && !IGNORED_FILES.includes(file),
+	);
+	if (visibleFiles.length > 0) {
+		logger.warn("folder is not empty", { foldPath, visibleFiles });
+		await dialog.showErrorBox(
+			"フォルダが空ではありません",
+			"新規プロジェクトを作成するには空のフォルダを選択してください。",
+		);
 		return false;
 	}
 
@@ -76,17 +85,38 @@ export async function registerProject(ctx: Context) {
 
 	// サーバー起動
 	logger.info("start server");
-	await startServer(container, foldPath);
+	try {
+		await startServer(container, foldPath);
+	} catch (err) {
+		logger.error("failed to start server", { error: err });
+		await dialog.showErrorBox(
+			"サーバー起動エラー",
+			"サーバーの起動に失敗しました。プロジェクトを開けません。",
+		);
+		return false;
+	}
 
 	logger.info("create window");
 	const window = BrowserWindow.fromWebContents(event.sender);
-	window?.hide();
-	// メインウィンドウ開く
-	await createMainWindow(
-		appConfig.isDev,
-		appConfig.preloadPath,
-		appConfig.rendererPath,
-	);
+	if (!window) {
+		logger.error("failed to get original window from event sender");
+		return false;
+	}
 
-	window?.destroy();
+	window.hide();
+
+	// メインウィンドウ開く
+	try {
+		await createMainWindow(
+			appConfig.isDev,
+			appConfig.preloadPath,
+			appConfig.rendererPath,
+		);
+		window.destroy();
+		return true;
+	} catch (err) {
+		logger.error("failed to create main window", { error: err });
+		window.show();
+		return false;
+	}
 }
