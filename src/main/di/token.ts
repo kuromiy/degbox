@@ -37,6 +37,7 @@ export const TOKENS = {
 		"AppSettingFileStore",
 	),
 	PROJECT_PATH: new InjectionToken<string>("ProjectPath"),
+	MIGRATIONS_BASE_PATH: new InjectionToken<string>("MigrationsBasePath"),
 
 	// repository
 	UNMANAGED_CONTENT_REPOSITORY: new InjectionToken<UnmanagedContentDataSource>(

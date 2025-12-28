@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { eq } from "drizzle-orm";
 import { BrowserWindow, dialog } from "electron";
+import { z } from "zod";
 import { createDatabase } from "../../../../features/shared/database/application/index.js";
 import { PROJECTS } from "../../../../features/shared/database/user/schema.js";
 import type { Context } from "../../context.js";
@@ -9,12 +10,19 @@ import { createMainWindow } from "../../createMainWindow.js";
 import { TOKENS } from "../../di/token.js";
 import { startServer } from "../../startServer.js";
 
+const projectFileSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	overview: z.string(),
+});
+
 export async function selectProject(ctx: Context) {
 	const { container, event } = ctx;
-	const [logger, database, appConfig] = container.get(
+	const [logger, database, appConfig, migrationsBasePath] = container.get(
 		TOKENS.LOGGER,
 		TOKENS.USER_DATABASE,
 		TOKENS.APP_CONFIG,
+		TOKENS.MIGRATIONS_BASE_PATH,
 	);
 
 	const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -40,11 +48,26 @@ export async function selectProject(ctx: Context) {
 
 	logger.info("open existing project", { foldPath });
 
-	const projectData = JSON.parse(projectFileContent) as {
-		id: string;
-		name: string;
-		overview: string;
-	};
+	let parsedContent: unknown;
+	try {
+		parsedContent = JSON.parse(projectFileContent);
+	} catch (error) {
+		logger.error("Failed to parse project.degbox as JSON", {
+			foldPath,
+			error,
+		});
+		return false;
+	}
+
+	const validationResult = projectFileSchema.safeParse(parsedContent);
+	if (!validationResult.success) {
+		logger.error("Invalid project.degbox file format", {
+			foldPath,
+			issues: validationResult.error.issues,
+		});
+		return false;
+	}
+	const projectData = validationResult.data;
 
 	// openedAt を更新して DB に upsert
 	const result = await database
@@ -67,11 +90,14 @@ export async function selectProject(ctx: Context) {
 
 	// アプリケーション用 DB 接続
 	logger.info("connect to database");
+	let db: Awaited<ReturnType<typeof createDatabase>>;
 	try {
-		const db = await createDatabase(`file:${foldPath}/application.db`, "./");
-		container.register(TOKENS.DATABASE, () => db);
+		db = await createDatabase(
+			`file:${foldPath}/application.db`,
+			migrationsBasePath,
+		);
 	} catch (err) {
-		logger.error(err);
+		logger.error("Failed to create application database", { error: err });
 		// upsert したレコードを削除してクリーンアップ
 		await database.delete(PROJECTS).where(eq(PROJECTS.id, projectData.id));
 		logger.info("cleaned up project record after database creation failure", {
@@ -80,17 +106,34 @@ export async function selectProject(ctx: Context) {
 		return false;
 	}
 
-	// PROJECT_PATH をコンテナに登録
+	// クリーンアップ用ヘルパー関数
+	const cleanup = async () => {
+		// コンテナ登録を解除
+		container.unregister(TOKENS.DATABASE);
+		container.unregister(TOKENS.PROJECT_PATH);
+		// プロジェクトレコードを削除
+		await database.delete(PROJECTS).where(eq(PROJECTS.id, projectData.id));
+		logger.info("cleaned up after failure", { projectId: projectData.id });
+	};
+
+	container.register(TOKENS.DATABASE, () => db);
 	container.register(TOKENS.PROJECT_PATH, () => foldPath);
 
 	// サーバー起動
 	logger.info("start server");
-	await startServer(container, foldPath);
+	try {
+		await startServer(container, foldPath);
+	} catch (err) {
+		logger.error("Failed to start server", { error: err });
+		await cleanup();
+		return false;
+	}
 
 	logger.info("create window");
 	const window = BrowserWindow.fromWebContents(event.sender);
 	if (!window) {
 		logger.error("failed to get original window from event sender");
+		await cleanup();
 		return false;
 	}
 
@@ -107,6 +150,7 @@ export async function selectProject(ctx: Context) {
 	} catch (err) {
 		logger.error("failed to create main window", { error: err });
 		window.show();
+		await cleanup();
 		return false;
 	}
 }

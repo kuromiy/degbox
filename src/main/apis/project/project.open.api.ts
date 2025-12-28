@@ -16,10 +16,11 @@ export type OpenProjectRequest = z.infer<typeof openProjectSchema>;
 
 export async function openProject(ctx: Context, request: OpenProjectRequest) {
 	const { container, event } = ctx;
-	const [logger, database, appConfig] = container.get(
+	const [logger, database, appConfig, migrationsBasePath] = container.get(
 		TOKENS.LOGGER,
 		TOKENS.USER_DATABASE,
 		TOKENS.APP_CONFIG,
+		TOKENS.MIGRATIONS_BASE_PATH,
 	);
 
 	logger.info("open project by id", request);
@@ -55,7 +56,10 @@ export async function openProject(ctx: Context, request: OpenProjectRequest) {
 	// アプリケーション用 DB 接続
 	logger.info("connect to database");
 	try {
-		const db = await createDatabase(`file:${foldPath}/application.db`, "./");
+		const db = await createDatabase(
+			`file:${foldPath}/application.db`,
+			migrationsBasePath,
+		);
 		container.register(TOKENS.DATABASE, () => db);
 	} catch (err) {
 		logger.error(err);

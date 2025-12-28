@@ -24,6 +24,10 @@ export class Container {
 		this.providers.set(token, provider);
 	}
 
+	unregister<T>(token: InjectionToken<T>): boolean {
+		return this.providers.delete(token);
+	}
+
 	// オーバーロードシグネチャ
 	get<T>(token: InjectionToken<T>): T;
 	get<T1, T2>(t1: InjectionToken<T1>, t2: InjectionToken<T2>): [T1, T2];

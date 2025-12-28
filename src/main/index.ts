@@ -43,8 +43,12 @@ app.whenReady().then(async () => {
 		: join(app.getPath("userData"), "user.db");
 
 	let userDatabase: Awaited<ReturnType<typeof createUserDatabase>>;
+	const migrationsBasePath = join(__dirname, "../../");
 	try {
-		userDatabase = await createUserDatabase(`file:${userDatabasePath}`, "./");
+		userDatabase = await createUserDatabase(
+			`file:${userDatabasePath}`,
+			migrationsBasePath,
+		);
 	} catch (error) {
 		console.error("Failed to initialize user database:", error);
 		if (error && typeof error === "object" && "details" in error) {
@@ -58,6 +62,7 @@ app.whenReady().then(async () => {
 		container.register(token, provider);
 	});
 	container.register(TOKENS.USER_DATABASE, () => userDatabase);
+	container.register(TOKENS.MIGRATIONS_BASE_PATH, () => migrationsBasePath);
 	container.register(TOKENS.APP_CONFIG, () => {
 		return {
 			isDev: IS_DEV,
