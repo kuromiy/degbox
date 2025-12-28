@@ -8,7 +8,7 @@ import { PROJECTS } from "../../../../features/shared/database/user/schema.js";
 import type { Context } from "../../context.js";
 import { createMainWindow } from "../../createMainWindow.js";
 import { TOKENS } from "../../di/token.js";
-import { startServer } from "../../startServer.js";
+import { startServer, stopServer } from "../../startServer.js";
 
 const projectFileSchema = z.object({
 	id: z.string(),
@@ -107,7 +107,19 @@ export async function selectProject(ctx: Context) {
 	}
 
 	// クリーンアップ用ヘルパー関数
+	let serverStarted = false;
 	const cleanup = async () => {
+		// サーバーが起動していれば停止
+		if (serverStarted) {
+			try {
+				await stopServer();
+				logger.info("server stopped during cleanup");
+			} catch (stopErr) {
+				logger.warn("Failed to stop server during cleanup", {
+					error: stopErr,
+				});
+			}
+		}
 		// コンテナ登録を解除
 		container.unregister(TOKENS.DATABASE);
 		container.unregister(TOKENS.PROJECT_PATH);
@@ -123,6 +135,7 @@ export async function selectProject(ctx: Context) {
 	logger.info("start server");
 	try {
 		await startServer(container, foldPath);
+		serverStarted = true;
 	} catch (err) {
 		logger.error("Failed to start server", { error: err });
 		await cleanup();

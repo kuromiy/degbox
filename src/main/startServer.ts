@@ -12,13 +12,22 @@ export async function startServer(
 		await stopServer();
 	}
 
-	const { createServer } = await import("../server/server.js");
-	const application = createServer({ container, fileRoot });
-	serverInstance = serve({
-		fetch: application.fetch,
-		port,
-	});
-	return serverInstance;
+	try {
+		const { createServer } = await import("../server/server.js");
+		const application = createServer({ container, fileRoot });
+		serverInstance = serve({
+			fetch: application.fetch,
+			port,
+		});
+		return serverInstance;
+	} catch (error) {
+		// 部分的に作成されたインスタンスがあればクリーンアップ
+		if (serverInstance) {
+			await stopServer();
+		}
+		serverInstance = null;
+		throw error;
+	}
 }
 
 export async function stopServer(): Promise<void> {
