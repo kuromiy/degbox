@@ -143,6 +143,7 @@ export class VideoServiceImpl implements VideoService {
 		const ffmpegPath = appsetting.ffmpeg || "ffmpeg";
 
 		return new Promise<void>((resolve, reject) => {
+			const stderrChunks: string[] = [];
 			const process = spawn(ffmpegPath, [
 				"-y",
 				"-i",
@@ -175,6 +176,7 @@ export class VideoServiceImpl implements VideoService {
 				this.logger.debug(`createHLS stdout: ${data}`);
 			});
 			process.stderr.on("data", (data) => {
+				stderrChunks.push(String(data));
 				this.logger.debug(`createHLS stderr: ${data}`);
 			});
 			process.once("close", (code, signal) => {
@@ -182,9 +184,11 @@ export class VideoServiceImpl implements VideoService {
 					this.logger.info(`createHLS completed successfully`);
 					resolve();
 				} else {
+					const stderrOutput = stderrChunks.join("");
 					this.logger.error(
 						`createHLS failed with code: ${code}, signal: ${signal}`,
 					);
+					this.logger.error(`createHLS stderr output: ${stderrOutput}`);
 					reject(
 						new Error(`Process exited with code: ${code}, signal: ${signal}`),
 					);

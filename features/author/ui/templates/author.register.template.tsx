@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FieldError } from "../../../../src/renderer/components/field-error.component.js";
 import {
 	NeutralButton,
 	PositiveButton,
@@ -11,7 +12,15 @@ import {
 	useAuthorUrls,
 } from "../components/author.urls.input.component.js";
 
-export function AuthorRegisterTemplate() {
+interface AuthorRegisterTemplateProps {
+	fieldErrors?: Record<string, string[]> | undefined;
+	generalError?: string | undefined;
+}
+
+export function AuthorRegisterTemplate({
+	fieldErrors,
+	generalError,
+}: AuthorRegisterTemplateProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const { urls, add, remove } = useAuthorUrls();
 	const { Form } = useNavigation();
@@ -22,17 +31,24 @@ export function AuthorRegisterTemplate() {
 				<AuthorModal onAddUrl={add} onClose={() => setIsOpen(false)} />
 			)}
 			<div className="w-full max-w-md">
+				{generalError && (
+					<div className="mb-4 rounded bg-red-100 p-3 text-red-700">
+						{generalError}
+					</div>
+				)}
 				<Form className="flex flex-col gap-4" method="POST">
 					<h1>作者登録</h1>
 					<div>
 						<label htmlFor="name">名前</label>
 						<Input name="name" type="text" />
+						<FieldError errors={fieldErrors?.name} />
 					</div>
 					<AuthorUrlsInput
 						urls={urls}
 						onAddClick={() => setIsOpen(true)}
 						onRemoveClick={remove}
 					/>
+					<FieldError errors={fieldErrors?.urls} />
 					<div className="flex gap-4">
 						<NeutralButton type="reset">リセット</NeutralButton>
 						<PositiveButton type="submit">登録</PositiveButton>

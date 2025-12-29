@@ -15,6 +15,13 @@ import {
 	useTagInput,
 } from "../../../features/tag/ui/tag.input.component.js";
 import { ApiService } from "../autogenerate/register.js";
+import { FieldError } from "../components/field-error.component.js";
+import {
+	type ActionError,
+	getErrorMessage,
+	isActionError,
+	isErrorResponse,
+} from "../utils/error.js";
 
 const client = new ApiService();
 
@@ -36,8 +43,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
 	const response = await client.registerIllust(resourceIds, tags, authorIds);
 	if (isFailure(response)) {
-		console.log(`response error: ${response.value.message}`);
-		throw new Error(response.value.message);
+		const error = response.value;
+		console.log(`response error: ${getErrorMessage(error)}`);
+		if (isErrorResponse(error)) {
+			return { error } as ActionError;
+		}
+		throw new Error(getErrorMessage(error));
 	}
 	return location.reload();
 }
@@ -46,9 +57,20 @@ export default function IllustRegisterPage() {
 	const { Form } = useNavigation();
 	const { tags, add, replace, change, autocompleteTags, suggestTags } =
 		useTagInput("");
-	const data = useActionData() as { message: string } | Error | undefined;
+	const actionData = useActionData<ActionError>();
 	const [isOpen, setIsOpen] = useState(false);
 	const [authors, setAuthors] = useState<AuthorWithVideoCount[]>([]);
+
+	const fieldErrors = isActionError(actionData)
+		? actionData.error.type === "valid"
+			? actionData.error.messages
+			: undefined
+		: undefined;
+
+	const generalError =
+		isActionError(actionData) && actionData.error.type !== "valid"
+			? actionData.error.messages
+			: undefined;
 
 	function handleAddAuthor(author: AuthorWithVideoCount) {
 		if (!authors.find((a) => a.id === author.id)) {
@@ -67,15 +89,6 @@ export default function IllustRegisterPage() {
 
 	return (
 		<main className="flex justify-center">
-			{data && (
-				<div className="mb-4">
-					{data instanceof Error ? (
-						<div className="text-red-500">エラー: {data.message}</div>
-					) : (
-						<div className="text-green-500">{data.message}</div>
-					)}
-				</div>
-			)}
 			{isOpen && (
 				<AuthorSelectModal
 					onClose={() => setIsOpen(false)}
@@ -83,10 +96,18 @@ export default function IllustRegisterPage() {
 				/>
 			)}
 			<div className="w-full max-w-2xl">
+				{generalError && (
+					<div className="mb-4 rounded bg-red-100 p-3 text-red-700">
+						{generalError}
+					</div>
+				)}
 				<Form className="flex flex-col gap-4" method="POST">
 					<h1>イラスト登録</h1>
 
-					<IllustContentInput />
+					<div>
+						<IllustContentInput />
+						<FieldError errors={fieldErrors?.resourceIds} />
+					</div>
 
 					<div>
 						<TagInput
@@ -98,6 +119,7 @@ export default function IllustRegisterPage() {
 							autocompleteTags={autocompleteTags}
 							suggestTags={suggestTags}
 						/>
+						<FieldError errors={fieldErrors?.tags} />
 					</div>
 
 					<div>
@@ -135,6 +157,7 @@ export default function IllustRegisterPage() {
 								value={author.id}
 							/>
 						))}
+						<FieldError errors={fieldErrors?.authorIds} />
 					</div>
 
 					<div className="flex gap-4">

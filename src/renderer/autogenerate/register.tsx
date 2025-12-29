@@ -35,58 +35,58 @@ type ReturnTypeUnwrapped<T> = T extends (...args: infer _Args) => infer R
 declare global {
     interface Window {
         api: {
-            getAppSetting: () => Promise<Result<ReturnTypeUnwrapped<typeof getAppSetting>, Error>>;
-            updateAppSetting: (ffmpegPath: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, Error>>;
-            deleteAuthor: (id: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteAuthor>, Error>>;
-            getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, Error>>;
-            registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
-            searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, Error>>;
-            updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, Error>>;
-            deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, Error>>;
-            detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, Error>>;
-            pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, Error>>;
-            registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
-            searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
-            updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, Error>>;
-            openProject: (projectId: string) => Promise<Result<ReturnTypeUnwrapped<typeof openProject>, Error>>;
-            getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, Error>>;
-            registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, Error>>;
-            selectProject: () => Promise<Result<ReturnTypeUnwrapped<typeof selectProject>, Error>>;
-            autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
-            suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
-            detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
-            pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, Error>>;
-            registerVideo: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
-            searchVideo: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, Error>>;
+            getAppSetting: () => Promise<Result<ReturnTypeUnwrapped<typeof getAppSetting>, unknown>>;
+            updateAppSetting: (ffmpegPath: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, unknown>>;
+            deleteAuthor: (id: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteAuthor>, unknown>>;
+            getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, unknown>>;
+            registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, unknown>>;
+            searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, unknown>>;
+            updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, unknown>>;
+            deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, unknown>>;
+            detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, unknown>>;
+            pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, unknown>>;
+            registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, unknown>>;
+            searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, unknown>>;
+            updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, unknown>>;
+            openProject: (projectId: string) => Promise<Result<ReturnTypeUnwrapped<typeof openProject>, unknown>>;
+            getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, unknown>>;
+            registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, unknown>>;
+            selectProject: () => Promise<Result<ReturnTypeUnwrapped<typeof selectProject>, unknown>>;
+            autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, unknown>>;
+            suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, unknown>>;
+            detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, unknown>>;
+            pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, unknown>>;
+            registerVideo: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, unknown>>;
+            searchVideo: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, unknown>>;
         };
     }
 }
 
 // サービスインターフェース
 export interface ServiceIF {
-    getAppSetting: () => Promise<Result<ReturnTypeUnwrapped<typeof getAppSetting>, Error>>;
-    updateAppSetting: (ffmpegPath: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, Error>>;
-    deleteAuthor: (id: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteAuthor>, Error>>;
-    getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, Error>>;
-    registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, Error>>;
-    searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, Error>>;
-    updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, Error>>;
-    deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, Error>>;
-    detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, Error>>;
-    pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, Error>>;
-    registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, Error>>;
-    searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, Error>>;
-    updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, Error>>;
-    openProject: (projectId: string) => Promise<Result<ReturnTypeUnwrapped<typeof openProject>, Error>>;
-    getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, Error>>;
-    registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, Error>>;
-    selectProject: () => Promise<Result<ReturnTypeUnwrapped<typeof selectProject>, Error>>;
-    autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, Error>>;
-    suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, Error>>;
-    detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, Error>>;
-    pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, Error>>;
-    registerVideo: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, Error>>;
-    searchVideo: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, Error>>;
+    getAppSetting: () => Promise<Result<ReturnTypeUnwrapped<typeof getAppSetting>, unknown>>;
+    updateAppSetting: (ffmpegPath: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, unknown>>;
+    deleteAuthor: (id: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteAuthor>, unknown>>;
+    getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, unknown>>;
+    registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, unknown>>;
+    searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, unknown>>;
+    updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, unknown>>;
+    deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, unknown>>;
+    detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, unknown>>;
+    pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, unknown>>;
+    registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, unknown>>;
+    searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, unknown>>;
+    updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, unknown>>;
+    openProject: (projectId: string) => Promise<Result<ReturnTypeUnwrapped<typeof openProject>, unknown>>;
+    getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, unknown>>;
+    registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, unknown>>;
+    selectProject: () => Promise<Result<ReturnTypeUnwrapped<typeof selectProject>, unknown>>;
+    autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, unknown>>;
+    suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, unknown>>;
+    detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, unknown>>;
+    pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, unknown>>;
+    registerVideo: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, unknown>>;
+    searchVideo: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, unknown>>;
 }
 
 // サービス実装クラス

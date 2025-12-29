@@ -16,10 +16,10 @@ await flow.build({
 	preloadPath: "./src/preload/autogenerate/register.ts",
 	rendererPath: "./src/renderer/autogenerate/register.tsx",
 	contextPath: "./src/main/context.ts",
-	// customErrorHandler: {
-	//     path: "./src/main/errorHandler.ts",
-	//     functionName: "customErrorHandler",
-	// }
+	customErrorHandler: {
+		path: "./src/main/errorHandler.ts",
+		functionName: "customErrorHandler",
+	},
 });
 
 // Tailwind CSSのビルド

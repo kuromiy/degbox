@@ -2,6 +2,7 @@
 import type { Context } from "../context.js";
 import { ipcMain, type IpcMainInvokeEvent } from "electron";
 import { success, failure } from "electron-flow";
+import { customErrorHandler } from "../errorHandler.js";
 
 import { getAppSetting } from "../apis/appsettings/app.setting.get.api.js";
 import { updateAppSetting } from "../apis/appsettings/app.setting.update.api.js";
@@ -34,7 +35,7 @@ export const autoGenerateHandlers = {
                 const result = await getAppSetting({ ...ctx, event }, );
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -44,7 +45,7 @@ export const autoGenerateHandlers = {
                 const result = await updateAppSetting({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -54,7 +55,7 @@ export const autoGenerateHandlers = {
                 const result = await deleteAuthor({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -64,7 +65,7 @@ export const autoGenerateHandlers = {
                 const result = await getAuthorDetail({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -74,7 +75,7 @@ export const autoGenerateHandlers = {
                 const result = await registerAuthor({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -84,7 +85,7 @@ export const autoGenerateHandlers = {
                 const result = await searchAuthor({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -94,7 +95,7 @@ export const autoGenerateHandlers = {
                 const result = await updateAuthor({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -104,7 +105,7 @@ export const autoGenerateHandlers = {
                 const result = await deleteIllust({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -114,7 +115,7 @@ export const autoGenerateHandlers = {
                 const result = await detailIllust({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -124,7 +125,7 @@ export const autoGenerateHandlers = {
                 const result = await pickupImage({ ...ctx, event }, );
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -134,7 +135,7 @@ export const autoGenerateHandlers = {
                 const result = await registerIllust({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -144,7 +145,7 @@ export const autoGenerateHandlers = {
                 const result = await searchIllust({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -154,7 +155,7 @@ export const autoGenerateHandlers = {
                 const result = await updateIllust({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -164,7 +165,7 @@ export const autoGenerateHandlers = {
                 const result = await openProject({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -174,7 +175,7 @@ export const autoGenerateHandlers = {
                 const result = await getRecentProject({ ...ctx, event }, );
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -184,7 +185,7 @@ export const autoGenerateHandlers = {
                 const result = await registerProject({ ...ctx, event }, );
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -194,7 +195,7 @@ export const autoGenerateHandlers = {
                 const result = await selectProject({ ...ctx, event }, );
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -204,7 +205,7 @@ export const autoGenerateHandlers = {
                 const result = await autocompleteTags({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -214,7 +215,7 @@ export const autoGenerateHandlers = {
                 const result = await suggestRelatedTags({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -224,7 +225,7 @@ export const autoGenerateHandlers = {
                 const result = await detailVideo({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -234,7 +235,7 @@ export const autoGenerateHandlers = {
                 const result = await pickupVideo({ ...ctx, event }, );
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -244,7 +245,7 @@ export const autoGenerateHandlers = {
                 const result = await registerVideo({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },
@@ -254,7 +255,7 @@ export const autoGenerateHandlers = {
                 const result = await searchVideo({ ...ctx, event }, args);
                 return success(result);
             } catch (e) {
-                return failure(e);
+                return customErrorHandler(e, { ...ctx, event });
             }
         };
     },

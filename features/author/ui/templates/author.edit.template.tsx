@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FieldError } from "../../../../src/renderer/components/field-error.component.js";
 import {
 	NeutralButton,
 	PositiveButton,
@@ -18,11 +19,15 @@ interface AuthorEditTemplateProps {
 		urls: Record<string, string>;
 	};
 	onCancel: () => void;
+	fieldErrors?: Record<string, string[]> | undefined;
+	generalError?: string | undefined;
 }
 
 export function AuthorEditTemplate({
 	author,
 	onCancel,
+	fieldErrors,
+	generalError,
 }: AuthorEditTemplateProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const { urls, add, remove } = useAuthorUrls(author.urls);
@@ -34,18 +39,25 @@ export function AuthorEditTemplate({
 				<AuthorModal onAddUrl={add} onClose={() => setIsOpen(false)} />
 			)}
 			<div className="w-full max-w-md">
+				{generalError && (
+					<div className="mb-4 rounded bg-red-100 p-3 text-red-700">
+						{generalError}
+					</div>
+				)}
 				<Form className="flex flex-col gap-4" method="POST">
 					<h1>作者編集</h1>
 					<Input type="hidden" name="id" value={author.id} />
 					<div>
 						<label htmlFor="name">名前</label>
 						<Input name="name" type="text" defaultValue={author.name} />
+						<FieldError errors={fieldErrors?.name} />
 					</div>
 					<AuthorUrlsInput
 						urls={urls}
 						onAddClick={() => setIsOpen(true)}
 						onRemoveClick={remove}
 					/>
+					<FieldError errors={fieldErrors?.urls} />
 					<div className="flex gap-4">
 						<NeutralButton type="button" onClick={onCancel}>
 							キャンセル

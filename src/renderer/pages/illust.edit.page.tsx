@@ -3,12 +3,19 @@ import {
 	type ActionFunctionArgs,
 	type LoaderFunctionArgs,
 	redirect,
+	useActionData,
 	useLoaderData,
 	useNavigate,
 } from "react-router-dom";
 import type { Illust } from "../../../features/illust/illust.model.js";
 import { IllustEditTemplate } from "../../../features/illust/ui/templates/illust.edit.template.js";
 import { ApiService } from "../autogenerate/register.js";
+import {
+	type ActionError,
+	getErrorMessage,
+	isActionError,
+	isErrorResponse,
+} from "../utils/error.js";
 
 const client = new ApiService();
 
@@ -52,8 +59,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		authorIds,
 	);
 	if (isFailure(response)) {
-		console.log(`response error: ${response.value.message}`);
-		throw new Error(response.value.message);
+		const error = response.value;
+		console.log(`response error: ${getErrorMessage(error)}`);
+		if (isErrorResponse(error)) {
+			return { error } as ActionError;
+		}
+		throw new Error(getErrorMessage(error));
 	}
 
 	// 更新成功後、詳細画面へリダイレクト
@@ -62,11 +73,30 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function IllustEditPage() {
 	const illust = useLoaderData<Illust>();
+	const actionData = useActionData<ActionError>();
 	const navigate = useNavigate();
+
+	const fieldErrors = isActionError(actionData)
+		? actionData.error.type === "valid"
+			? actionData.error.messages
+			: undefined
+		: undefined;
+
+	const generalError =
+		isActionError(actionData) && actionData.error.type !== "valid"
+			? actionData.error.messages
+			: undefined;
 
 	const handleCancel = () => {
 		navigate(`/illust/${illust.id}`);
 	};
 
-	return <IllustEditTemplate illust={illust} onCancel={handleCancel} />;
+	return (
+		<IllustEditTemplate
+			illust={illust}
+			onCancel={handleCancel}
+			fieldErrors={fieldErrors}
+			generalError={generalError}
+		/>
+	);
 }

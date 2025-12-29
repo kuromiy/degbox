@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FieldError } from "../../../../src/renderer/components/field-error.component.js";
 import type { AuthorWithVideoCount } from "../../../author/author.model.js";
 import { AuthorSelectModal } from "../../../author/ui/components/author.select.modal.component.js";
 import {
@@ -14,11 +15,15 @@ import { IllustEditImageManager } from "../components/illust.edit.image.manager.
 interface IllustEditTemplateProps {
 	illust: Illust;
 	onCancel: () => void;
+	fieldErrors?: Record<string, string[]> | undefined;
+	generalError?: string | undefined;
 }
 
 export function IllustEditTemplate({
 	illust,
 	onCancel,
+	fieldErrors,
+	generalError,
 }: IllustEditTemplateProps) {
 	const { Form } = useNavigation();
 	const initialTags = illust.tags.map((t) => t.name).join(" ");
@@ -85,12 +90,18 @@ export function IllustEditTemplate({
 			)}
 
 			<div className="w-full max-w-2xl">
+				{generalError && (
+					<div className="mb-4 rounded bg-red-100 p-3 text-red-700">
+						{generalError}
+					</div>
+				)}
 				<Form className="flex flex-col gap-6" method="POST">
 					<h1 className="font-bold text-2xl">イラスト編集</h1>
 
 					{/* 画像管理 */}
 					<div className="rounded-lg border bg-white p-6 shadow-sm">
 						<IllustEditImageManager initialContents={illust.contents} />
+						<FieldError errors={fieldErrors?.imageItems} />
 					</div>
 
 					{/* タグ選択 */}
@@ -104,6 +115,7 @@ export function IllustEditTemplate({
 							autocompleteTags={autocompleteTags}
 							suggestTags={suggestTags}
 						/>
+						<FieldError errors={fieldErrors?.tags} />
 					</div>
 
 					{/* 作者選択 */}
@@ -142,6 +154,7 @@ export function IllustEditTemplate({
 								value={author.id}
 							/>
 						))}
+						<FieldError errors={fieldErrors?.authorIds} />
 					</div>
 
 					{/* 操作ボタン */}
