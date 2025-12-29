@@ -1,10 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { eq } from "drizzle-orm";
 import { BrowserWindow, dialog } from "electron";
 import { z } from "zod";
 import { createDatabase } from "../../../../features/shared/database/application/index.js";
-import { PROJECTS } from "../../../../features/shared/database/user/schema.js";
 import type { Context } from "../../context.js";
 import { createMainWindow } from "../../createMainWindow.js";
 import { TOKENS } from "../../di/token.js";
@@ -18,12 +16,13 @@ const projectFileSchema = z.object({
 
 export async function selectProject(ctx: Context) {
 	const { container, event } = ctx;
-	const [logger, database, appConfig, migrationsBasePath] = container.get(
-		TOKENS.LOGGER,
-		TOKENS.USER_DATABASE,
-		TOKENS.APP_CONFIG,
-		TOKENS.MIGRATIONS_BASE_PATH,
-	);
+	const [logger, appConfig, migrationsBasePath, projectRepository] =
+		container.get(
+			TOKENS.LOGGER,
+			TOKENS.APP_CONFIG,
+			TOKENS.MIGRATIONS_BASE_PATH,
+			TOKENS.PROJECT_REPOSITORY,
+		);
 
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ["openDirectory"],
@@ -70,23 +69,17 @@ export async function selectProject(ctx: Context) {
 	const projectData = validationResult.data;
 
 	// openedAt を更新して DB に upsert
-	const result = await database
-		.insert(PROJECTS)
-		.values({
-			id: projectData.id,
-			name: projectData.name,
-			overview: projectData.overview,
-			path: foldPath,
-			openedAt: new Date().toISOString(),
-		})
-		.onConflictDoUpdate({
-			target: PROJECTS.id,
-			set: {
-				openedAt: new Date().toISOString(),
-			},
-		});
+	const now = new Date().toISOString();
+	const savedProject = await projectRepository.save({
+		id: projectData.id,
+		name: projectData.name,
+		overview: projectData.overview,
+		path: foldPath,
+		openedAt: now,
+		createdAt: now,
+	});
 
-	logger.info("upsert result", { result });
+	logger.info("upsert result", { savedProject });
 
 	// アプリケーション用 DB 接続
 	logger.info("connect to database");
@@ -99,7 +92,7 @@ export async function selectProject(ctx: Context) {
 	} catch (err) {
 		logger.error("Failed to create application database", { error: err });
 		// upsert したレコードを削除してクリーンアップ
-		await database.delete(PROJECTS).where(eq(PROJECTS.id, projectData.id));
+		await projectRepository.delete(projectData.id);
 		logger.info("cleaned up project record after database creation failure", {
 			projectId: projectData.id,
 		});
@@ -124,7 +117,7 @@ export async function selectProject(ctx: Context) {
 		container.unregister(TOKENS.DATABASE);
 		container.unregister(TOKENS.PROJECT_PATH);
 		// プロジェクトレコードを削除
-		await database.delete(PROJECTS).where(eq(PROJECTS.id, projectData.id));
+		await projectRepository.delete(projectData.id);
 		logger.info("cleaned up after failure", { projectId: projectData.id });
 	};
 

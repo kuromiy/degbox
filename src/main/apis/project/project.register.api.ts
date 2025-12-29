@@ -1,9 +1,8 @@
-import { randomUUID } from "node:crypto";
 import { readdir } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { BrowserWindow, dialog } from "electron";
+import { createScopedContainer } from "../../../../features/shared/container/index.js";
 import { createDatabase } from "../../../../features/shared/database/application/index.js";
-import { PROJECTS } from "../../../../features/shared/database/user/schema.js";
 import type { Context } from "../../context.js";
 import { createMainWindow } from "../../createMainWindow.js";
 import { TOKENS } from "../../di/token.js";
@@ -17,6 +16,7 @@ export async function registerProject(ctx: Context) {
 		TOKENS.FILE_SYSTEM,
 		TOKENS.APP_CONFIG,
 	);
+	const projectRepository = container.get(TOKENS.PROJECT_REPOSITORY);
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ["openDirectory"],
 	});
@@ -48,16 +48,28 @@ export async function registerProject(ctx: Context) {
 
 	const result = await database.transaction(async (tx) => {
 		return await fileSystem.transaction(async (fs) => {
+			const scopedContainer = createScopedContainer(
+				container,
+				[TOKENS.USER_DATABASE, tx],
+				[TOKENS.FILE_SYSTEM, fs],
+			);
+			const scopedProjectRepository = scopedContainer.get(
+				TOKENS.PROJECT_REPOSITORY,
+			);
+
+			const projectId = await projectRepository.generateId();
 			const projectPath = join(foldPath, "project.degbox");
+			const now = new Date().toISOString();
 			const project = {
-				id: randomUUID().toString(),
+				id: projectId,
 				name: basename(foldPath),
 				overview: "",
 				path: projectPath,
-				openedAt: new Date().toISOString(),
+				openedAt: now,
+				createdAt: now,
 			};
 			await fs.create(projectPath, JSON.stringify(project, null, 2));
-			await tx.insert(PROJECTS).values(project);
+			await scopedProjectRepository.save(project);
 
 			return true;
 		});

@@ -7,6 +7,7 @@ import type { ContentRepository } from "../../../features/content/content.reposi
 import type { ContentService } from "../../../features/content/content.service.js";
 import type { IllustAction } from "../../../features/illust/illust.action.js";
 import type { IllustRepository } from "../../../features/illust/illust.repository.js";
+import type { ProjectRepository } from "../../../features/project/project.repository.js";
 import { InjectionToken } from "../../../features/shared/container/index.js";
 import type { Database } from "../../../features/shared/database/application/type.js";
 import type { Database as UserDatabase } from "../../../features/shared/database/user/type.js";
@@ -55,6 +56,9 @@ export const TOKENS = {
 	ILLUST_REPOSITORY: new InjectionToken<IllustRepository>("IllustRepository"),
 	APPSETTING_REPOSITORY: new InjectionToken<AppSettingRepository>(
 		"AppSettingRepository",
+	),
+	PROJECT_REPOSITORY: new InjectionToken<ProjectRepository>(
+		"ProjectRepository",
 	),
 
 	// service

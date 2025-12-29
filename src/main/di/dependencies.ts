@@ -5,6 +5,7 @@ import { ContentDataSource } from "../../../features/content/content.datasource.
 import { ContentServiceImpl } from "../../../features/content/content.service.impl.js";
 import { IllustAction } from "../../../features/illust/illust.action.js";
 import { IllustDataSource } from "../../../features/illust/illust.datasource.js";
+import { ProjectDataSource } from "../../../features/project/project.datasource.js";
 import type {
 	Container,
 	InjectionToken,
@@ -88,6 +89,11 @@ export const depend: DependencyEntry[] = [
 		token: TOKENS.APPSETTING_REPOSITORY,
 		provider: (c: Container) =>
 			new AppSettingDataSource(c.get(TOKENS.APPSETTING_FILE_STORE)),
+	},
+	{
+		token: TOKENS.PROJECT_REPOSITORY,
+		provider: (c: Container) =>
+			new ProjectDataSource(c.get(TOKENS.USER_DATABASE)),
 	},
 
 	// service
