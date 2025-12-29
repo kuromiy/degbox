@@ -10,8 +10,9 @@ import {
 	VIDEOS,
 	VIDEOS_CONTENTS,
 	VIDEOS_TAGS,
-} from "../../../features/shared/database/schema.js";
-import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+} from "../../../features/shared/database/application/schema.js";
+import { depend } from "../../../src/main/di/dependencies.js";
+import { TOKENS } from "../../../src/main/di/token.js";
 import { buildFileUrl } from "../../../src/server/config/index.js";
 import { createServer } from "../../../src/server/server.js";
 import VideoDetailPage from "../../../src/server/view/pages/video.detail.page.js";
@@ -74,7 +75,7 @@ describe("ビデオ詳細画面", () => {
 			.insert(VIDEOS_CONTENTS)
 			.values({ videoId: testVideoId, contentId: "1" });
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request(`/video/detail/${testVideoId}`);
 		assert.equal(res.status, 200);
@@ -160,7 +161,7 @@ describe("ビデオ詳細画面", () => {
 			.insert(VIDEOS_CONTENTS)
 			.values({ videoId: testVideoId, contentId: "1" });
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request(`/video/detail/${testVideoId}`);
 		assert.equal(res.status, 200);

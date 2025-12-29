@@ -8,9 +8,10 @@ import {
 	VIDEOS,
 	VIDEOS_CONTENTS,
 	VIDEOS_TAGS,
-} from "../../../features/shared/database/schema.js";
+} from "../../../features/shared/database/application/schema.js";
 import { detailVideo } from "../../../src/main/apis/videos/video.detail.api.js";
-import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+import { depend } from "../../../src/main/di/dependencies.js";
+import { TOKENS } from "../../../src/main/di/token.js";
 import { createTestDatabase } from "../../helpers/createTestDatabase.js";
 import { testLogger } from "../../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "../testIpcMainInvokeEvent.js";

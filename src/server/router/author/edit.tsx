@@ -1,7 +1,7 @@
 import { csrf } from "hono/csrf";
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
-import { TOKENS } from "../../../main/depend.injection.js";
+import { TOKENS } from "../../../main/di/token.js";
 import { factory } from "../../factory.js";
 import { formValidatorMiddleware } from "../../middleware/formValidator.js";
 import AuthorEditPage from "../../view/pages/author.edit.page.js";

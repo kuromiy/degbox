@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TOKENS } from "../../../main/depend.injection.js";
+import { TOKENS } from "../../../main/di/token.js";
 import { factory } from "../../factory.js";
 import { convertIllustContentPathsToUrls } from "../../helpers/illust.helper.js";
 import IllustDetailPage from "../../view/pages/illust.detail.page.js";

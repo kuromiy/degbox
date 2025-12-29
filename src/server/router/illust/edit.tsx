@@ -2,7 +2,7 @@ import { csrf } from "hono/csrf";
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
-import { TOKENS } from "../../../main/depend.injection.js";
+import { TOKENS } from "../../../main/di/token.js";
 import { factory } from "../../factory.js";
 import { convertIllustContentPathsToUrls } from "../../helpers/illust.helper.js";
 import { formValidatorMiddleware } from "../../middleware/formValidator.js";

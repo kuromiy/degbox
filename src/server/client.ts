@@ -183,4 +183,20 @@ export class FetchClient implements ServiceIF {
 	async updateAppSetting(_ffmpegPath: string) {
 		return failure(new Error("updateAppSetting is not allowed in FetchClient"));
 	}
+
+	async getRecentProject() {
+		return failure(new Error("getRecentProject is not allowed in FetchClient"));
+	}
+
+	async registerProject() {
+		return failure(new Error("registerProject is not allowed in FetchClient"));
+	}
+
+	async selectProject() {
+		return failure(new Error("selectProject is not allowed in FetchClient"));
+	}
+
+	async openProject(_projectId: string) {
+		return failure(new Error("openProject is not allowed in FetchClient"));
+	}
 }

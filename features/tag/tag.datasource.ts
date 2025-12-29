@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { eq, sql } from "drizzle-orm";
-import { TAGS } from "../shared/database/schema.js";
-import type { Database } from "../shared/database/type.js";
+import { TAGS } from "../shared/database/application/schema.js";
+import type { Database } from "../shared/database/application/type.js";
 import type { Tag } from "./tag.model.js";
 import type { TagRepository } from "./tag.repository.js";
 

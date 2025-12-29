@@ -5,10 +5,18 @@ import { fileURLToPath } from "node:url";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import { migrate } from "drizzle-orm/libsql/migrator";
-import * as schema from "../../features/shared/database/schema.js";
+import * as schema from "../../features/shared/database/application/schema.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+/**
+ * テスト用のプロジェクトパスを取得する
+ * @returns テスト用プロジェクトパス
+ */
+export function getTestProjectPath(): string {
+	return join(__dirname, "../db");
+}
 
 /**
  * テスト用のデータベースを作成する
@@ -29,7 +37,7 @@ export async function createTestDatabase(categories: string[], dbName: string) {
 	const database = drizzle({ client, schema });
 
 	// マイグレーションを実行(絶対パスを使用)
-	const migrationsFolder = join(__dirname, "../../drizzle");
+	const migrationsFolder = join(__dirname, "../../drizzle/application");
 	await migrate(database, { migrationsFolder });
 
 	return database;

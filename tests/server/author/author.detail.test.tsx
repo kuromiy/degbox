@@ -10,8 +10,9 @@ import {
 	VIDEOS,
 	VIDEOS_AUTHORS,
 	VIDEOS_CONTENTS,
-} from "../../../features/shared/database/schema.js";
-import { depend, TOKENS } from "../../../src/main/depend.injection.js";
+} from "../../../features/shared/database/application/schema.js";
+import { depend } from "../../../src/main/di/dependencies.js";
+import { TOKENS } from "../../../src/main/di/token.js";
 import { createServer } from "../../../src/server/server.js";
 import AuthorDetailPage from "../../../src/server/view/pages/author.detail.page.js";
 import { TestJobQueue } from "../../api/testjobqueue.js";
@@ -49,7 +50,7 @@ describe("作者詳細画面", () => {
 			urls: { twitter: "https://twitter.com/test" },
 		});
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request("/author/author1");
 
@@ -141,7 +142,7 @@ describe("作者詳細画面", () => {
 			.insert(VIDEOS_CONTENTS)
 			.values({ videoId: "v2", contentId: "c2" });
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request("/author/author1");
 		assert.equal(res.status, 200);
@@ -196,7 +197,7 @@ describe("作者詳細画面", () => {
 				.values({ videoId: `v${i}`, contentId: `c${i}` });
 		}
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		// ページ2、サイズ3でリクエスト
 		const res = await app.request("/author/author1?videoPage=2&videoSize=3");
@@ -229,7 +230,7 @@ describe("作者詳細画面", () => {
 			urls: {},
 		});
 
-		const app = createServer(container);
+		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request("/author/author1");
 		assert.equal(res.status, 200);

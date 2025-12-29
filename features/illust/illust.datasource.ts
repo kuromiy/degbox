@@ -9,8 +9,8 @@ import {
 	ILLUSTS_CONTENTS,
 	ILLUSTS_TAGS,
 	TAGS,
-} from "../shared/database/schema.js";
-import type { Database } from "../shared/database/type.js";
+} from "../shared/database/application/schema.js";
+import type { Database } from "../shared/database/application/type.js";
 import type { Illust } from "./illust.model.js";
 import type { IllustRepository } from "./illust.repository.js";
 

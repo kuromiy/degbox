@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { convertVideoArrayPathsToUrls } from "../../../server/helpers/video.helper.js";
 import type { Context } from "../../context.js";
-import { TOKENS } from "../../depend.injection.js";
+import { TOKENS } from "../../di/token.js";
 
 export const searchVideoSchema = z.object({
 	keyword: z.string().optional().default(""),

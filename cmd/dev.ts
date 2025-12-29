@@ -53,7 +53,12 @@ await hydraBuilder.watchBuild({
 const rendererProcess = await createServer({
 	plugins: [react()],
 	build: {
-		outDir: "../../dist/renderer",
+		rollupOptions: {
+			input: {
+				index: "./src/renderer/index.html",
+				"project-select": "./src/renderer/project-select.html",
+			},
+		},
 	},
 	root: "./src/renderer",
 	base: "./",

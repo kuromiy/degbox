@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
-import { TOKENS } from "../../depend.injection.js";
+import { TOKENS } from "../../di/token.js";
 
 export const registerVideoSchema = z.object({
 	resourceIds: z.array(z.string()).min(1),

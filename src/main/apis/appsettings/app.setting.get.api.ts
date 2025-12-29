@@ -1,5 +1,5 @@
 import type { Context } from "../../context.js";
-import { TOKENS } from "../../depend.injection.js";
+import { TOKENS } from "../../di/token.js";
 
 export async function getAppSetting(ctx: Context) {
 	const { container } = ctx;

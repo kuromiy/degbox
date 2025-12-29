@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { convertIllustContentPathsToUrls } from "../../../server/helpers/illust.helper.js";
 import type { Context } from "../../context.js";
-import { TOKENS } from "../../depend.injection.js";
+import { TOKENS } from "../../di/token.js";
 
 export const detailIllustSchema = z.object({
 	illustId: z.string().uuid(),

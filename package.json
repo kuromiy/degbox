@@ -6,7 +6,9 @@
 	"scripts": {
 		"dev": "tsx --env-file=.env ./cmd/dev.ts",
 		"build": "tsx --env-file=.env ./cmd/build.ts",
-		"db:gen": "npx drizzle-kit generate",
+		"db:gen": "npm run db:gen:user && npm run db:gen:application",
+		"db:gen:user": "npx drizzle-kit generate --config=./features/shared/database/user/drizzle.config.ts",
+		"db:gen:application": "npx drizzle-kit generate --config=./features/shared/database/application/drizzle.config.ts",
 		"db:mig": "npx drizzle-kit migrate",
 		"test": "npm run test:api && npm run test:server",
 		"test:e2e": "npx playwright test",

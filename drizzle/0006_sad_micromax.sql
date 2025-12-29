@@ -1,1 +1,0 @@
-ALTER TABLE `videos_contents` ADD `order` integer DEFAULT 0 NOT NULL;
