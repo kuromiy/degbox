@@ -1,4 +1,3 @@
-import { dirname } from "node:path";
 import { eq } from "drizzle-orm";
 import { BrowserWindow } from "electron";
 import { z } from "zod";
@@ -42,8 +41,7 @@ export async function openProject(ctx: Context, request: OpenProjectRequest) {
 		return false;
 	}
 
-	// pathはproject.degboxファイルのパスなので、親ディレクトリを取得
-	const foldPath = dirname(project.path);
+	const foldPath = project.path;
 
 	// openedAt を更新
 	await database
