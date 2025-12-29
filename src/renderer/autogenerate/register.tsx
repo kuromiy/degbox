@@ -38,26 +38,26 @@ declare global {
             getAppSetting: () => Promise<Result<ReturnTypeUnwrapped<typeof getAppSetting>, unknown>>;
             updateAppSetting: (ffmpegPath: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, unknown>>;
             deleteAuthor: (id: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteAuthor>, unknown>>;
-            getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, unknown>>;
+            getAuthorDetail: (authorId: string, videoPage: number, videoSize: number) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, unknown>>;
             registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, unknown>>;
-            searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, unknown>>;
+            searchAuthor: (name: string | undefined, page: number, size: number) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, unknown>>;
             updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, unknown>>;
             deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, unknown>>;
             detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, unknown>>;
             pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, unknown>>;
-            registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, unknown>>;
-            searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, unknown>>;
-            updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, unknown>>;
+            registerIllust: (resourceIds: string[], rawTags: string, authorIds: string[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, unknown>>;
+            searchIllust: (keyword: string | undefined, sortBy: string, order: string, page: number, limit: number) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, unknown>>;
+            updateIllust: (id: string, tags: string, imageItems: string[], authorIds: string[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, unknown>>;
             openProject: (projectId: string) => Promise<Result<ReturnTypeUnwrapped<typeof openProject>, unknown>>;
             getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, unknown>>;
             registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, unknown>>;
             selectProject: () => Promise<Result<ReturnTypeUnwrapped<typeof selectProject>, unknown>>;
-            autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, unknown>>;
-            suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, unknown>>;
+            autocompleteTags: (value: string, limit: number) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, unknown>>;
+            suggestRelatedTags: (tagNames: string[], limit: number) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, unknown>>;
             detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, unknown>>;
             pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, unknown>>;
-            registerVideo: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, unknown>>;
-            searchVideo: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, unknown>>;
+            registerVideo: (resourceIds: string[], rawTags: string, authorIds: string[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, unknown>>;
+            searchVideo: (keyword: string, sortBy: string, order: string, page: number, size: number) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, unknown>>;
         };
     }
 }
@@ -67,26 +67,26 @@ export interface ServiceIF {
     getAppSetting: () => Promise<Result<ReturnTypeUnwrapped<typeof getAppSetting>, unknown>>;
     updateAppSetting: (ffmpegPath: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, unknown>>;
     deleteAuthor: (id: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteAuthor>, unknown>>;
-    getAuthorDetail: (authorId: string, videoPage: number | undefined, videoSize: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, unknown>>;
+    getAuthorDetail: (authorId: string, videoPage: number, videoSize: number) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, unknown>>;
     registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, unknown>>;
-    searchAuthor: (name: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, unknown>>;
+    searchAuthor: (name: string | undefined, page: number, size: number) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, unknown>>;
     updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, unknown>>;
     deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, unknown>>;
     detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, unknown>>;
     pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, unknown>>;
-    registerIllust: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, unknown>>;
-    searchIllust: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, unknown>>;
-    updateIllust: (id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, unknown>>;
+    registerIllust: (resourceIds: string[], rawTags: string, authorIds: string[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerIllust>, unknown>>;
+    searchIllust: (keyword: string | undefined, sortBy: string, order: string, page: number, limit: number) => Promise<Result<ReturnTypeUnwrapped<typeof searchIllust>, unknown>>;
+    updateIllust: (id: string, tags: string, imageItems: string[], authorIds: string[]) => Promise<Result<ReturnTypeUnwrapped<typeof updateIllust>, unknown>>;
     openProject: (projectId: string) => Promise<Result<ReturnTypeUnwrapped<typeof openProject>, unknown>>;
     getRecentProject: () => Promise<Result<ReturnTypeUnwrapped<typeof getRecentProject>, unknown>>;
     registerProject: () => Promise<Result<ReturnTypeUnwrapped<typeof registerProject>, unknown>>;
     selectProject: () => Promise<Result<ReturnTypeUnwrapped<typeof selectProject>, unknown>>;
-    autocompleteTags: (value: string, limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, unknown>>;
-    suggestRelatedTags: (tagNames: unknown[], limit: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, unknown>>;
+    autocompleteTags: (value: string, limit: number) => Promise<Result<ReturnTypeUnwrapped<typeof autocompleteTags>, unknown>>;
+    suggestRelatedTags: (tagNames: string[], limit: number) => Promise<Result<ReturnTypeUnwrapped<typeof suggestRelatedTags>, unknown>>;
     detailVideo: (videoId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailVideo>, unknown>>;
     pickupVideo: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupVideo>, unknown>>;
-    registerVideo: (resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, unknown>>;
-    searchVideo: (keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, unknown>>;
+    registerVideo: (resourceIds: string[], rawTags: string, authorIds: string[] | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof registerVideo>, unknown>>;
+    searchVideo: (keyword: string, sortBy: string, order: string, page: number, size: number) => Promise<Result<ReturnTypeUnwrapped<typeof searchVideo>, unknown>>;
 }
 
 // サービス実装クラス
@@ -103,7 +103,7 @@ export class ApiService implements ServiceIF {
         return window.api.deleteAuthor(id);
     }
 
-    async getAuthorDetail(authorId: string, videoPage: number | undefined, videoSize: number | undefined) {
+    async getAuthorDetail(authorId: string, videoPage: number, videoSize: number) {
         return window.api.getAuthorDetail(authorId, videoPage, videoSize);
     }
 
@@ -111,7 +111,7 @@ export class ApiService implements ServiceIF {
         return window.api.registerAuthor(name, urls);
     }
 
-    async searchAuthor(name: string | undefined, page: number | undefined, size: number | undefined) {
+    async searchAuthor(name: string | undefined, page: number, size: number) {
         return window.api.searchAuthor(name, page, size);
     }
 
@@ -131,15 +131,15 @@ export class ApiService implements ServiceIF {
         return window.api.pickupImage();
     }
 
-    async registerIllust(resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) {
+    async registerIllust(resourceIds: string[], rawTags: string, authorIds: string[] | undefined) {
         return window.api.registerIllust(resourceIds, rawTags, authorIds);
     }
 
-    async searchIllust(keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, limit: number | undefined) {
+    async searchIllust(keyword: string | undefined, sortBy: string, order: string, page: number, limit: number) {
         return window.api.searchIllust(keyword, sortBy, order, page, limit);
     }
 
-    async updateIllust(id: string, tags: string, imageItems: unknown[], authorIds: unknown[]) {
+    async updateIllust(id: string, tags: string, imageItems: string[], authorIds: string[]) {
         return window.api.updateIllust(id, tags, imageItems, authorIds);
     }
 
@@ -159,11 +159,11 @@ export class ApiService implements ServiceIF {
         return window.api.selectProject();
     }
 
-    async autocompleteTags(value: string, limit: number | undefined) {
+    async autocompleteTags(value: string, limit: number) {
         return window.api.autocompleteTags(value, limit);
     }
 
-    async suggestRelatedTags(tagNames: unknown[], limit: number | undefined) {
+    async suggestRelatedTags(tagNames: string[], limit: number) {
         return window.api.suggestRelatedTags(tagNames, limit);
     }
 
@@ -175,11 +175,11 @@ export class ApiService implements ServiceIF {
         return window.api.pickupVideo();
     }
 
-    async registerVideo(resourceIds: unknown[], rawTags: string, authorIds: unknown[] | undefined) {
+    async registerVideo(resourceIds: string[], rawTags: string, authorIds: string[] | undefined) {
         return window.api.registerVideo(resourceIds, rawTags, authorIds);
     }
 
-    async searchVideo(keyword: string | undefined, sortBy: string | undefined, order: string | undefined, page: number | undefined, size: number | undefined) {
+    async searchVideo(keyword: string, sortBy: string, order: string, page: number, size: number) {
         return window.api.searchVideo(keyword, sortBy, order, page, size);
     }
 }

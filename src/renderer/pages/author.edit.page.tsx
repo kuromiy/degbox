@@ -24,7 +24,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 		throw new Error("Author ID is required");
 	}
 
-	const response = await client.getAuthorDetail(authorId, undefined, undefined);
+	const response = await client.getAuthorDetail(authorId, 1, 20);
 	if (isFailure(response)) {
 		throw response.value;
 	}

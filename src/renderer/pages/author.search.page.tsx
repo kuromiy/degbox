@@ -12,11 +12,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	const pageStr = url.searchParams.get("page");
 	const pageNum = pageStr ? Number(pageStr) : Number.NaN;
-	const page = Number.isFinite(pageNum) ? pageNum : undefined;
+	const page = Number.isFinite(pageNum) ? pageNum : 1;
 
 	const sizeStr = url.searchParams.get("size");
 	const sizeNum = sizeStr ? Number(sizeStr) : Number.NaN;
-	const size = Number.isFinite(sizeNum) ? sizeNum : undefined;
+	const size = Number.isFinite(sizeNum) ? sizeNum : 20;
 
 	const response = await client.searchAuthor(name, page, size);
 	if (isFailure(response)) {

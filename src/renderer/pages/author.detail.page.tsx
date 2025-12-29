@@ -20,11 +20,11 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 	const videoPageStr =
 		url.searchParams.get("page") ?? url.searchParams.get("videoPage");
 	const videoPageNum = videoPageStr ? Number(videoPageStr) : Number.NaN;
-	const videoPage = Number.isFinite(videoPageNum) ? videoPageNum : undefined;
+	const videoPage = Number.isFinite(videoPageNum) ? videoPageNum : 1;
 
 	const videoSizeStr = url.searchParams.get("videoSize");
 	const videoSizeNum = videoSizeStr ? Number(videoSizeStr) : Number.NaN;
-	const videoSize = Number.isFinite(videoSizeNum) ? videoSizeNum : undefined;
+	const videoSize = Number.isFinite(videoSizeNum) ? videoSizeNum : 20;
 
 	const response = await client.getAuthorDetail(authorId, videoPage, videoSize);
 	if (isFailure(response)) {
