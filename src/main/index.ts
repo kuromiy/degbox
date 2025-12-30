@@ -2,6 +2,7 @@ import { dirname, join } from "node:path";
 import { cwd } from "node:process";
 import { fileURLToPath } from "node:url";
 import { app, protocol } from "electron";
+import { UserAppSettingDataSource } from "../../features/appsetting/user.app.setting.datasource.js";
 import { Container } from "../../features/shared/container/index.js";
 import { createDatabase as createUserDatabase } from "../../features/shared/database/user/index.js";
 import { registerAPI, registerProtocol } from "./autogenerate/index.js";
@@ -63,6 +64,10 @@ app.whenReady().then(async () => {
 	});
 	container.register(TOKENS.USER_DATABASE, () => userDatabase);
 	container.register(TOKENS.MIGRATIONS_BASE_PATH, () => migrationsBasePath);
+	container.register(
+		TOKENS.USER_APPSETTING_REPOSITORY,
+		() => new UserAppSettingDataSource(userDatabase),
+	);
 	container.register(TOKENS.APP_CONFIG, () => {
 		return {
 			isDev: IS_DEV,

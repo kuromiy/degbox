@@ -1,4 +1,3 @@
-import { AppSettingDataSource } from "../../../features/appsetting/app.setting.datasource.js";
 import { AuthorDataSource } from "../../../features/author/author.datasource.js";
 import { ContentAction } from "../../../features/content/content.action.js";
 import { ContentDataSource } from "../../../features/content/content.datasource.js";
@@ -86,11 +85,6 @@ export const depend: DependencyEntry[] = [
 			new IllustDataSource(c.get(TOKENS.LOGGER), c.get(TOKENS.DATABASE)),
 	},
 	{
-		token: TOKENS.APPSETTING_REPOSITORY,
-		provider: (c: Container) =>
-			new AppSettingDataSource(c.get(TOKENS.APPSETTING_FILE_STORE)),
-	},
-	{
 		token: TOKENS.PROJECT_REPOSITORY,
 		provider: (c: Container) =>
 			new ProjectDataSource(c.get(TOKENS.USER_DATABASE)),
@@ -112,7 +106,7 @@ export const depend: DependencyEntry[] = [
 			new VideoServiceImpl(
 				c.get(TOKENS.LOGGER),
 				c.get(TOKENS.FILE_SYSTEM),
-				c.get(TOKENS.APPSETTING_REPOSITORY),
+				c.get(TOKENS.USER_APPSETTING_REPOSITORY),
 			),
 	},
 	{

@@ -1,6 +1,5 @@
 import type { Logger } from "winston";
-import type { AppSetting } from "../../../features/appsetting/app.setting.model.js";
-import type { AppSettingRepository } from "../../../features/appsetting/app.setting.repository.js";
+import type { UserAppSettingRepository } from "../../../features/appsetting/user.app.setting.repository.js";
 import type { AuthorRepository } from "../../../features/author/author.repository.js";
 import type { ContentAction } from "../../../features/content/content.action.js";
 import type { ContentRepository } from "../../../features/content/content.repository.js";
@@ -11,7 +10,6 @@ import type { ProjectRepository } from "../../../features/project/project.reposi
 import { InjectionToken } from "../../../features/shared/container/index.js";
 import type { Database } from "../../../features/shared/database/application/type.js";
 import type { Database as UserDatabase } from "../../../features/shared/database/user/type.js";
-import type { FileStore } from "../../../features/shared/filestore/index.js";
 import type { FileSystem } from "../../../features/shared/filesystem/index.js";
 import type { JobQueue } from "../../../features/shared/jobqueue/index.js";
 import type { TagAction } from "../../../features/tag/tag.action.js";
@@ -34,9 +32,6 @@ export const TOKENS = {
 	DATABASE: new InjectionToken<Database>("Database"),
 	USER_DATABASE: new InjectionToken<UserDatabase>("UserDatabase"),
 	CACHE: new InjectionToken<Map<string, UnmanagedContent>>("Cache"),
-	APPSETTING_FILE_STORE: new InjectionToken<FileStore<AppSetting>>(
-		"AppSettingFileStore",
-	),
 	PROJECT_PATH: new InjectionToken<string>("ProjectPath"),
 	MIGRATIONS_BASE_PATH: new InjectionToken<string>("MigrationsBasePath"),
 
@@ -54,11 +49,11 @@ export const TOKENS = {
 	AUTHOR_REPOSITORY: new InjectionToken<AuthorRepository>("AuthorRepository"),
 	VIDEO_REPOSITORY: new InjectionToken<VideoRepository>("VideoRepository"),
 	ILLUST_REPOSITORY: new InjectionToken<IllustRepository>("IllustRepository"),
-	APPSETTING_REPOSITORY: new InjectionToken<AppSettingRepository>(
-		"AppSettingRepository",
-	),
 	PROJECT_REPOSITORY: new InjectionToken<ProjectRepository>(
 		"ProjectRepository",
+	),
+	USER_APPSETTING_REPOSITORY: new InjectionToken<UserAppSettingRepository>(
+		"UserAppSettingRepository",
 	),
 
 	// service

@@ -9,3 +9,8 @@ export const PROJECTS = sqliteTable("projects", {
 	openedAt: text("opened_at").notNull(),
 	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const APP_SETTINGS = sqliteTable("APP_SETTINGS", {
+	key: text("key").primaryKey(),
+	value: text("value").notNull(),
+});
