@@ -10,12 +10,36 @@ export type ErrorResponse =
  * unknown型がErrorResponse型かどうかを判定する
  */
 export function isErrorResponse(error: unknown): error is ErrorResponse {
-	return (
-		error !== null &&
-		typeof error === "object" &&
-		"type" in error &&
-		"messages" in error
-	);
+	if (error === null || typeof error !== "object") {
+		return false;
+	}
+	if (!("type" in error) || !("messages" in error)) {
+		return false;
+	}
+
+	const obj = error as { type: unknown; messages: unknown };
+
+	if (typeof obj.type !== "string") {
+		return false;
+	}
+
+	// type: "valid" の場合、messages は Record<string, string[]>
+	if (obj.type === "valid") {
+		if (obj.messages === null || typeof obj.messages !== "object") {
+			return false;
+		}
+		const messagesObj = obj.messages as Record<string, unknown>;
+		return Object.values(messagesObj).every(
+			(arr) => Array.isArray(arr) && arr.every((m) => typeof m === "string"),
+		);
+	}
+
+	// type: "application" または "system" の場合、messages は string
+	if (obj.type === "application" || obj.type === "system") {
+		return typeof obj.messages === "string";
+	}
+
+	return false;
 }
 
 /**
@@ -31,6 +55,9 @@ export function getErrorMessage(error: unknown): string {
 		if (error.type === "valid") {
 			// バリデーションエラーの場合、全メッセージを結合
 			const allMessages = Object.values(error.messages).flat();
+			if (allMessages.length === 0) {
+				return "入力内容に問題があります";
+			}
 			return allMessages.join(", ");
 		}
 		return error.messages;
