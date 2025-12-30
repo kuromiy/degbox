@@ -86,7 +86,7 @@ describe("ビデオ登録画面", () => {
 				ffmpeg:
 					"D:\\tools\\ffmpeg-6.0-full_build\\ffmpeg-6.0-full_build\\bin\\ffmpeg.exe",
 			}),
-			save: async () => {},
+			save: async (_setting) => {},
 		};
 		container.register(
 			TOKENS.USER_APPSETTING_REPOSITORY,
