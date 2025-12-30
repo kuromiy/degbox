@@ -9,6 +9,7 @@ export class VideoAction {
 	constructor(
 		private readonly repository: VideoRepository,
 		private readonly service: VideoService,
+		private readonly projectPath: string,
 	) {}
 
 	async register(tags: Tag[], contents: Content[], authors?: Author[]) {
@@ -22,8 +23,8 @@ export class VideoAction {
 
 		// すべてのコンテンツに対してHLS生成
 		for (const content of contents) {
-			const fullPath = join(content.path, content.name);
-			const outputDir = content.path;
+			const fullPath = join(this.projectPath, content.path, content.name);
+			const outputDir = join(this.projectPath, content.path);
 
 			// HLS生成（hlsサブフォルダに出力）
 			await this.service.generateHls(
@@ -35,8 +36,12 @@ export class VideoAction {
 
 		// 最初のコンテンツからサムネイルとGIF生成
 		const firstContent = contents[0] as Content;
-		const firstFullPath = join(firstContent.path, firstContent.name);
-		const firstOutputDir = firstContent.path;
+		const firstFullPath = join(
+			this.projectPath,
+			firstContent.path,
+			firstContent.name,
+		);
+		const firstOutputDir = join(this.projectPath, firstContent.path);
 
 		// サムネイル生成
 		await this.service.generateThumbnail(

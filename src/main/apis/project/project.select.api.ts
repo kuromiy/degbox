@@ -2,7 +2,12 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { BrowserWindow, dialog } from "electron";
 import { z } from "zod";
+import {
+	type AppSetting,
+	AppSettingSchema,
+} from "../../../../features/appsetting/app.setting.model.js";
 import { createDatabase } from "../../../../features/shared/database/application/index.js";
+import { createJsonFileStoreWithFallback } from "../../../../features/shared/filestore/index.js";
 import type { Context } from "../../context.js";
 import { createMainWindow } from "../../createMainWindow.js";
 import { TOKENS } from "../../di/token.js";
@@ -101,6 +106,7 @@ export async function selectProject(ctx: Context) {
 
 	// クリーンアップ用ヘルパー関数
 	let serverStarted = false;
+	let appSettingFileStoreRegistered = false;
 	const cleanup = async () => {
 		// サーバーが起動していれば停止
 		if (serverStarted) {
@@ -116,6 +122,9 @@ export async function selectProject(ctx: Context) {
 		// コンテナ登録を解除
 		container.unregister(TOKENS.DATABASE);
 		container.unregister(TOKENS.PROJECT_PATH);
+		if (appSettingFileStoreRegistered) {
+			container.unregister(TOKENS.APPSETTING_FILE_STORE);
+		}
 		// プロジェクトレコードを削除
 		await projectRepository.delete(projectData.id);
 		logger.info("cleaned up after failure", { projectId: projectData.id });
@@ -123,6 +132,26 @@ export async function selectProject(ctx: Context) {
 
 	container.register(TOKENS.DATABASE, () => db);
 	container.register(TOKENS.PROJECT_PATH, () => foldPath);
+
+	// AppSettingFileStore を作成してコンテナに登録
+	const appSettingInit: AppSetting = { ffmpeg: "" };
+	let appSettingFileStore: Awaited<
+		ReturnType<typeof createJsonFileStoreWithFallback<AppSetting>>
+	>;
+	try {
+		appSettingFileStore = await createJsonFileStoreWithFallback(
+			join(foldPath, "app_setting.json"),
+			appSettingInit,
+			AppSettingSchema,
+			{ onValidationError: async () => true },
+		);
+	} catch (err) {
+		logger.error("Failed to create app setting file store", { error: err });
+		await cleanup();
+		return false;
+	}
+	container.register(TOKENS.APPSETTING_FILE_STORE, () => appSettingFileStore);
+	appSettingFileStoreRegistered = true;
 
 	// サーバー起動
 	logger.info("start server");

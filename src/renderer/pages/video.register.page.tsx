@@ -14,6 +14,13 @@ import {
 } from "../../../features/tag/ui/tag.input.component.js";
 import { VideoContentInput } from "../../../features/video/ui/components/video.content.input.component.js";
 import { ApiService } from "../autogenerate/register.js";
+import { FieldError } from "../components/field-error.component.js";
+import {
+	type ActionError,
+	getErrorMessage,
+	isActionError,
+	isErrorResponse,
+} from "../utils/error.js";
 
 const client = new ApiService();
 
@@ -26,24 +33,26 @@ export async function action({ request }: ActionFunctionArgs) {
 	console.log(
 		`url: ${request.url}, tags: ${tags}, resourceIds: ${resourceIds}, authorId: ${authorId}`,
 	);
-	if (!resourceIds || !tags) {
-		console.log("必須項目が入力されていません");
-		throw new Error("必須項目が入力されていません");
-	}
 
-	// カンマ区切りの文字列を配列に変換
-	const resourceIdArray = resourceIds.split(",").filter((id) => id.trim());
+	// カンマ区切りの文字列を配列に変換（空の場合は空配列）
+	const resourceIdArray = resourceIds
+		? resourceIds.split(",").filter((id) => id.trim())
+		: [];
 	// authorIdを配列に変換（存在する場合のみ）
 	const authorIdArray = authorId ? [authorId] : undefined;
 
 	const response = await client.registerVideo(
 		resourceIdArray,
-		tags,
+		tags ?? "",
 		authorIdArray,
 	);
 	if (isFailure(response)) {
-		console.log(`response error: ${response.value.message}`);
-		throw new Error(response.value.message);
+		const error = response.value;
+		console.log(`response error: ${getErrorMessage(error)}`);
+		if (isErrorResponse(error)) {
+			return { error } as ActionError;
+		}
+		throw new Error(getErrorMessage(error));
 	}
 	return location.reload();
 }
@@ -52,11 +61,22 @@ export default function VideoRegisterPage() {
 	const { Form } = useNavigation();
 	const { tags, add, replace, change, autocompleteTags, suggestTags } =
 		useTagInput("");
-	const data = useActionData() as { message: string } | Error | undefined;
+	const actionData = useActionData<ActionError>();
 	const [isOpen, setIsOpen] = useState(false);
 	const [author, setAuthor] = useState<AuthorWithVideoCount | undefined>(
 		undefined,
 	);
+
+	const fieldErrors = isActionError(actionData)
+		? actionData.error.type === "valid"
+			? actionData.error.messages
+			: undefined
+		: undefined;
+
+	const generalError =
+		isActionError(actionData) && actionData.error.type !== "valid"
+			? actionData.error.messages
+			: undefined;
 
 	function handleReset() {
 		setAuthor(undefined);
@@ -64,15 +84,6 @@ export default function VideoRegisterPage() {
 
 	return (
 		<main className="flex justify-center">
-			{data && (
-				<div className="mb-4">
-					{data instanceof Error ? (
-						<div className="text-red-500">エラー: {data.message}</div>
-					) : (
-						<div className="text-green-500">{data.message}</div>
-					)}
-				</div>
-			)}
 			{isOpen && (
 				<AuthorSelectModal
 					onClose={() => setIsOpen(false)}
@@ -81,29 +92,49 @@ export default function VideoRegisterPage() {
 				/>
 			)}
 			<div className="w-full max-w-md">
+				{generalError && (
+					<div className="mb-4 rounded bg-red-100 p-3 text-red-700">
+						{generalError}
+					</div>
+				)}
 				<Form className="flex flex-col gap-4" method="POST">
 					<h1>動画登録</h1>
-					<VideoContentInput />
-					<TagInput
-						name="tags"
-						value={tags}
-						onAdd={add}
-						onReplace={replace}
-						onChange={change}
-						autocompleteTags={autocompleteTags}
-						suggestTags={suggestTags}
-					/>
-					<div className="flex justify-between divide-x divide-black rounded-lg border px-4 py-2">
-						<div className="flex-1 pr-4">{author ? author.name : "未選択"}</div>
-						<button
-							type="button"
-							onClick={() => setIsOpen(true)}
-							className="pl-4"
-						>
-							選択
-						</button>
+					<div>
+						<VideoContentInput />
+						<FieldError errors={fieldErrors?.resourceIds} />
 					</div>
-					<input type="hidden" name="authorId" value={author?.id ?? ""}></input>
+					<div>
+						<TagInput
+							name="tags"
+							value={tags}
+							onAdd={add}
+							onReplace={replace}
+							onChange={change}
+							autocompleteTags={autocompleteTags}
+							suggestTags={suggestTags}
+						/>
+						<FieldError errors={fieldErrors?.tags} />
+					</div>
+					<div>
+						<div className="flex justify-between divide-x divide-black rounded-lg border px-4 py-2">
+							<div className="flex-1 pr-4">
+								{author ? author.name : "未選択"}
+							</div>
+							<button
+								type="button"
+								onClick={() => setIsOpen(true)}
+								className="pl-4"
+							>
+								選択
+							</button>
+						</div>
+						<input
+							type="hidden"
+							name="authorId"
+							value={author?.id ?? ""}
+						></input>
+						<FieldError errors={fieldErrors?.authorId} />
+					</div>
 					<div className="flex gap-4">
 						<NeutralButton type="reset" onClick={handleReset}>
 							リセット

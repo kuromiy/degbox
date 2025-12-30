@@ -3,8 +3,12 @@ import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
 import type { Illust } from "../../../features/illust/illust.model.js";
 import { Container } from "../../../features/shared/container/index.js";
+import { ValidError } from "../../../features/shared/error/valid/index.js";
 import type { UnmanagedContent } from "../../../features/unmanaged-content/unmanagedContent.model.js";
-import { registerIllust } from "../../../src/main/apis/illusts/illust.register.api.js";
+import {
+	registerIllust,
+	registerIllustValidator,
+} from "../../../src/main/apis/illusts/illust.register.api.js";
 import type { Context } from "../../../src/main/context.js";
 import { depend } from "../../../src/main/di/dependencies.js";
 import { TOKENS } from "../../../src/main/di/token.js";
@@ -236,13 +240,13 @@ describe("イラスト登録API", () => {
 			event: mockEvent,
 		};
 
-		// 実行 - バリデーションエラーが発生することを検証
-		await assert.rejects(
-			async () => {
-				await registerIllust(context, request);
+		// バリデータを直接呼び出してバリデーションエラーを検証
+		assert.throws(
+			() => {
+				registerIllustValidator(request, context);
 			},
-			Error,
-			"resourceIds が空の場合はバリデーションエラーが発生すべき",
+			ValidError,
+			"resourceIds が空の場合はValidErrorが発生すべき",
 		);
 	});
 });

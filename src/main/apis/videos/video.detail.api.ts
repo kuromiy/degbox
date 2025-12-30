@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { convertVideoPathsToUrls } from "../../../server/helpers/video.helper.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -8,6 +9,8 @@ export const detailVideoSchema = z.object({
 });
 export type DetailVideoRequest = z.infer<typeof detailVideoSchema>;
 
+export const detailVideoValidator = zodValidator(detailVideoSchema);
+
 export async function detailVideo(ctx: Context, request: DetailVideoRequest) {
 	const { container } = ctx;
 	const [logger, repository] = container.get(
@@ -15,12 +18,7 @@ export async function detailVideo(ctx: Context, request: DetailVideoRequest) {
 		TOKENS.VIDEO_REPOSITORY,
 	);
 	logger.info("detail video", request);
-	const valid = detailVideoSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
-	const { videoId } = valid.data;
+	const { videoId } = request;
 	const video = await repository.findById(videoId);
 	if (!video) {
 		logger.warn(`Video not found: ${videoId}`);

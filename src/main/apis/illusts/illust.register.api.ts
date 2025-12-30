@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -10,6 +11,8 @@ export const registerIllustSchema = z.object({
 	authorIds: z.array(z.string()).optional(),
 });
 export type RegisterIllustRequest = z.infer<typeof registerIllustSchema>;
+
+export const registerIllustValidator = zodValidator(registerIllustSchema);
 
 export async function registerIllust(
 	ctx: Context,
@@ -23,19 +26,14 @@ export async function registerIllust(
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("register illust", request);
-	const valid = registerIllustSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
 
 	jobQueue.enqueue({
 		name: "register-illust",
-		input: valid.data,
+		input: request,
 		handle: async () => {
 			return database.transaction(async (tx) => {
 				return fileSystem.transaction(async (fs) => {
-					const { resourceIds, rawTags, authorIds } = valid.data;
+					const { resourceIds, rawTags, authorIds } = request;
 
 					const scopedContainer = createScopedContainer(
 						container,

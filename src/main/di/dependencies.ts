@@ -148,6 +148,7 @@ export const depend: DependencyEntry[] = [
 			new VideoAction(
 				c.get(TOKENS.VIDEO_REPOSITORY),
 				c.get(TOKENS.VIDEO_SERVICE),
+				c.get(TOKENS.PROJECT_PATH),
 			),
 	},
 	{

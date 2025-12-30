@@ -9,7 +9,11 @@ import {
 	VIDEOS_CONTENTS,
 	VIDEOS_TAGS,
 } from "../../../features/shared/database/application/schema.js";
-import { detailVideo } from "../../../src/main/apis/videos/video.detail.api.js";
+import { ValidError } from "../../../features/shared/error/valid/index.js";
+import {
+	detailVideo,
+	detailVideoValidator,
+} from "../../../src/main/apis/videos/video.detail.api.js";
 import { depend } from "../../../src/main/di/dependencies.js";
 import { TOKENS } from "../../../src/main/di/token.js";
 import { createTestDatabase } from "../../helpers/createTestDatabase.js";
@@ -162,14 +166,13 @@ describe("ビデオ詳細API", () => {
 			videoId: "invalid-uuid-format", // 不正な形式
 		};
 
-		// 実行と検証
-		await assert.rejects(
-			async () => {
-				await detailVideo(context, request);
+		// バリデータを直接呼び出してバリデーションエラーを検証
+		assert.throws(
+			() => {
+				detailVideoValidator(request, context);
 			},
-			{
-				message: "Invalid request",
-			},
+			ValidError,
+			"不正なUUID形式の場合はValidErrorが発生すべき",
 		);
 	});
 });

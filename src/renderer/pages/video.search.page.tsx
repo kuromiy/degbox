@@ -8,18 +8,18 @@ const client = new ApiService();
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
-	const keyword = url.searchParams.get("keyword") ?? undefined;
-	const sortBy = url.searchParams.get("sortBy") ?? undefined;
-	const order = url.searchParams.get("order") ?? undefined;
+	const keyword = url.searchParams.get("keyword") ?? "";
+	const sortBy = url.searchParams.get("sortBy") ?? "createdAt";
+	const order = url.searchParams.get("order") ?? "desc";
 
-	// 文字列を数値に変換（nullまたは無効な値の場合はundefined）
+	// 文字列を数値に変換（nullまたは無効な値の場合はデフォルト値）
 	const pageStr = url.searchParams.get("page");
 	const pageNum = pageStr ? Number(pageStr) : Number.NaN;
-	const page = Number.isFinite(pageNum) ? pageNum : undefined;
+	const page = Number.isFinite(pageNum) ? pageNum : 1;
 
 	const sizeStr = url.searchParams.get("size");
 	const sizeNum = sizeStr ? Number(sizeStr) : Number.NaN;
-	const size = Number.isFinite(sizeNum) ? sizeNum : undefined;
+	const size = Number.isFinite(sizeNum) ? sizeNum : 20;
 
 	const response = await client.searchVideo(keyword, sortBy, order, page, size);
 	if (isFailure(response)) {

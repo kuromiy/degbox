@@ -9,8 +9,8 @@ const client = new ApiService();
 export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
 	const keyword = url.searchParams.get("keyword") ?? undefined;
-	const sortBy = url.searchParams.get("sortBy") ?? undefined;
-	const order = url.searchParams.get("order") ?? undefined;
+	const sortBy = url.searchParams.get("sortBy") ?? "createdAt";
+	const order = url.searchParams.get("order") ?? "desc";
 
 	// 文字列を数値に変換し、デフォルト値と範囲でサニタイズ
 	const pageStr = url.searchParams.get("page");

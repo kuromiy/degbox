@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
@@ -9,6 +10,8 @@ export const updateAuthorSchema = z.object({
 	urls: z.string(),
 });
 export type UpdateAuthorRequest = z.infer<typeof updateAuthorSchema>;
+
+export const updateAuthorValidator = zodValidator(updateAuthorSchema);
 
 export interface AuthorUpdateResponse {
 	id: string;
@@ -27,19 +30,14 @@ export async function updateAuthor(
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("update author", request);
-	const valid = updateAuthorSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
 
 	return new Promise((resolve, reject) => {
 		jobQueue.enqueue({
 			name: "update-author",
-			input: valid.data,
+			input: request,
 			handle: async () => {
 				return database.transaction(async (tx) => {
-					const { id, name, urls: urlsString } = valid.data;
+					const { id, name, urls: urlsString } = request;
 
 					// JSON文字列をRecord<string, string>に変換
 					let urls: Record<string, string>;

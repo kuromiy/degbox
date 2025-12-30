@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
@@ -6,6 +7,8 @@ export const deleteAuthorSchema = z.object({
 	id: z.string(),
 });
 export type DeleteAuthorRequest = z.infer<typeof deleteAuthorSchema>;
+
+export const deleteAuthorValidator = zodValidator(deleteAuthorSchema);
 
 export interface DeleteAuthorResponse {
 	success: boolean;
@@ -22,13 +25,8 @@ export async function deleteAuthor(
 	);
 
 	logger.info("delete author", request);
-	const valid = deleteAuthorSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
 
-	const { id } = valid.data;
+	const { id } = request;
 
 	// 作者が存在するか確認
 	const author = await repository.get(id);

@@ -2,9 +2,13 @@ import { strict as assert } from "node:assert";
 import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
 import { Container } from "../../../features/shared/container/index.js";
+import { ValidError } from "../../../features/shared/error/valid/index.js";
 import type { UnmanagedContent } from "../../../features/unmanaged-content/unmanagedContent.model.js";
 import { registerIllust } from "../../../src/main/apis/illusts/illust.register.api.js";
-import { searchIllust } from "../../../src/main/apis/illusts/illust.search.api.js";
+import {
+	searchIllust,
+	searchIllustValidator,
+} from "../../../src/main/apis/illusts/illust.search.api.js";
 import type { Context } from "../../../src/main/context.js";
 import { depend } from "../../../src/main/di/dependencies.js";
 import { TOKENS } from "../../../src/main/di/token.js";
@@ -354,18 +358,21 @@ describe("イラスト検索API", () => {
 			event: mockEvent,
 		};
 
-		// 不正なページ番号で検索
-		await assert.rejects(
-			async () => {
-				await searchIllust(context, {
-					page: 0,
-					limit: 20,
-					sortBy: "id",
-					order: "desc",
-				});
+		// バリデータを直接呼び出してバリデーションエラーを検証
+		assert.throws(
+			() => {
+				searchIllustValidator(
+					{
+						page: 0,
+						limit: 20,
+						sortBy: "id",
+						order: "desc",
+					},
+					context,
+				);
 			},
-			Error,
-			"page が 0 の場合はバリデーションエラーが発生すべき",
+			ValidError,
+			"page が 0 の場合はValidErrorが発生すべき",
 		);
 	});
 
@@ -400,18 +407,21 @@ describe("イラスト検索API", () => {
 			event: mockEvent,
 		};
 
-		// 不正なリミットで検索
-		await assert.rejects(
-			async () => {
-				await searchIllust(context, {
-					page: 1,
-					limit: 101,
-					sortBy: "id",
-					order: "desc",
-				});
+		// バリデータを直接呼び出してバリデーションエラーを検証
+		assert.throws(
+			() => {
+				searchIllustValidator(
+					{
+						page: 1,
+						limit: 101,
+						sortBy: "id",
+						order: "desc",
+					},
+					context,
+				);
 			},
-			Error,
-			"limit が 101 の場合はバリデーションエラーが発生すべき",
+			ValidError,
+			"limit が 101 の場合はValidErrorが発生すべき",
 		);
 	});
 });

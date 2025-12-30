@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
@@ -9,6 +10,8 @@ export const searchAuthorSchema = z.object({
 });
 export type SearchAuthorRequest = z.infer<typeof searchAuthorSchema>;
 
+export const searchAuthorValidator = zodValidator(searchAuthorSchema);
+
 export async function searchAuthor(ctx: Context, request: SearchAuthorRequest) {
 	const { container } = ctx;
 	const [logger, repository] = container.get(
@@ -16,12 +19,7 @@ export async function searchAuthor(ctx: Context, request: SearchAuthorRequest) {
 		TOKENS.AUTHOR_REPOSITORY,
 	);
 	logger.info("search author", request);
-	const valid = searchAuthorSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
-	const { name, page: rowPage, size } = valid.data;
+	const { name, page: rowPage, size } = request;
 	const page = rowPage - 1; // 表示は1ベース、処理は0ベースなので-1する
 	const count = await repository.count(name);
 	if (count === 0) {

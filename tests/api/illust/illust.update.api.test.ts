@@ -3,9 +3,13 @@ import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
 import type { Illust } from "../../../features/illust/illust.model.js";
 import { Container } from "../../../features/shared/container/index.js";
+import { ValidError } from "../../../features/shared/error/valid/index.js";
 import type { UnmanagedContent } from "../../../features/unmanaged-content/unmanagedContent.model.js";
 import { registerIllust } from "../../../src/main/apis/illusts/illust.register.api.js";
-import { updateIllust } from "../../../src/main/apis/illusts/illust.update.api.js";
+import {
+	updateIllust,
+	updateIllustValidator,
+} from "../../../src/main/apis/illusts/illust.update.api.js";
 import type { Context } from "../../../src/main/context.js";
 import { depend } from "../../../src/main/di/dependencies.js";
 import { TOKENS } from "../../../src/main/di/token.js";
@@ -599,18 +603,21 @@ describe("イラスト更新API", () => {
 			event: mockEvent,
 		};
 
-		// バリデーションエラーが発生することを検証
-		await assert.rejects(
-			async () => {
-				await updateIllust(context, {
-					id: "",
-					tags: "test",
-					imageItems: ["existing:some-id"],
-					authorIds: [],
-				});
+		// バリデータを直接呼び出してバリデーションエラーを検証
+		assert.throws(
+			() => {
+				updateIllustValidator(
+					{
+						id: "",
+						tags: "test",
+						imageItems: ["existing:some-id"],
+						authorIds: [],
+					},
+					context,
+				);
 			},
-			Error,
-			"空のIDの場合はバリデーションエラーが発生すべき",
+			ValidError,
+			"空のIDの場合はValidErrorが発生すべき",
 		);
 	});
 });

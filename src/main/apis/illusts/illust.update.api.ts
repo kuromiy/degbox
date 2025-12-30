@@ -1,17 +1,20 @@
 import { z } from "zod";
 import type { Content } from "../../../../features/content/content.model.js";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
 export const updateIllustSchema = z.object({
-	id: z.string(),
+	id: z.string().min(1),
 	tags: z.string(),
 	imageItems: z.array(z.string()), // "existing:id" または "new:id" の形式
 	authorIds: z.array(z.string()),
 });
 export type UpdateIllustRequest = z.infer<typeof updateIllustSchema>;
+
+export const updateIllustValidator = zodValidator(updateIllustSchema);
 
 export interface UpdateIllustResponse {
 	id: string;
@@ -29,20 +32,15 @@ export async function updateIllust(
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("update illust", request);
-	const valid = updateIllustSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
 
 	return new Promise((resolve, reject) => {
 		jobQueue.enqueue({
 			name: "update-illust",
-			input: valid.data,
+			input: request,
 			handle: async () => {
 				return database.transaction(async (tx) => {
 					return fileSystem.transaction(async (fs) => {
-						const { id, tags: rawTags, imageItems, authorIds } = valid.data;
+						const { id, tags: rawTags, imageItems, authorIds } = request;
 
 						const scopedContainer = createScopedContainer(
 							container,

@@ -1,6 +1,12 @@
+import { join } from "node:path";
 import { BrowserWindow } from "electron";
 import { z } from "zod";
+import {
+	type AppSetting,
+	AppSettingSchema,
+} from "../../../../features/appsetting/app.setting.model.js";
 import { createDatabase } from "../../../../features/shared/database/application/index.js";
+import { createJsonFileStoreWithFallback } from "../../../../features/shared/filestore/index.js";
 import type { Context } from "../../context.js";
 import { createMainWindow } from "../../createMainWindow.js";
 import { TOKENS } from "../../di/token.js";
@@ -63,6 +69,16 @@ export async function openProject(ctx: Context, request: OpenProjectRequest) {
 
 	// PROJECT_PATH をコンテナに登録
 	container.register(TOKENS.PROJECT_PATH, () => foldPath);
+
+	// AppSettingFileStore を作成してコンテナに登録
+	const appSettingInit: AppSetting = { ffmpeg: "" };
+	const appSettingFileStore = await createJsonFileStoreWithFallback(
+		join(foldPath, "app_setting.json"),
+		appSettingInit,
+		AppSettingSchema,
+		{ onValidationError: async () => true },
+	);
+	container.register(TOKENS.APPSETTING_FILE_STORE, () => appSettingFileStore);
 
 	// サーバー起動
 	logger.info("start server");
