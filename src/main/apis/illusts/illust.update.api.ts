@@ -7,7 +7,7 @@ import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
 export const updateIllustSchema = z.object({
-	id: z.string(),
+	id: z.string().min(1),
 	tags: z.string(),
 	imageItems: z.array(z.string()), // "existing:id" または "new:id" の形式
 	authorIds: z.array(z.string()),
