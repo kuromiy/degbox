@@ -50,19 +50,6 @@ export function getErrorMessage(error: unknown): string {
 }
 
 /**
- * バリデーションエラーから特定フィールドのエラーメッセージを取得する
- */
-export function getFieldErrors(
-	error: unknown,
-	fieldName: string,
-): string[] | undefined {
-	if (isErrorResponse(error) && error.type === "valid") {
-		return error.messages[fieldName];
-	}
-	return undefined;
-}
-
-/**
  * ActionData用の型
  */
 export type ActionError = {

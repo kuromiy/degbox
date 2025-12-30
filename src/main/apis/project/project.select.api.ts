@@ -106,6 +106,7 @@ export async function selectProject(ctx: Context) {
 
 	// クリーンアップ用ヘルパー関数
 	let serverStarted = false;
+	let appSettingFileStoreRegistered = false;
 	const cleanup = async () => {
 		// サーバーが起動していれば停止
 		if (serverStarted) {
@@ -121,6 +122,9 @@ export async function selectProject(ctx: Context) {
 		// コンテナ登録を解除
 		container.unregister(TOKENS.DATABASE);
 		container.unregister(TOKENS.PROJECT_PATH);
+		if (appSettingFileStoreRegistered) {
+			container.unregister(TOKENS.APPSETTING_FILE_STORE);
+		}
 		// プロジェクトレコードを削除
 		await projectRepository.delete(projectData.id);
 		logger.info("cleaned up after failure", { projectId: projectData.id });
@@ -131,13 +135,23 @@ export async function selectProject(ctx: Context) {
 
 	// AppSettingFileStore を作成してコンテナに登録
 	const appSettingInit: AppSetting = { ffmpeg: "" };
-	const appSettingFileStore = await createJsonFileStoreWithFallback(
-		join(foldPath, "app_setting.json"),
-		appSettingInit,
-		AppSettingSchema,
-		{ onValidationError: async () => true },
-	);
+	let appSettingFileStore: Awaited<
+		ReturnType<typeof createJsonFileStoreWithFallback<AppSetting>>
+	>;
+	try {
+		appSettingFileStore = await createJsonFileStoreWithFallback(
+			join(foldPath, "app_setting.json"),
+			appSettingInit,
+			AppSettingSchema,
+			{ onValidationError: async () => true },
+		);
+	} catch (err) {
+		logger.error("Failed to create app setting file store", { error: err });
+		await cleanup();
+		return false;
+	}
 	container.register(TOKENS.APPSETTING_FILE_STORE, () => appSettingFileStore);
+	appSettingFileStoreRegistered = true;
 
 	// サーバー起動
 	logger.info("start server");

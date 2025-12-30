@@ -1,15 +1,15 @@
 export type ApplicationMessage = string;
 
 export class ApplicationError extends Error {
-	private _messaages: ApplicationMessage;
+	private _messages: ApplicationMessage;
 
 	constructor(src: string) {
 		super("application error.");
 		this.name = "ApplicationError";
-		this._messaages = src;
+		this._messages = src;
 	}
 
 	public get messages() {
-		return this._messaages;
+		return this._messages;
 	}
 }
