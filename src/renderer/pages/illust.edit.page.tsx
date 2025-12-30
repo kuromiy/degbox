@@ -47,11 +47,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		`url: ${request.url}, id: ${illustId}, tags: ${tags}, imageItems: ${imageItems}, authorIds: ${authorIds}`,
 	);
 
-	if (imageItems.length === 0) {
-		console.log("画像が選択されていません");
-		throw new Error("最低1枚の画像が必要です");
-	}
-
 	const response = await client.updateIllust(
 		illustId,
 		tags,

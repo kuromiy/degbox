@@ -20,6 +20,10 @@ await flow.build({
 		path: "./src/main/errorHandler.ts",
 		functionName: "customErrorHandler",
 	},
+	validatorConfig: {
+		// パターン: {funcName}Validator → getUserValidator
+		pattern: "{funcName}Validator",
+	},
 });
 
 // Tailwind CSSのビルド

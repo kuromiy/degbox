@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
+import { ValidError } from "../../../../features/shared/error/valid/index.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
@@ -8,6 +9,17 @@ export const registerAuthorSchema = z.object({
 	urls: z.string(),
 });
 export type RegisterAuthorRequest = z.infer<typeof registerAuthorSchema>;
+
+export function registerAuthorValidator(args: unknown, ctx: Context) {
+	const logger = ctx.container.get(TOKENS.LOGGER);
+	const valid = registerAuthorSchema.safeParse(args);
+	if (!valid.success) {
+		const error = new ValidError(valid.error);
+		logger.debug("invalid request", { error });
+		throw error;
+	}
+	return valid.data;
+}
 
 export async function registerAuthor(
 	ctx: Context,
@@ -20,18 +32,13 @@ export async function registerAuthor(
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("register author", request);
-	const valid = registerAuthorSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
 
 	jobQueue.enqueue({
 		name: "register-author",
-		input: valid.data,
+		input: request,
 		handle: async () => {
 			return database.transaction(async (tx) => {
-				const { name, urls: urlsString } = valid.data;
+				const { name, urls: urlsString } = request;
 
 				// JSON文字列をRecord<string, string>に変換
 				let urls: Record<string, string>;

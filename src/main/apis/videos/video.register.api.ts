@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
+import { ValidError } from "../../../../features/shared/error/valid/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -10,6 +11,17 @@ export const registerVideoSchema = z.object({
 	authorIds: z.array(z.string()).optional(),
 });
 export type RegisterVideoRequest = z.infer<typeof registerVideoSchema>;
+
+export function registerVideoValidator(args: unknown, ctx: Context) {
+	const logger = ctx.container.get(TOKENS.LOGGER);
+	const valid = registerVideoSchema.safeParse(args);
+	if (!valid.success) {
+		const error = new ValidError(valid.error);
+		logger.debug("invalid request", { error });
+		throw error;
+	}
+	return valid.data;
+}
 
 export async function registerVideo(
 	ctx: Context,
@@ -23,19 +35,14 @@ export async function registerVideo(
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("register video", request);
-	const valid = registerVideoSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
 
 	jobQueue.enqueue({
 		name: "register-video",
-		input: valid.data,
+		input: request,
 		handle: async () => {
 			return database.transaction(async (tx) => {
 				return fileSystem.transaction(async (fs) => {
-					const { resourceIds, rawTags, authorIds } = valid.data;
+					const { resourceIds, rawTags, authorIds } = request;
 
 					const scopedContainer = createScopedContainer(
 						container,

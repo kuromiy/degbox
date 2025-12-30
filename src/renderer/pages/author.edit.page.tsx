@@ -42,14 +42,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	}
 
 	const formData = await request.formData();
-	const name = formData.get("name")?.toString();
+	const name = formData.get("name")?.toString() ?? "";
 	const urls = formData.get("urls")?.toString() || "{}";
 
 	console.log(`id: ${authorId}, name: ${name}, urls: ${urls}`);
-	if (!name) {
-		console.log("必須項目が入力されていません");
-		throw new Error("必須項目が入力されていません");
-	}
 
 	const response = await client.updateAuthor(authorId, name, urls);
 	if (isFailure(response)) {

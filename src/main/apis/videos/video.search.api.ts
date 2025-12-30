@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ValidError } from "../../../../features/shared/error/valid/index.js";
 import { convertVideoArrayPathsToUrls } from "../../../server/helpers/video.helper.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -12,6 +13,17 @@ export const searchVideoSchema = z.object({
 });
 export type SearchVideoRequest = z.infer<typeof searchVideoSchema>;
 
+export function searchVideoValidator(args: unknown, ctx: Context) {
+	const logger = ctx.container.get(TOKENS.LOGGER);
+	const valid = searchVideoSchema.safeParse(args);
+	if (!valid.success) {
+		const error = new ValidError(valid.error);
+		logger.debug("invalid request", { error });
+		throw error;
+	}
+	return valid.data;
+}
+
 export async function searchVideo(ctx: Context, request: SearchVideoRequest) {
 	const { container } = ctx;
 	const [logger, repository] = container.get(
@@ -19,12 +31,7 @@ export async function searchVideo(ctx: Context, request: SearchVideoRequest) {
 		TOKENS.VIDEO_REPOSITORY,
 	);
 	logger.info("search video", request);
-	const valid = searchVideoSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
-	const { keyword, sortBy, order, page: rowPage, size } = valid.data;
+	const { keyword, sortBy, order, page: rowPage, size } = request;
 	const page = rowPage - 1; // 表示は1ベース、処理は0ベースなので-1する
 	const count = await repository.count(keyword);
 	if (count === 0) {

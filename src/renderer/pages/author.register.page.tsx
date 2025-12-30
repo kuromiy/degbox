@@ -17,12 +17,8 @@ export async function action({ request }: ActionFunctionArgs) {
 	const urls = formData.get("urls")?.toString() || "{}";
 
 	console.log(`name: ${name}, urls: ${urls}`);
-	if (!name) {
-		console.log("必須項目が入力されていません");
-		throw new Error("必須項目が入力されていません");
-	}
 
-	const response = await client.registerAuthor(name, urls);
+	const response = await client.registerAuthor(name ?? "", urls);
 	if (isFailure(response)) {
 		const error = response.value;
 		console.log(`response error: ${getErrorMessage(error)}`);

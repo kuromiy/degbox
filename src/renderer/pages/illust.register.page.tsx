@@ -36,11 +36,6 @@ export async function action({ request }: ActionFunctionArgs) {
 		`url: ${request.url}, tags: ${tags}, resourceIds: ${resourceIds}, authorIds: ${authorIds}`,
 	);
 
-	if (resourceIds.length === 0) {
-		console.log("コンテンツファイルが選択されていません");
-		throw new Error("コンテンツファイルを1枚以上選択してください");
-	}
-
 	const response = await client.registerIllust(resourceIds, tags, authorIds);
 	if (isFailure(response)) {
 		const error = response.value;

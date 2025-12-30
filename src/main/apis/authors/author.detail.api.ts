@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ValidError } from "../../../../features/shared/error/valid/index.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
@@ -8,6 +9,17 @@ export const getAuthorDetailSchema = z.object({
 	videoSize: z.coerce.number().int().min(1).max(100).optional().default(20),
 });
 export type GetAuthorDetailRequest = z.infer<typeof getAuthorDetailSchema>;
+
+export function getAuthorDetailValidator(args: unknown, ctx: Context) {
+	const logger = ctx.container.get(TOKENS.LOGGER);
+	const valid = getAuthorDetailSchema.safeParse(args);
+	if (!valid.success) {
+		const error = new ValidError(valid.error);
+		logger.debug("invalid request", { error });
+		throw error;
+	}
+	return valid.data;
+}
 
 export interface AuthorDetailResponse {
 	id: string;
@@ -39,13 +51,8 @@ export async function getAuthorDetail(
 	);
 
 	logger.info("get author detail", request);
-	const valid = getAuthorDetailSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
 
-	const { authorId, videoPage: rowPage, videoSize } = valid.data;
+	const { authorId, videoPage: rowPage, videoSize } = request;
 	const page = rowPage - 1; // 表示は1ベース、処理は0ベースなので-1する
 
 	// 作者情報を取得

@@ -33,19 +33,17 @@ export async function action({ request }: ActionFunctionArgs) {
 	console.log(
 		`url: ${request.url}, tags: ${tags}, resourceIds: ${resourceIds}, authorId: ${authorId}`,
 	);
-	if (!resourceIds || !tags) {
-		console.log("必須項目が入力されていません");
-		throw new Error("必須項目が入力されていません");
-	}
 
-	// カンマ区切りの文字列を配列に変換
-	const resourceIdArray = resourceIds.split(",").filter((id) => id.trim());
+	// カンマ区切りの文字列を配列に変換（空の場合は空配列）
+	const resourceIdArray = resourceIds
+		? resourceIds.split(",").filter((id) => id.trim())
+		: [];
 	// authorIdを配列に変換（存在する場合のみ）
 	const authorIdArray = authorId ? [authorId] : undefined;
 
 	const response = await client.registerVideo(
 		resourceIdArray,
-		tags,
+		tags ?? "",
 		authorIdArray,
 	);
 	if (isFailure(response)) {

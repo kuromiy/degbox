@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ValidError } from "../../../../features/shared/error/valid/index.js";
 import { convertIllustContentPathsToUrls } from "../../../server/helpers/illust.helper.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -8,6 +9,17 @@ export const detailIllustSchema = z.object({
 });
 export type DetailIllustRequest = z.infer<typeof detailIllustSchema>;
 
+export function detailIllustValidator(args: unknown, ctx: Context) {
+	const logger = ctx.container.get(TOKENS.LOGGER);
+	const valid = detailIllustSchema.safeParse(args);
+	if (!valid.success) {
+		const error = new ValidError(valid.error);
+		logger.debug("invalid request", { error });
+		throw error;
+	}
+	return valid.data;
+}
+
 export async function detailIllust(ctx: Context, request: DetailIllustRequest) {
 	const { container } = ctx;
 	const [logger, repository] = container.get(
@@ -15,12 +27,7 @@ export async function detailIllust(ctx: Context, request: DetailIllustRequest) {
 		TOKENS.ILLUST_REPOSITORY,
 	);
 	logger.info("detail illust", request);
-	const valid = detailIllustSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
-	const { illustId } = valid.data;
+	const { illustId } = request;
 	const illust = await repository.findById(illustId);
 	if (!illust) {
 		logger.warn(`Illust not found: ${illustId}`);

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { Content } from "../../../../features/content/content.model.js";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
+import { ValidError } from "../../../../features/shared/error/valid/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -12,6 +13,17 @@ export const updateIllustSchema = z.object({
 	authorIds: z.array(z.string()),
 });
 export type UpdateIllustRequest = z.infer<typeof updateIllustSchema>;
+
+export function updateIllustValidator(args: unknown, ctx: Context) {
+	const logger = ctx.container.get(TOKENS.LOGGER);
+	const valid = updateIllustSchema.safeParse(args);
+	if (!valid.success) {
+		const error = new ValidError(valid.error);
+		logger.debug("invalid request", { error });
+		throw error;
+	}
+	return valid.data;
+}
 
 export interface UpdateIllustResponse {
 	id: string;
@@ -29,20 +41,15 @@ export async function updateIllust(
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("update illust", request);
-	const valid = updateIllustSchema.safeParse(request);
-	if (!valid.success) {
-		logger.warn("Invalid request", valid.error);
-		throw new Error("Invalid request");
-	}
 
 	return new Promise((resolve, reject) => {
 		jobQueue.enqueue({
 			name: "update-illust",
-			input: valid.data,
+			input: request,
 			handle: async () => {
 				return database.transaction(async (tx) => {
 					return fileSystem.transaction(async (fs) => {
-						const { id, tags: rawTags, imageItems, authorIds } = valid.data;
+						const { id, tags: rawTags, imageItems, authorIds } = request;
 
 						const scopedContainer = createScopedContainer(
 							container,
