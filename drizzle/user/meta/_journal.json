@@ -8,6 +8,13 @@
 			"when": 1766756801446,
 			"tag": "0000_third_shape",
 			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "6",
+			"when": 1767126731739,
+			"tag": "0001_glossy_thunderball",
+			"breakpoints": true
 		}
 	]
 }

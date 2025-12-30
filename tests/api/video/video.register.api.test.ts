@@ -1,12 +1,8 @@
 import { strict as assert } from "node:assert";
 import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
-import {
-	type AppSetting,
-	AppSettingSchema,
-} from "../../../features/appsetting/app.setting.model.js";
+import type { UserAppSettingRepository } from "../../../features/appsetting/user.app.setting.repository.js";
 import { Container } from "../../../features/shared/container/index.js";
-import { createJsonFileStoreWithFallback } from "../../../features/shared/filestore/index.js";
 import type { UnmanagedContent } from "../../../features/unmanaged-content/unmanagedContent.model.js";
 import { registerVideo } from "../../../src/main/apis/videos/video.register.api.js";
 import type { Context } from "../../../src/main/context.js";
@@ -19,6 +15,13 @@ import {
 import { testLogger } from "../../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "../testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "../testjobqueue.js";
+
+class MockUserAppSettingRepository implements UserAppSettingRepository {
+	async get() {
+		return { ffmpeg: "" };
+	}
+	async save() {}
+}
 
 const CATEGORY_NAME = "video-register-api";
 
@@ -54,19 +57,11 @@ describe("ビデオ登録API", () => {
 		container.register(TOKENS.CACHE, () => cache);
 		container.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
 
-		// AppSettingFileStoreを作成（src/main/index.ts L68-94 参照）
-		const init: AppSetting = {
-			ffmpeg: "",
-		};
-		const appSettingFileStore = await createJsonFileStoreWithFallback(
-			"./tests/db/app_setting.json",
-			init,
-			AppSettingSchema,
-			{
-				onValidationError: async () => true,
-			},
+		// UserAppSettingRepositoryのモックを登録
+		container.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
-		container.register(TOKENS.APPSETTING_FILE_STORE, () => appSettingFileStore);
 
 		// 準備
 		const request = {

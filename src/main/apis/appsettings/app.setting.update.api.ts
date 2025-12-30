@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { AppSetting } from "../../../../features/appsetting/app.setting.model.js";
+import type { UserAppSetting } from "../../../../features/appsetting/user.app.setting.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
@@ -15,7 +15,7 @@ export async function updateAppSetting(
 	const { container } = ctx;
 	const [logger, repository] = container.get(
 		TOKENS.LOGGER,
-		TOKENS.APPSETTING_REPOSITORY,
+		TOKENS.USER_APPSETTING_REPOSITORY,
 	);
 
 	logger.info("update app settings", request);
@@ -26,8 +26,9 @@ export async function updateAppSetting(
 	}
 
 	const { ffmpegPath } = valid.data;
-	const value: AppSetting = {
+	const value: UserAppSetting = {
 		ffmpeg: ffmpegPath,
 	};
-	return await repository.save(value);
+	await repository.save(value);
+	return value;
 }

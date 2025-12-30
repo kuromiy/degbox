@@ -5,7 +5,7 @@ export async function getAppSetting(ctx: Context) {
 	const { container } = ctx;
 	const [logger, repository] = container.get(
 		TOKENS.LOGGER,
-		TOKENS.APPSETTING_REPOSITORY,
+		TOKENS.USER_APPSETTING_REPOSITORY,
 	);
 
 	logger.info("get app settings");

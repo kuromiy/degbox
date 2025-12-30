@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { dirname } from "node:path";
 import type { Logger } from "winston";
-import type { AppSettingRepository } from "../appsetting/app.setting.repository.js";
+import type { UserAppSettingRepository } from "../appsetting/user.app.setting.repository.js";
 import type { FileSystem } from "../shared/filesystem/index.js";
 import type { VideoService } from "./video.service.js";
 
@@ -15,11 +15,11 @@ export class VideoServiceImpl implements VideoService {
 	constructor(
 		private readonly logger: Logger,
 		private readonly fs: FileSystem,
-		private readonly repository: AppSettingRepository,
+		private readonly userAppSettingRepository: UserAppSettingRepository,
 	) {}
 	generateThumbnail(inputPath: string, outputPath: string): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			this.repository
+			this.userAppSettingRepository
 				.get()
 				.then((value) => {
 					const ffmpegPath = value.ffmpeg || "ffmpeg";
@@ -80,7 +80,7 @@ export class VideoServiceImpl implements VideoService {
 	}
 	generateThumbnailGif(inputPath: string, outputPath: string): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			this.repository
+			this.userAppSettingRepository
 				.get()
 				.then((value) => {
 					const ffmpegPath = value.ffmpeg || "ffmpeg";
@@ -139,7 +139,7 @@ export class VideoServiceImpl implements VideoService {
 		// hlsフォルダを作成（存在しない場合）
 		const segmentDir = dirname(outputTsPath);
 		await this.fs.createDirectory(segmentDir);
-		const appsetting = await this.repository.get();
+		const appsetting = await this.userAppSettingRepository.get();
 		const ffmpegPath = appsetting.ffmpeg || "ffmpeg";
 
 		return new Promise<void>((resolve, reject) => {

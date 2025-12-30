@@ -1,0 +1,4 @@
+CREATE TABLE `APP_SETTINGS` (
+	`key` text PRIMARY KEY NOT NULL,
+	`value` text NOT NULL
+);
