@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ValidError } from "../../../../features/shared/error/valid/index.js";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { convertIllustContentPathsToUrls } from "../../../server/helpers/illust.helper.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -9,16 +9,7 @@ export const detailIllustSchema = z.object({
 });
 export type DetailIllustRequest = z.infer<typeof detailIllustSchema>;
 
-export function detailIllustValidator(args: unknown, ctx: Context) {
-	const logger = ctx.container.get(TOKENS.LOGGER);
-	const valid = detailIllustSchema.safeParse(args);
-	if (!valid.success) {
-		const error = new ValidError(valid.error);
-		logger.debug("invalid request", { error });
-		throw error;
-	}
-	return valid.data;
-}
+export const detailIllustValidator = zodValidator(detailIllustSchema);
 
 export async function detailIllust(ctx: Context, request: DetailIllustRequest) {
 	const { container } = ctx;

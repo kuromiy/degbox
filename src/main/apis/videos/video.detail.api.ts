@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ValidError } from "../../../../features/shared/error/valid/index.js";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { convertVideoPathsToUrls } from "../../../server/helpers/video.helper.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -9,16 +9,7 @@ export const detailVideoSchema = z.object({
 });
 export type DetailVideoRequest = z.infer<typeof detailVideoSchema>;
 
-export function detailVideoValidator(args: unknown, ctx: Context) {
-	const logger = ctx.container.get(TOKENS.LOGGER);
-	const valid = detailVideoSchema.safeParse(args);
-	if (!valid.success) {
-		const error = new ValidError(valid.error);
-		logger.debug("invalid request", { error });
-		throw error;
-	}
-	return valid.data;
-}
+export const detailVideoValidator = zodValidator(detailVideoSchema);
 
 export async function detailVideo(ctx: Context, request: DetailVideoRequest) {
 	const { container } = ctx;

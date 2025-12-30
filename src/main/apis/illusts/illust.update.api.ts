@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { Content } from "../../../../features/content/content.model.js";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
-import { ValidError } from "../../../../features/shared/error/valid/index.js";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -14,16 +14,7 @@ export const updateIllustSchema = z.object({
 });
 export type UpdateIllustRequest = z.infer<typeof updateIllustSchema>;
 
-export function updateIllustValidator(args: unknown, ctx: Context) {
-	const logger = ctx.container.get(TOKENS.LOGGER);
-	const valid = updateIllustSchema.safeParse(args);
-	if (!valid.success) {
-		const error = new ValidError(valid.error);
-		logger.debug("invalid request", { error });
-		throw error;
-	}
-	return valid.data;
-}
+export const updateIllustValidator = zodValidator(updateIllustSchema);
 
 export interface UpdateIllustResponse {
 	id: string;

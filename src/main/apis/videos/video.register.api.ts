@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
-import { ValidError } from "../../../../features/shared/error/valid/index.js";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -12,16 +12,7 @@ export const registerVideoSchema = z.object({
 });
 export type RegisterVideoRequest = z.infer<typeof registerVideoSchema>;
 
-export function registerVideoValidator(args: unknown, ctx: Context) {
-	const logger = ctx.container.get(TOKENS.LOGGER);
-	const valid = registerVideoSchema.safeParse(args);
-	if (!valid.success) {
-		const error = new ValidError(valid.error);
-		logger.debug("invalid request", { error });
-		throw error;
-	}
-	return valid.data;
-}
+export const registerVideoValidator = zodValidator(registerVideoSchema);
 
 export async function registerVideo(
 	ctx: Context,

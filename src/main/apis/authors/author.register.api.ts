@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
-import { ValidError } from "../../../../features/shared/error/valid/index.js";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
@@ -10,16 +10,7 @@ export const registerAuthorSchema = z.object({
 });
 export type RegisterAuthorRequest = z.infer<typeof registerAuthorSchema>;
 
-export function registerAuthorValidator(args: unknown, ctx: Context) {
-	const logger = ctx.container.get(TOKENS.LOGGER);
-	const valid = registerAuthorSchema.safeParse(args);
-	if (!valid.success) {
-		const error = new ValidError(valid.error);
-		logger.debug("invalid request", { error });
-		throw error;
-	}
-	return valid.data;
-}
+export const registerAuthorValidator = zodValidator(registerAuthorSchema);
 
 export async function registerAuthor(
 	ctx: Context,

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
-import { ValidError } from "../../../../features/shared/error/valid/index.js";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
@@ -11,16 +11,7 @@ export const updateAuthorSchema = z.object({
 });
 export type UpdateAuthorRequest = z.infer<typeof updateAuthorSchema>;
 
-export function updateAuthorValidator(args: unknown, ctx: Context) {
-	const logger = ctx.container.get(TOKENS.LOGGER);
-	const valid = updateAuthorSchema.safeParse(args);
-	if (!valid.success) {
-		const error = new ValidError(valid.error);
-		logger.debug("invalid request", { error });
-		throw error;
-	}
-	return valid.data;
-}
+export const updateAuthorValidator = zodValidator(updateAuthorSchema);
 
 export interface AuthorUpdateResponse {
 	id: string;

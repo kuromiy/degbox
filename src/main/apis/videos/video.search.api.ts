@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ValidError } from "../../../../features/shared/error/valid/index.js";
+import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { convertVideoArrayPathsToUrls } from "../../../server/helpers/video.helper.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
@@ -13,16 +13,7 @@ export const searchVideoSchema = z.object({
 });
 export type SearchVideoRequest = z.infer<typeof searchVideoSchema>;
 
-export function searchVideoValidator(args: unknown, ctx: Context) {
-	const logger = ctx.container.get(TOKENS.LOGGER);
-	const valid = searchVideoSchema.safeParse(args);
-	if (!valid.success) {
-		const error = new ValidError(valid.error);
-		logger.debug("invalid request", { error });
-		throw error;
-	}
-	return valid.data;
-}
+export const searchVideoValidator = zodValidator(searchVideoSchema);
 
 export async function searchVideo(ctx: Context, request: SearchVideoRequest) {
 	const { container } = ctx;
