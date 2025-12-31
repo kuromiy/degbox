@@ -4,6 +4,7 @@ import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
+import { createEventSender } from "../../event-sender.js";
 
 export const registerIllustSchema = z.object({
 	resourceIds: z.array(z.string()).min(1),
@@ -26,6 +27,7 @@ export async function registerIllust(
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("register illust", request);
+	const sender = createEventSender(event.sender);
 
 	jobQueue.enqueue({
 		name: "register-illust",
@@ -104,7 +106,8 @@ export async function registerIllust(
 			logger.info("Illust registered successfully", { illust });
 			// const window = BrowserWindow.fromWebContents(event.sender);
 			// window?.webContents.send("onSuccess", {message: "success"});
-			event.sender.send("onSuccess", { message: "success" });
+			// event.sender.send("onSuccess", { message: "success" });
+			sender.onSuccess({ message: "success" });
 		},
 		onError: (error) => {
 			logger.error("Failed to register illust", { error });

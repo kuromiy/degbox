@@ -5,6 +5,7 @@ import {
 	useEffect,
 	useState,
 } from "react";
+import { EventService } from "../../../src/renderer/autogenerate/renderer-events.js";
 import { Toast, type ToastType } from "./components/toast.component.js";
 
 type ToastItem = {
@@ -80,7 +81,8 @@ export function MainProcessEventBridge() {
 	const { addToast } = useToast();
 
 	useEffect(() => {
-		const cleanup = window.efevent.onSuccess((event) => {
+		const eventService = new EventService();
+		const cleanup = eventService.onSuccess((event) => {
 			addToast("success", event.message);
 		});
 		return cleanup;
