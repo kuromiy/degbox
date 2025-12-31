@@ -104,13 +104,11 @@ export async function registerIllust(
 		},
 		onSuccess: (illust) => {
 			logger.info("Illust registered successfully", { illust });
-			// const window = BrowserWindow.fromWebContents(event.sender);
-			// window?.webContents.send("onSuccess", {message: "success"});
-			// event.sender.send("onSuccess", { message: "success" });
-			sender.onSuccess({ message: "success" });
+			sender.onMessage({ type: "success", message: "success" });
 		},
 		onError: (error) => {
 			logger.error("Failed to register illust", { error });
+			sender.onMessage({ type: "error", message: "failure" });
 		},
 	});
 }

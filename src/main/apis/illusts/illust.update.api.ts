@@ -5,6 +5,7 @@ import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
+import { createEventSender } from "../../event-sender.js";
 
 export const updateIllustSchema = z.object({
 	id: z.string().min(1),
@@ -24,7 +25,7 @@ export async function updateIllust(
 	ctx: Context,
 	request: UpdateIllustRequest,
 ): Promise<UpdateIllustResponse> {
-	const { container } = ctx;
+	const { container, event } = ctx;
 	const [logger, database, fileSystem, jobQueue] = container.get(
 		TOKENS.LOGGER,
 		TOKENS.DATABASE,
@@ -32,6 +33,7 @@ export async function updateIllust(
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("update illust", request);
+	const sender = createEventSender(event.sender);
 
 	return new Promise((resolve, reject) => {
 		jobQueue.enqueue({
@@ -145,10 +147,12 @@ export async function updateIllust(
 			},
 			onSuccess: (illust) => {
 				logger.info("Illust updated successfully", { illust });
+				sender.onMessage({ type: "success", message: "success" });
 				resolve({ id: illust.id });
 			},
 			onError: (error) => {
 				logger.error("Failed to update illust", { error });
+				sender.onMessage({ type: "error", message: "failure" });
 				reject(error);
 			},
 		});

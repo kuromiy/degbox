@@ -9,8 +9,8 @@ import type { Message } from "./events/onsuccess.js";
 export class EventSender {
     constructor(private sender: WebContents) {}
 
-    onSuccess(value: Message) {
-        this.sender.send("onSuccess", value);
+    onMessage(value: Message) {
+        this.sender.send("onMessage", value);
     }
 }
 

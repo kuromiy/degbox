@@ -1,4 +1,5 @@
 export type Message = {
+	type: "success" | "error" | "info" | "warning";
 	message: string;
 };
-export type onSuccess = (message: Message) => void;
+export type onMessage = (message: Message) => void;

@@ -82,8 +82,8 @@ export function MainProcessEventBridge() {
 
 	useEffect(() => {
 		const eventService = new EventService();
-		const cleanup = eventService.onSuccess((event) => {
-			addToast("success", event.message);
+		const cleanup = eventService.onMessage((event) => {
+			addToast(event.type, event.message);
 		});
 		return cleanup;
 	}, [addToast]);

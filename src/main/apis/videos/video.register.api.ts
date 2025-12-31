@@ -4,6 +4,7 @@ import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
+import { createEventSender } from "../../event-sender.js";
 
 export const registerVideoSchema = z.object({
 	resourceIds: z.array(z.string()).min(1),
@@ -18,7 +19,7 @@ export async function registerVideo(
 	ctx: Context,
 	request: RegisterVideoRequest,
 ) {
-	const { container } = ctx;
+	const { container, event } = ctx;
 	const [logger, database, fileSystem, jobQueue] = container.get(
 		TOKENS.LOGGER,
 		TOKENS.DATABASE,
@@ -26,6 +27,7 @@ export async function registerVideo(
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("register video", request);
+	const sender = createEventSender(event.sender);
 
 	jobQueue.enqueue({
 		name: "register-video",
@@ -102,9 +104,11 @@ export async function registerVideo(
 		},
 		onSuccess: (video) => {
 			logger.info("Video registered successfully", { video });
+			sender.onMessage({ type: "success", message: "success" });
 		},
 		onError: (error) => {
 			logger.error("Failed to register video", { error });
+			sender.onMessage({ type: "error", message: "failure" });
 		},
 	});
 }

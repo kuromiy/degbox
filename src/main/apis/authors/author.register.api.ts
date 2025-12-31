@@ -3,6 +3,7 @@ import { createScopedContainer } from "../../../../features/shared/container/ind
 import { zodValidator } from "../../../../features/shared/validation/index.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
+import { createEventSender } from "../../event-sender.js";
 
 export const registerAuthorSchema = z.object({
 	name: z.string().trim().min(1).max(255),
@@ -16,13 +17,14 @@ export async function registerAuthor(
 	ctx: Context,
 	request: RegisterAuthorRequest,
 ) {
-	const { container } = ctx;
+	const { container, event } = ctx;
 	const [logger, database, jobQueue] = container.get(
 		TOKENS.LOGGER,
 		TOKENS.DATABASE,
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("register author", request);
+	const sender = createEventSender(event.sender);
 
 	jobQueue.enqueue({
 		name: "register-author",
@@ -54,9 +56,11 @@ export async function registerAuthor(
 		},
 		onSuccess: (author) => {
 			logger.info("Author registered successfully", { author });
+			sender.onMessage({ type: "success", message: "success" });
 		},
 		onError: (error) => {
 			logger.error("Failed to register author", { error });
+			sender.onMessage({ type: "error", message: "failure" });
 		},
 	});
 }

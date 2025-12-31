@@ -3,6 +3,7 @@ import { createScopedContainer } from "../../../../features/shared/container/ind
 import { zodValidator } from "../../../../features/shared/validation/index.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
+import { createEventSender } from "../../event-sender.js";
 
 export const updateAuthorSchema = z.object({
 	id: z.string(),
@@ -23,13 +24,14 @@ export async function updateAuthor(
 	ctx: Context,
 	request: UpdateAuthorRequest,
 ): Promise<AuthorUpdateResponse> {
-	const { container } = ctx;
+	const { container, event } = ctx;
 	const [logger, database, jobQueue] = container.get(
 		TOKENS.LOGGER,
 		TOKENS.DATABASE,
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("update author", request);
+	const sender = createEventSender(event.sender);
 
 	return new Promise((resolve, reject) => {
 		jobQueue.enqueue({
@@ -68,6 +70,7 @@ export async function updateAuthor(
 			},
 			onSuccess: (author) => {
 				logger.info("Author updated successfully", { author });
+				sender.onMessage({ type: "success", message: "success" });
 				resolve({
 					id: author.id,
 					name: author.name,
@@ -76,6 +79,7 @@ export async function updateAuthor(
 			},
 			onError: (error) => {
 				logger.error("Failed to update author", { error });
+				sender.onMessage({ type: "error", message: "failure" });
 				reject(error);
 			},
 		});

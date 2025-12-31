@@ -4,13 +4,13 @@ import { ipcRenderer } from "electron";
 import type { Message } from "../../main/events/onsuccess.js";
 
 export default {
-    onSuccess: (cb: (value: Message) => void) => {
+    onMessage: (cb: (value: Message) => void) => {
         const handler = (_event: Electron.IpcRendererEvent, value: Message) => {
             cb(value);
         };
-        ipcRenderer.on("onSuccess", handler);
+        ipcRenderer.on("onMessage", handler);
         return () => {
-            ipcRenderer.removeListener("onSuccess", handler);
+            ipcRenderer.removeListener("onMessage", handler);
         };
     }
 };
