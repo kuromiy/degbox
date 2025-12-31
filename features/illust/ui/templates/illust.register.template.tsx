@@ -21,7 +21,7 @@ export function IllustRegisterTemplate({
 	generalError,
 }: IllustRegisterTemplateProps) {
 	const { Form } = useNavigation();
-	const { tags, add, replace, change, autocompleteTags, suggestTags } =
+	const { tags, add, replace, change, reset, autocompleteTags, suggestTags } =
 		useTagInput("");
 	const [isOpen, setIsOpen] = useState(false);
 	const [authors, setAuthors] = useState<AuthorWithVideoCount[]>([]);
@@ -39,6 +39,7 @@ export function IllustRegisterTemplate({
 
 	function handleReset() {
 		setAuthors([]);
+		reset();
 	}
 
 	return (

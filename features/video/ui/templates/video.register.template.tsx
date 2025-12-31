@@ -20,7 +20,7 @@ export function VideoRegisterTemplate({
 	generalError,
 }: VideoRegisterTemplateProps) {
 	const { Form } = useNavigation();
-	const { tags, add, replace, change, autocompleteTags, suggestTags } =
+	const { tags, add, replace, change, reset, autocompleteTags, suggestTags } =
 		useTagInput("");
 	const [isOpen, setIsOpen] = useState(false);
 	const [author, setAuthor] = useState<AuthorWithVideoCount | undefined>(
@@ -29,6 +29,7 @@ export function VideoRegisterTemplate({
 
 	function handleReset() {
 		setAuthor(undefined);
+		reset();
 	}
 
 	return (
