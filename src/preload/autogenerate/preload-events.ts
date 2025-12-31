@@ -10,7 +10,7 @@ export default {
         };
         ipcRenderer.on("onMessage", handler);
         return () => {
-            ipcRenderer.removeListener("onMessage", handler);
+            ipcRenderer.off("onMessage", handler);
         };
     }
 };

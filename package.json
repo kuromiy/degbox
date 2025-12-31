@@ -55,7 +55,7 @@
 		"@hono/node-server": "^1.19.5",
 		"@libsql/client": "^0.15.15",
 		"drizzle-orm": "^0.44.5",
-		"electron-flow": "github:kuromiy/electron-flow#v2.3.0",
+		"electron-flow": "github:kuromiy/electron-flow#v2.3.1",
 		"hls.js": "^1.6.14",
 		"hono": "^4.9.10",
 		"react": "^19.1.1",
