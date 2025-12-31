@@ -14,6 +14,7 @@ import AuthorEditPage, {
 } from "./pages/author.edit.page.js";
 import AuthorRegisterPage, {
 	action as authorRegisterAction,
+	loader as authorRegisterLoader,
 } from "./pages/author.register.page.js";
 import AuthorSearchPage, {
 	loader as authorSearchLoader,
@@ -27,6 +28,7 @@ import IllustEditPage, {
 } from "./pages/illust.edit.page.js";
 import IllustRegisterPage, {
 	action as illustRegisterAction,
+	loader as illustRegisterLoader,
 } from "./pages/illust.register.page.js";
 import IllustSearchPage, {
 	loader as illustSearchLoader,
@@ -36,6 +38,7 @@ import VideoDetailPage, {
 } from "./pages/video.detail.page.js";
 import VideoRegisterPage, {
 	action as videoRegisterAction,
+	loader as videoRegisterLoader,
 } from "./pages/video.register.page.js";
 import VideoSearchPage, {
 	loader as videoSearchLoader,
@@ -63,6 +66,7 @@ export const route = createHashRouter([
 				path: "/video/register",
 				element: <VideoRegisterPage />,
 				action: videoRegisterAction,
+				loader: videoRegisterLoader,
 				HydrateFallback: () => <div>読み込み中...</div>,
 			},
 			{
@@ -85,6 +89,7 @@ export const route = createHashRouter([
 				path: "/illust/register",
 				element: <IllustRegisterPage />,
 				action: illustRegisterAction,
+				loader: illustRegisterLoader,
 				HydrateFallback: () => <div>読み込み中...</div>,
 			},
 			{
@@ -108,6 +113,7 @@ export const route = createHashRouter([
 				path: "/author/register",
 				element: <AuthorRegisterPage />,
 				action: authorRegisterAction,
+				loader: authorRegisterLoader,
 				HydrateFallback: () => <div>読み込み中...</div>,
 			},
 			{

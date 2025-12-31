@@ -18,7 +18,7 @@ export async function registerIllust(
 	ctx: Context,
 	request: RegisterIllustRequest,
 ) {
-	const { container } = ctx;
+	const { container, event } = ctx;
 	const [logger, database, fileSystem, jobQueue] = container.get(
 		TOKENS.LOGGER,
 		TOKENS.DATABASE,
@@ -102,6 +102,9 @@ export async function registerIllust(
 		},
 		onSuccess: (illust) => {
 			logger.info("Illust registered successfully", { illust });
+			// const window = BrowserWindow.fromWebContents(event.sender);
+			// window?.webContents.send("onSuccess", {message: "success"});
+			event.sender.send("onSuccess", { message: "success" });
 		},
 		onError: (error) => {
 			logger.error("Failed to register illust", { error });

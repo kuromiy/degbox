@@ -1,5 +1,11 @@
 import { isFailure } from "electron-flow/result";
-import { type ActionFunctionArgs, useActionData } from "react-router-dom";
+import {
+	type ActionFunctionArgs,
+	type LoaderFunctionArgs,
+	redirect,
+	useActionData,
+	useLoaderData,
+} from "react-router-dom";
 import { AuthorRegisterTemplate } from "../../../features/author/ui/templates/author.register.template.js";
 import { ApiService } from "../autogenerate/register.js";
 import {
@@ -10,6 +16,12 @@ import {
 } from "../utils/error.js";
 
 const client = new ApiService();
+
+export function loader({ request }: LoaderFunctionArgs) {
+	const url = new URL(request.url);
+	const timestamp = url.searchParams.get("timestamp") ?? Date.now().toString();
+	return timestamp;
+}
 
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
@@ -27,11 +39,12 @@ export async function action({ request }: ActionFunctionArgs) {
 		}
 		throw new Error(getErrorMessage(error));
 	}
-	return location.reload();
+	return redirect("/author/register");
 }
 
 export default function AuthorRegisterPage() {
 	const actionData = useActionData<ActionError>();
+	const timestamp = useLoaderData<typeof loader>();
 
 	const fieldErrors = isActionError(actionData)
 		? actionData.error.type === "valid"
@@ -46,6 +59,7 @@ export default function AuthorRegisterPage() {
 
 	return (
 		<AuthorRegisterTemplate
+			key={timestamp}
 			fieldErrors={fieldErrors}
 			generalError={generalError}
 		/>

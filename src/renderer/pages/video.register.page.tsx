@@ -1,20 +1,13 @@
 import { isFailure } from "electron-flow/result";
-import { useState } from "react";
-import { type ActionFunctionArgs, useActionData } from "react-router-dom";
-import type { AuthorWithVideoCount } from "../../../features/author/author.model.js";
-import { AuthorSelectModal } from "../../../features/author/ui/components/author.select.modal.component.js";
 import {
-	NeutralButton,
-	PositiveButton,
-} from "../../../features/shared/ui/components/button.component.js";
-import { useNavigation } from "../../../features/shared/ui/navigation.context.js";
-import {
-	TagInput,
-	useTagInput,
-} from "../../../features/tag/ui/tag.input.component.js";
-import { VideoContentInput } from "../../../features/video/ui/components/video.content.input.component.js";
+	type ActionFunctionArgs,
+	type LoaderFunctionArgs,
+	redirect,
+	useActionData,
+	useLoaderData,
+} from "react-router-dom";
+import { VideoRegisterTemplate } from "../../../features/video/ui/templates/video.register.template.js";
 import { ApiService } from "../autogenerate/register.js";
-import { FieldError } from "../components/field-error.component.js";
 import {
 	type ActionError,
 	getErrorMessage,
@@ -23,6 +16,12 @@ import {
 } from "../utils/error.js";
 
 const client = new ApiService();
+
+export function loader({ request }: LoaderFunctionArgs) {
+	const url = new URL(request.url);
+	const timestamp = url.searchParams.get("timestamp") ?? Date.now().toString();
+	return timestamp;
+}
 
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
@@ -54,18 +53,12 @@ export async function action({ request }: ActionFunctionArgs) {
 		}
 		throw new Error(getErrorMessage(error));
 	}
-	return location.reload();
+	return redirect("/video/register");
 }
 
 export default function VideoRegisterPage() {
-	const { Form } = useNavigation();
-	const { tags, add, replace, change, autocompleteTags, suggestTags } =
-		useTagInput("");
 	const actionData = useActionData<ActionError>();
-	const [isOpen, setIsOpen] = useState(false);
-	const [author, setAuthor] = useState<AuthorWithVideoCount | undefined>(
-		undefined,
-	);
+	const timestamp = useLoaderData<typeof loader>();
 
 	const fieldErrors = isActionError(actionData)
 		? actionData.error.type === "valid"
@@ -78,71 +71,11 @@ export default function VideoRegisterPage() {
 			? actionData.error.messages
 			: undefined;
 
-	function handleReset() {
-		setAuthor(undefined);
-	}
-
 	return (
-		<main className="flex justify-center">
-			{isOpen && (
-				<AuthorSelectModal
-					onClose={() => setIsOpen(false)}
-					onSelected={(author) => setAuthor(author)}
-					{...(author?.id && { initialAuthorId: author.id })}
-				/>
-			)}
-			<div className="w-full max-w-md">
-				{generalError && (
-					<div className="mb-4 rounded bg-red-100 p-3 text-red-700">
-						{generalError}
-					</div>
-				)}
-				<Form className="flex flex-col gap-4" method="POST">
-					<h1>動画登録</h1>
-					<div>
-						<VideoContentInput />
-						<FieldError errors={fieldErrors?.resourceIds} />
-					</div>
-					<div>
-						<TagInput
-							name="tags"
-							value={tags}
-							onAdd={add}
-							onReplace={replace}
-							onChange={change}
-							autocompleteTags={autocompleteTags}
-							suggestTags={suggestTags}
-						/>
-						<FieldError errors={fieldErrors?.tags} />
-					</div>
-					<div>
-						<div className="flex justify-between divide-x divide-black rounded-lg border px-4 py-2">
-							<div className="flex-1 pr-4">
-								{author ? author.name : "未選択"}
-							</div>
-							<button
-								type="button"
-								onClick={() => setIsOpen(true)}
-								className="pl-4"
-							>
-								選択
-							</button>
-						</div>
-						<input
-							type="hidden"
-							name="authorId"
-							value={author?.id ?? ""}
-						></input>
-						<FieldError errors={fieldErrors?.authorId} />
-					</div>
-					<div className="flex gap-4">
-						<NeutralButton type="reset" onClick={handleReset}>
-							リセット
-						</NeutralButton>
-						<PositiveButton type="submit">登録</PositiveButton>
-					</div>
-				</Form>
-			</div>
-		</main>
+		<VideoRegisterTemplate
+			key={timestamp}
+			fieldErrors={fieldErrors}
+			generalError={generalError}
+		/>
 	);
 }
