@@ -30,6 +30,10 @@ await watchBuild({
 		// パターン: {funcName}Validator → getUserValidator
 		pattern: "{funcName}Validator",
 	},
+	eventDirPath: "./src/main/events", // 新規
+	preloadEventsPath: "./src/preload/autogenerate/preload-events.ts", // 新規
+	eventSenderPath: "./src/main/event-sender.ts", // 新規
+	rendererEventsPath: "./src/renderer/autogenerate/renderer-events.tsx", // 新規
 });
 
 // Tailwind CSSのビルド監視

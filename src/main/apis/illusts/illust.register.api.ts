@@ -4,6 +4,7 @@ import { zodValidator } from "../../../../features/shared/validation/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
+import { createEventSender } from "../../event-sender.js";
 
 export const registerIllustSchema = z.object({
 	resourceIds: z.array(z.string()).min(1),
@@ -18,7 +19,7 @@ export async function registerIllust(
 	ctx: Context,
 	request: RegisterIllustRequest,
 ) {
-	const { container } = ctx;
+	const { container, event } = ctx;
 	const [logger, database, fileSystem, jobQueue] = container.get(
 		TOKENS.LOGGER,
 		TOKENS.DATABASE,
@@ -26,6 +27,7 @@ export async function registerIllust(
 		TOKENS.JOB_QUEUE,
 	);
 	logger.info("register illust", request);
+	const sender = createEventSender(event.sender);
 
 	jobQueue.enqueue({
 		name: "register-illust",
@@ -102,9 +104,11 @@ export async function registerIllust(
 		},
 		onSuccess: (illust) => {
 			logger.info("Illust registered successfully", { illust });
+			sender.onMessage({ type: "success", message: "success" });
 		},
 		onError: (error) => {
 			logger.error("Failed to register illust", { error });
+			sender.onMessage({ type: "error", message: "failure" });
 		},
 	});
 }

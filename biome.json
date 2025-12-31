@@ -40,7 +40,11 @@
 			"includes": [
 				"src/main/autogenerate/register.ts",
 				"src/preload/autogenerate/register.ts",
-				"src/renderer/autogenerate/register.tsx"
+				"src/renderer/autogenerate/register.tsx",
+
+				"src/renderer/autogenerate/renderer-events.tsx",
+				"src/preload/autogenerate/preload-events.ts",
+				"src/main/event-sender.ts"
 			],
 			"formatter": {
 				"enabled": false
