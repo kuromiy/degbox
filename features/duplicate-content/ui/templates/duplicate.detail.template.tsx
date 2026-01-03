@@ -19,6 +19,7 @@ interface DuplicateDetailTemplateProps {
 	contents: ContentWithItem[];
 	getContentUrl: (content: Content | null) => string | undefined;
 	onRemoveItem: (contentId: string) => Promise<void>;
+	onDeleteContent: (contentId: string) => Promise<void>;
 	onDeleteGroup: () => Promise<void>;
 	onBack: () => void;
 }
@@ -28,6 +29,7 @@ export function DuplicateDetailTemplate({
 	contents,
 	getContentUrl,
 	onRemoveItem,
+	onDeleteContent,
 	onDeleteGroup,
 	onBack,
 }: DuplicateDetailTemplateProps) {
@@ -39,6 +41,14 @@ export function DuplicateDetailTemplate({
 	const handleRemoveItem = async (contentId: string) => {
 		if (!confirm("このコンテンツをグループから除外しますか？")) return;
 		await onRemoveItem(contentId);
+	};
+
+	const handleDeleteContent = async (contentId: string) => {
+		if (
+			!confirm("このコンテンツを完全に削除しますか？この操作は取り消せません。")
+		)
+			return;
+		await onDeleteContent(contentId);
 	};
 
 	const handleDeleteGroup = async () => {
@@ -94,6 +104,7 @@ export function DuplicateDetailTemplate({
 								isSelected={selectedContentId === item.contentId}
 								onSelect={() => setSelectedContentId(item.contentId)}
 								onRemove={() => handleRemoveItem(item.contentId)}
+								onDeleteContent={() => handleDeleteContent(item.contentId)}
 							/>
 						))}
 					</div>

@@ -49,4 +49,8 @@ export class ContentDataSource implements ContentRepository {
 			type: row.type,
 		};
 	}
+
+	async delete(id: string): Promise<void> {
+		await this.db.delete(CONTENTS).where(eq(CONTENTS.id, id));
+	}
 }

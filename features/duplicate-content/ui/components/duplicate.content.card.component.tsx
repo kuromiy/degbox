@@ -8,6 +8,7 @@ interface DuplicateContentCardProps {
 	isSelected: boolean;
 	onSelect: () => void;
 	onRemove: () => void;
+	onDeleteContent: () => void;
 }
 
 export function DuplicateContentCard({
@@ -17,6 +18,7 @@ export function DuplicateContentCard({
 	isSelected,
 	onSelect,
 	onRemove,
+	onDeleteContent,
 }: DuplicateContentCardProps) {
 	return (
 		<div
@@ -83,6 +85,13 @@ export function DuplicateContentCard({
 					className="w-full rounded bg-red-100 px-3 py-1 text-red-700 text-sm hover:bg-red-200"
 				>
 					グループから除外
+				</button>
+				<button
+					type="button"
+					onClick={onDeleteContent}
+					className="mt-2 w-full rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
+				>
+					コンテンツを削除
 				</button>
 			</div>
 		</div>

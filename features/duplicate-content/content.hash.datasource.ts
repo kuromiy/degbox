@@ -43,4 +43,10 @@ export class ContentHashDataSource implements ContentHashRepository {
 
 		return rows;
 	}
+
+	async deleteByContentId(contentId: string): Promise<void> {
+		await this.db
+			.delete(CONTENT_HASHS)
+			.where(eq(CONTENT_HASHS.contentId, contentId));
+	}
 }

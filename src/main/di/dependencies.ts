@@ -33,7 +33,6 @@ export type DependencyEntry = {
 	provider: (container: Container) => unknown;
 };
 
-const fileSystem = new FileSystemImpl((err) => console.error(err));
 const jobQueue = new JobQueue();
 const cache = new Map<string, UnmanagedContent>();
 
@@ -45,7 +44,11 @@ export const depend: DependencyEntry[] = [
 	},
 	{
 		token: TOKENS.FILE_SYSTEM,
-		provider: (_: Container) => fileSystem,
+		provider: (c: Container) =>
+			new FileSystemImpl(
+				(err) => console.error(err),
+				c.get(TOKENS.PROJECT_PATH),
+			),
 	},
 	{
 		token: TOKENS.JOB_QUEUE,

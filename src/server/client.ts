@@ -223,4 +223,8 @@ export class FetchClient implements ServiceIF {
 			new Error("removeItemFromGroup is not allowed in FetchClient"),
 		);
 	}
+
+	async deleteContent(_groupId: string, _contentId: string) {
+		return failure(new Error("deleteContent is not allowed in FetchClient"));
+	}
 }

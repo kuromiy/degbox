@@ -94,8 +94,7 @@ export class ContentServiceImpl implements ContentService {
 			contentPath,
 			contentName,
 		});
-		// const fullPath = join(this.baseContentPath, contentPath, contentName);
-		const fullPath = join(contentPath, contentName);
+		const fullPath = join(this.baseContentPath, contentPath, contentName);
 		this.logger.info("fullPath", { fullPath });
 		await this.fs.delete(fullPath);
 	}

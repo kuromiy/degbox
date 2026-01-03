@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { copyFile, rm } from "node:fs/promises";
+import { copyFile, mkdir, rm } from "node:fs/promises";
+import { join } from "node:path";
 import type { FileSystemOperationCommand } from "../index.js";
 
 /**
@@ -9,25 +10,29 @@ import type { FileSystemOperationCommand } from "../index.js";
  * トランザクションが完了したら一時ディレクトリのファイルを削除する
  */
 export class FileDeleteCommand implements FileSystemOperationCommand {
-	private TEMP_DIR = "./temp";
-
+	private readonly tempDir: string;
 	private readonly fileName: string;
 
-	constructor(private path: string) {
+	constructor(
+		private path: string,
+		basePath?: string,
+	) {
+		this.tempDir = basePath ? join(basePath, "temp") : "./temp";
 		this.fileName = randomUUID().toString();
 	}
 
 	public async execute() {
-		await copyFile(this.path, `${this.TEMP_DIR}/${this.fileName}`);
+		await mkdir(this.tempDir, { recursive: true });
+		await copyFile(this.path, join(this.tempDir, this.fileName));
 		await rm(this.path);
 	}
 
 	public async undo() {
-		await copyFile(`${this.TEMP_DIR}/${this.fileName}`, this.path);
-		await rm(`${this.TEMP_DIR}/${this.fileName}`);
+		await copyFile(join(this.tempDir, this.fileName), this.path);
+		await rm(join(this.tempDir, this.fileName));
 	}
 
 	public async done() {
-		await rm(`${this.TEMP_DIR}/${this.fileName}`);
+		await rm(join(this.tempDir, this.fileName));
 	}
 }

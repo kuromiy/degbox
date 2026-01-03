@@ -68,6 +68,20 @@ export default function DuplicateDetailPage() {
 		[data.group, revalidator],
 	);
 
+	const handleDeleteContent = useCallback(
+		async (contentId: string) => {
+			if (!data.group) return;
+			const response = await client.deleteContent(data.group.id, contentId);
+			if (isFailure(response)) {
+				console.error("Failed to delete content:", response.value);
+				return;
+			}
+			// データを再取得
+			revalidator.revalidate();
+		},
+		[data.group, revalidator],
+	);
+
 	const handleDeleteGroup = useCallback(async () => {
 		if (!data.group) return;
 		const response = await client.deleteDuplicateGroup(data.group.id);
@@ -97,6 +111,7 @@ export default function DuplicateDetailPage() {
 			contents={data.contents}
 			getContentUrl={getContentUrl}
 			onRemoveItem={handleRemoveItem}
+			onDeleteContent={handleDeleteContent}
 			onDeleteGroup={handleDeleteGroup}
 			onBack={handleBack}
 		/>

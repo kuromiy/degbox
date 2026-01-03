@@ -11,6 +11,7 @@ import { getAuthorDetail, getAuthorDetailValidator } from "../apis/authors/autho
 import { registerAuthor, registerAuthorValidator } from "../apis/authors/author.register.api.js";
 import { searchAuthor, searchAuthorValidator } from "../apis/authors/author.search.api.js";
 import { updateAuthor, updateAuthorValidator } from "../apis/authors/author.update.api.js";
+import { deleteContent, deleteContentValidator } from "../apis/duplicates/duplicate.delete-content.api.js";
 import { deleteDuplicateGroup, deleteDuplicateGroupValidator } from "../apis/duplicates/duplicate.delete.api.js";
 import { getDuplicateGroup, getDuplicateGroupValidator } from "../apis/duplicates/duplicate.detail.api.js";
 import { listDuplicateGroups } from "../apis/duplicates/duplicate.list.api.js";
@@ -102,6 +103,17 @@ export const autoGenerateHandlers = {
             try {
                 const validatedArgs = updateAuthorValidator(args, { ...ctx, event });
                 const result = await updateAuthor({ ...ctx, event }, validatedArgs);
+                return success(result);
+            } catch (e) {
+                return customErrorHandler(e, { ...ctx, event });
+            }
+        };
+    },
+    "deleteContent": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: unknown) => {
+            try {
+                const validatedArgs = deleteContentValidator(args, { ...ctx, event });
+                const result = await deleteContent({ ...ctx, event }, validatedArgs);
                 return success(result);
             } catch (e) {
                 return customErrorHandler(e, { ...ctx, event });
