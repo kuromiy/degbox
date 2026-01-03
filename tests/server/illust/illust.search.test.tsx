@@ -127,19 +127,19 @@ describe("イラスト検索画面", () => {
 			id: "content-1",
 			path: "/path/to/content-1.jpg",
 			name: "content-1.jpg",
-			hash: "hash-1",
+			type: "image",
 		});
 		await database.insert(CONTENTS).values({
 			id: "content-2",
 			path: "/path/to/content-2.jpg",
 			name: "content-2.jpg",
-			hash: "hash-2",
+			type: "image",
 		});
 		await database.insert(CONTENTS).values({
 			id: "content-3",
 			path: "/path/to/content-3.jpg",
 			name: "content-3.jpg",
-			hash: "hash-3",
+			type: "image",
 		});
 
 		// イラストのコンテンツを作成（最低1つのコンテンツが必要）
@@ -203,7 +203,7 @@ describe("イラスト検索画面", () => {
 				id: `content-${i}`,
 				path: `/path/to/content-${i}.jpg`,
 				name: `content-${i}.jpg`,
-				hash: `hash-${i}`,
+				type: "image",
 			});
 			await database.insert(ILLUSTS_CONTENTS).values({
 				illustId: `illust-${i}`,

@@ -58,19 +58,19 @@ describe("作者詳細API", () => {
 			id: "c1",
 			path: "/path/to/video1",
 			name: "動画1",
-			hash: "hash1",
+			type: "video",
 		});
 		await database.insert(CONTENTS).values({
 			id: "c2",
 			path: "/path/to/video2",
 			name: "動画2",
-			hash: "hash2",
+			type: "video",
 		});
 		await database.insert(CONTENTS).values({
 			id: "c3",
 			path: "/path/to/video3",
 			name: "動画3",
-			hash: "hash3",
+			type: "video",
 		});
 
 		// 作者とビデオの関連
@@ -159,7 +159,7 @@ describe("作者詳細API", () => {
 				id: `c${i}`,
 				path: `/path/to/video${i}`,
 				name: `動画${i}`,
-				hash: `hash${i}`,
+				type: "video",
 			});
 			await database
 				.insert(VIDEOS_AUTHORS)

@@ -22,12 +22,15 @@ export interface FileSystem {
 }
 
 export class FileSystemImpl implements FileSystem {
-	constructor(private readonly errorLog: (error: Error) => void) {}
+	constructor(
+		private readonly errorLog: (error: Error) => void,
+		private readonly basePath?: string,
+	) {}
 
 	public async transaction<T>(
 		transaction: (tx: FileSystem) => Promise<T> | T,
 	): Promise<T> {
-		const invoker = new FileSystemInvoker(this.errorLog);
+		const invoker = new FileSystemInvoker(this.errorLog, this.basePath);
 		try {
 			const result = await transaction(invoker);
 			await invoker.done();
@@ -89,7 +92,10 @@ export class FileSystemImpl implements FileSystem {
 }
 
 class FileSystemInvoker implements FileSystem {
-	constructor(private readonly errorLog: (error: Error) => void) {}
+	constructor(
+		private readonly errorLog: (error: Error) => void,
+		private readonly basePath?: string,
+	) {}
 
 	private commands: FileSystemOperationCommand[] = [];
 
@@ -97,7 +103,7 @@ class FileSystemInvoker implements FileSystem {
 		transaction: (tx: FileSystem) => Promise<T> | T,
 	): Promise<T> {
 		// 新しいFileSystemInvokerインスタンスで別のトランザクション境界を作成
-		const nestedInvoker = new FileSystemInvoker(this.errorLog);
+		const nestedInvoker = new FileSystemInvoker(this.errorLog, this.basePath);
 		try {
 			const result = await transaction(nestedInvoker);
 			await nestedInvoker.done();
@@ -134,7 +140,7 @@ class FileSystemInvoker implements FileSystem {
 	}
 
 	public async delete(path: string) {
-		const command = new FileDeleteCommand(path);
+		const command = new FileDeleteCommand(path, this.basePath);
 		await command.execute();
 		this.commands.push(command);
 	}

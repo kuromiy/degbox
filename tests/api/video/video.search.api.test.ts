@@ -48,13 +48,13 @@ describe("ビデオ検索API", () => {
 			id: "1",
 			path: "contents/video",
 			name: "content001",
-			hash: "content001",
+			type: "video",
 		});
 		await database.insert(CONTENTS).values({
 			id: "2",
 			path: "contents/video",
 			name: "content002",
-			hash: "content002",
+			type: "video",
 		});
 
 		// ビデオ

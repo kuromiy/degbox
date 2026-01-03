@@ -11,6 +11,11 @@ import { getAuthorDetail, getAuthorDetailValidator } from "../apis/authors/autho
 import { registerAuthor, registerAuthorValidator } from "../apis/authors/author.register.api.js";
 import { searchAuthor, searchAuthorValidator } from "../apis/authors/author.search.api.js";
 import { updateAuthor, updateAuthorValidator } from "../apis/authors/author.update.api.js";
+import { deleteContent, deleteContentValidator } from "../apis/duplicates/duplicate.delete-content.api.js";
+import { deleteDuplicateGroup, deleteDuplicateGroupValidator } from "../apis/duplicates/duplicate.delete.api.js";
+import { getDuplicateGroup, getDuplicateGroupValidator } from "../apis/duplicates/duplicate.detail.api.js";
+import { listDuplicateGroups } from "../apis/duplicates/duplicate.list.api.js";
+import { removeItemFromGroup, removeItemFromGroupValidator } from "../apis/duplicates/duplicate.remove-item.api.js";
 import { deleteIllust, deleteIllustValidator } from "../apis/illusts/illust.delete.api.js";
 import { detailIllust, detailIllustValidator } from "../apis/illusts/illust.detail.api.js";
 import { pickupImage } from "../apis/illusts/illust.pickup.api.js";
@@ -98,6 +103,60 @@ export const autoGenerateHandlers = {
             try {
                 const validatedArgs = updateAuthorValidator(args, { ...ctx, event });
                 const result = await updateAuthor({ ...ctx, event }, validatedArgs);
+                return success(result);
+            } catch (e) {
+                return customErrorHandler(e, { ...ctx, event });
+            }
+        };
+    },
+    "deleteContent": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: unknown) => {
+            try {
+                const validatedArgs = deleteContentValidator(args, { ...ctx, event });
+                const result = await deleteContent({ ...ctx, event }, validatedArgs);
+                return success(result);
+            } catch (e) {
+                return customErrorHandler(e, { ...ctx, event });
+            }
+        };
+    },
+    "deleteDuplicateGroup": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: unknown) => {
+            try {
+                const validatedArgs = deleteDuplicateGroupValidator(args, { ...ctx, event });
+                const result = await deleteDuplicateGroup({ ...ctx, event }, validatedArgs);
+                return success(result);
+            } catch (e) {
+                return customErrorHandler(e, { ...ctx, event });
+            }
+        };
+    },
+    "getDuplicateGroup": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: unknown) => {
+            try {
+                const validatedArgs = getDuplicateGroupValidator(args, { ...ctx, event });
+                const result = await getDuplicateGroup({ ...ctx, event }, validatedArgs);
+                return success(result);
+            } catch (e) {
+                return customErrorHandler(e, { ...ctx, event });
+            }
+        };
+    },
+    "listDuplicateGroups": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, _: unknown) => {
+            try {
+                const result = await listDuplicateGroups({ ...ctx, event });
+                return success(result);
+            } catch (e) {
+                return customErrorHandler(e, { ...ctx, event });
+            }
+        };
+    },
+    "removeItemFromGroup": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, args: unknown) => {
+            try {
+                const validatedArgs = removeItemFromGroupValidator(args, { ...ctx, event });
+                const result = await removeItemFromGroup({ ...ctx, event }, validatedArgs);
                 return success(result);
             } catch (e) {
                 return customErrorHandler(e, { ...ctx, event });

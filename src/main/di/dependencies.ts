@@ -2,6 +2,11 @@ import { AuthorDataSource } from "../../../features/author/author.datasource.js"
 import { ContentAction } from "../../../features/content/content.action.js";
 import { ContentDataSource } from "../../../features/content/content.datasource.js";
 import { ContentServiceImpl } from "../../../features/content/content.service.impl.js";
+import { CalculatorFactory } from "../../../features/duplicate-content/calculator/calculator.factory.js";
+import { ContentHashDataSource } from "../../../features/duplicate-content/content.hash.datasource.js";
+import { DuplicateContentAction } from "../../../features/duplicate-content/duplicate.content.action.js";
+import { DuplicateContentDataSource } from "../../../features/duplicate-content/duplicate.content.datasource.js";
+import { HashService } from "../../../features/duplicate-content/hash.service.js";
 import { IllustAction } from "../../../features/illust/illust.action.js";
 import { IllustDataSource } from "../../../features/illust/illust.datasource.js";
 import { ProjectDataSource } from "../../../features/project/project.datasource.js";
@@ -28,7 +33,6 @@ export type DependencyEntry = {
 	provider: (container: Container) => unknown;
 };
 
-const fileSystem = new FileSystemImpl((err) => console.error(err));
 const jobQueue = new JobQueue();
 const cache = new Map<string, UnmanagedContent>();
 
@@ -40,7 +44,11 @@ export const depend: DependencyEntry[] = [
 	},
 	{
 		token: TOKENS.FILE_SYSTEM,
-		provider: (_: Container) => fileSystem,
+		provider: (c: Container) =>
+			new FileSystemImpl(
+				(err) => console.error(err),
+				c.get(TOKENS.PROJECT_PATH),
+			),
 	},
 	{
 		token: TOKENS.JOB_QUEUE,
@@ -89,8 +97,30 @@ export const depend: DependencyEntry[] = [
 		provider: (c: Container) =>
 			new ProjectDataSource(c.get(TOKENS.USER_DATABASE)),
 	},
+	{
+		token: TOKENS.CONTENT_HASH_REPOSITORY,
+		provider: (c: Container) =>
+			new ContentHashDataSource(c.get(TOKENS.DATABASE)),
+	},
+	{
+		token: TOKENS.DUPLICATE_CONTENT_REPOSITORY,
+		provider: (c: Container) =>
+			new DuplicateContentDataSource(c.get(TOKENS.DATABASE)),
+	},
 
 	// service
+	{
+		token: TOKENS.HASH_SERVICE,
+		provider: (_: Container) => new HashService(),
+	},
+	{
+		token: TOKENS.CALCULATOR_FACTORY,
+		provider: (c: Container) =>
+			new CalculatorFactory(
+				c.get(TOKENS.HASH_SERVICE),
+				c.get(TOKENS.PROJECT_PATH),
+			),
+	},
 	{
 		token: TOKENS.CONTENT_SERVICE,
 		provider: (c: Container) =>
@@ -120,12 +150,23 @@ export const depend: DependencyEntry[] = [
 
 	// action
 	{
+		token: TOKENS.DUPLICATE_CONTENT_ACTION,
+		provider: (c: Container) =>
+			new DuplicateContentAction(
+				c.get(TOKENS.LOGGER),
+				c.get(TOKENS.CALCULATOR_FACTORY),
+				c.get(TOKENS.DUPLICATE_CONTENT_REPOSITORY),
+				c.get(TOKENS.CONTENT_HASH_REPOSITORY),
+			),
+	},
+	{
 		token: TOKENS.CONTENT_ACTION,
 		provider: (c: Container) =>
 			new ContentAction(
 				c.get(TOKENS.CONTENT_REPOSITORY),
 				c.get(TOKENS.CONTENT_SERVICE),
 				c.get(TOKENS.PROJECT_PATH),
+				c.get(TOKENS.DUPLICATE_CONTENT_ACTION),
 			),
 	},
 	{

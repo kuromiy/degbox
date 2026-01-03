@@ -52,7 +52,7 @@ describe("ビデオ詳細API", () => {
 			id: "1",
 			path: "contents/video",
 			name: "content001",
-			hash: "content001",
+			type: "video",
 		});
 
 		// ビデオ
