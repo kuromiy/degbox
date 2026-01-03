@@ -153,6 +153,7 @@ export const depend: DependencyEntry[] = [
 		token: TOKENS.DUPLICATE_CONTENT_ACTION,
 		provider: (c: Container) =>
 			new DuplicateContentAction(
+				c.get(TOKENS.LOGGER),
 				c.get(TOKENS.CALCULATOR_FACTORY),
 				c.get(TOKENS.DUPLICATE_CONTENT_REPOSITORY),
 				c.get(TOKENS.CONTENT_HASH_REPOSITORY),

@@ -55,6 +55,8 @@ export class ContentDataSource implements ContentRepository {
 	}
 
 	async delete(id: string): Promise<void> {
+		// FK制約違反を防ぐため、関連行を先に削除
+		await this.deleteRelations(id);
 		await this.db.delete(CONTENTS).where(eq(CONTENTS.id, id));
 	}
 

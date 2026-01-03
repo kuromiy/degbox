@@ -1,3 +1,4 @@
+import type { Logger } from "winston";
 import type { Content } from "../content/content.model.js";
 import type { CalculatorFactory } from "./calculator/calculator.factory.js";
 import type { ContentHash } from "./content.hash.model.js";
@@ -7,6 +8,7 @@ import type { DuplicateContentRepository } from "./duplicate.content.repository.
 
 export class DuplicateContentAction {
 	constructor(
+		private readonly logger: Logger,
 		private readonly factory: CalculatorFactory,
 		private readonly duplicateContentRepository: DuplicateContentRepository,
 		private readonly contentHashRepository: ContentHashRepository,
@@ -16,7 +18,6 @@ export class DuplicateContentAction {
 		const calculator = this.factory.create(content.type);
 		const hashes = await calculator.calculate(content);
 
-		console.log("hash save");
 		for (const hash of hashes) {
 			// ハッシュ保存
 			await this.contentHashRepository.save(hash);
@@ -34,20 +35,60 @@ export class DuplicateContentAction {
 		);
 
 		const others = existing.filter((h) => h.contentId !== contentId);
-		const firstOther = others[0];
-		if (!firstOther) return;
+		if (others.length === 0) return;
 
-		// 既存グループを検索
-		const existingGroup =
-			await this.duplicateContentRepository.findByContentIdAndHashType(
-				firstOther.contentId,
-				hash.type,
+		// 全てのothersについて既存グループを検索
+		const groupResults = await Promise.all(
+			others.map(async (other) => ({
+				contentId: other.contentId,
+				group: await this.duplicateContentRepository.findByContentIdAndHashType(
+					other.contentId,
+					hash.type,
+				),
+			})),
+		);
+
+		// 既存グループを収集（重複排除）
+		const existingGroups = new Map<string, DuplicateGroup>();
+		for (const result of groupResults) {
+			if (result.group) {
+				existingGroups.set(result.group.id, result.group);
+			}
+		}
+
+		const groupIds = Array.from(existingGroups.keys());
+
+		if (groupIds.length > 1) {
+			// 複数の既存グループが見つかった場合はエラー
+			this.logger.error("Multiple existing duplicate groups found", {
+				contentId,
+				hashType: hash.type,
+				hashValue: hash.value,
+				existingGroupIds: groupIds,
+			});
+			throw new Error(
+				`Multiple existing duplicate groups found for hash type ${hash.type}: ${groupIds.join(", ")}. Manual resolution required.`,
 			);
+		}
 
-		if (existingGroup) {
+		const firstGroupId = groupIds[0];
+		if (groupIds.length === 1 && firstGroupId) {
 			// 既存グループに追加
-			existingGroup.items.push({ contentId, similarity: 100 });
-			await this.duplicateContentRepository.save(existingGroup);
+			const existingGroup = existingGroups.get(firstGroupId);
+			if (existingGroup) {
+				// 同じcontentIdが既に存在するかチェック
+				const alreadyExists = existingGroup.items.some(
+					(item) => item.contentId === contentId,
+				);
+				if (!alreadyExists) {
+					this.logger.debug("Adding content to existing duplicate group", {
+						contentId,
+						groupId: existingGroup.id,
+					});
+					existingGroup.items.push({ contentId, similarity: 100 });
+					await this.duplicateContentRepository.save(existingGroup);
+				}
+			}
 		} else {
 			// 新規グループ作成
 			const newGroup: DuplicateGroup = {
@@ -58,6 +99,10 @@ export class DuplicateContentAction {
 					{ contentId, similarity: 100 },
 				],
 			};
+			this.logger.debug("Creating new duplicate group", {
+				groupId: newGroup.id,
+				contentIds: newGroup.items.map((i) => i.contentId),
+			});
 			await this.duplicateContentRepository.save(newGroup);
 		}
 	}

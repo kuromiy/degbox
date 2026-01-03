@@ -21,15 +21,9 @@ export class ContentAction {
 		// ファイル移動（IDを使用）
 		const destPath = await this.service.moveToDestination(path, id);
 
-		console.log(
-			`project path: ${this.projectPath}, path: ${path}, destPath: ${destPath}`,
-		);
-
 		// パスからファイル名を取得（プロジェクトルートからの相対パス）
 		const dirPath = relative(this.projectPath, dirname(destPath));
 		const fileName = basename(destPath);
-
-		console.log(`dirPath: ${dirPath}, fileName: ${fileName}`);
 
 		const content = {
 			id,
@@ -38,14 +32,10 @@ export class ContentAction {
 			type: detectContentType(fileName),
 			// hash,
 		};
-		console.log("before");
 		const registered = await this.repository.save(content);
-		console.log("after");
 
 		// 重複コンテンツ管理登録
-		console.log("before2");
 		await this.duplicateContentAction.register(registered);
-		console.log("after2");
 
 		return registered;
 	}

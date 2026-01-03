@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import {
 	DUPLICATE_GROUP_ITEMS,
 	DUPLICATE_GROUPS,
@@ -181,12 +181,13 @@ export class DuplicateContentDataSource implements DuplicateContentRepository {
 			);
 
 		// グループ内のアイテムが1つ以下になったら、グループも削除
-		const remainingItems = await this.db
-			.select({ count: DUPLICATE_GROUP_ITEMS.contentId })
+		const result = await this.db
+			.select({ count: count(DUPLICATE_GROUP_ITEMS.contentId) })
 			.from(DUPLICATE_GROUP_ITEMS)
 			.where(eq(DUPLICATE_GROUP_ITEMS.groupId, groupId));
 
-		if (remainingItems.length <= 1) {
+		const remainingCount = result[0]?.count ?? 0;
+		if (remainingCount <= 1) {
 			await this.delete(groupId);
 		}
 	}
