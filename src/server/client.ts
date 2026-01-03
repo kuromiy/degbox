@@ -199,4 +199,28 @@ export class FetchClient implements ServiceIF {
 	async openProject(_projectId: string) {
 		return failure(new Error("openProject is not allowed in FetchClient"));
 	}
+
+	async deleteDuplicateGroup(_groupId: string) {
+		return failure(
+			new Error("deleteDuplicateGroup is not allowed in FetchClient"),
+		);
+	}
+
+	async getDuplicateGroup(_groupId: string) {
+		return failure(
+			new Error("getDuplicateGroup is not allowed in FetchClient"),
+		);
+	}
+
+	async listDuplicateGroups() {
+		return failure(
+			new Error("listDuplicateGroups is not allowed in FetchClient"),
+		);
+	}
+
+	async removeItemFromGroup(_groupId: string, _contentId: string) {
+		return failure(
+			new Error("removeItemFromGroup is not allowed in FetchClient"),
+		);
+	}
 }

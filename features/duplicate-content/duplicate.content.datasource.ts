@@ -103,4 +103,91 @@ export class DuplicateContentDataSource implements DuplicateContentRepository {
 			})),
 		};
 	}
+
+	async findAll(): Promise<DuplicateGroup[]> {
+		const groups = await this.db
+			.select({
+				id: DUPLICATE_GROUPS.id,
+				hashType: DUPLICATE_GROUPS.hashType,
+			})
+			.from(DUPLICATE_GROUPS);
+
+		const result: DuplicateGroup[] = [];
+		for (const group of groups) {
+			const items = await this.db
+				.select({
+					contentId: DUPLICATE_GROUP_ITEMS.contentId,
+					similarity: DUPLICATE_GROUP_ITEMS.similarity,
+				})
+				.from(DUPLICATE_GROUP_ITEMS)
+				.where(eq(DUPLICATE_GROUP_ITEMS.groupId, group.id));
+
+			result.push({
+				id: group.id,
+				hashType: group.hashType,
+				items: items.map((item) => ({
+					contentId: item.contentId,
+					similarity: item.similarity ?? 100,
+				})),
+			});
+		}
+
+		return result;
+	}
+
+	async findById(id: string): Promise<DuplicateGroup | null> {
+		const group = await this.db
+			.select({
+				id: DUPLICATE_GROUPS.id,
+				hashType: DUPLICATE_GROUPS.hashType,
+			})
+			.from(DUPLICATE_GROUPS)
+			.where(eq(DUPLICATE_GROUPS.id, id))
+			.limit(1);
+
+		const groupRow = group[0];
+		if (!groupRow) return null;
+
+		const items = await this.db
+			.select({
+				contentId: DUPLICATE_GROUP_ITEMS.contentId,
+				similarity: DUPLICATE_GROUP_ITEMS.similarity,
+			})
+			.from(DUPLICATE_GROUP_ITEMS)
+			.where(eq(DUPLICATE_GROUP_ITEMS.groupId, id));
+
+		return {
+			id: groupRow.id,
+			hashType: groupRow.hashType,
+			items: items.map((item) => ({
+				contentId: item.contentId,
+				similarity: item.similarity ?? 100,
+			})),
+		};
+	}
+
+	async delete(id: string): Promise<void> {
+		await this.db.delete(DUPLICATE_GROUPS).where(eq(DUPLICATE_GROUPS.id, id));
+	}
+
+	async removeItemFromGroup(groupId: string, contentId: string): Promise<void> {
+		await this.db
+			.delete(DUPLICATE_GROUP_ITEMS)
+			.where(
+				and(
+					eq(DUPLICATE_GROUP_ITEMS.groupId, groupId),
+					eq(DUPLICATE_GROUP_ITEMS.contentId, contentId),
+				),
+			);
+
+		// グループ内のアイテムが1つ以下になったら、グループも削除
+		const remainingItems = await this.db
+			.select({ count: DUPLICATE_GROUP_ITEMS.contentId })
+			.from(DUPLICATE_GROUP_ITEMS)
+			.where(eq(DUPLICATE_GROUP_ITEMS.groupId, groupId));
+
+		if (remainingItems.length <= 1) {
+			await this.delete(groupId);
+		}
+	}
 }

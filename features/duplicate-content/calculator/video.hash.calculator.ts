@@ -14,7 +14,7 @@ export class VideoHashCalculator implements HashCalculator {
 	async calculate(content: Content): Promise<ContentHash[]> {
 		const filePath = join(this.projectPath, content.path, content.name);
 		const result: ContentHash = {
-			id: randomUUID.toString(),
+			id: randomUUID(),
 			type: "sha256",
 			value: await this.hashService.calcSha256(filePath),
 			contentId: content.id,

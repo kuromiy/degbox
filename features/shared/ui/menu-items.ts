@@ -35,6 +35,10 @@ export const menuItems: MenuCategory[] = [
 		],
 	},
 	{
+		category: "管理",
+		items: [{ to: "/duplicate", label: "重複コンテンツ" }],
+	},
+	{
 		category: "設定",
 		items: [{ to: "/appsettings", label: "アプリ設定" }],
 	},

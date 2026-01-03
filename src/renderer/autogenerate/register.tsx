@@ -6,6 +6,10 @@ import type { getAuthorDetail } from "../../main/apis/authors/author.detail.api.
 import type { registerAuthor } from "../../main/apis/authors/author.register.api.js";
 import type { searchAuthor } from "../../main/apis/authors/author.search.api.js";
 import type { updateAuthor } from "../../main/apis/authors/author.update.api.js";
+import type { deleteDuplicateGroup } from "../../main/apis/duplicates/duplicate.delete.api.js";
+import type { getDuplicateGroup } from "../../main/apis/duplicates/duplicate.detail.api.js";
+import type { listDuplicateGroups } from "../../main/apis/duplicates/duplicate.list.api.js";
+import type { removeItemFromGroup } from "../../main/apis/duplicates/duplicate.remove-item.api.js";
 import type { deleteIllust } from "../../main/apis/illusts/illust.delete.api.js";
 import type { detailIllust } from "../../main/apis/illusts/illust.detail.api.js";
 import type { pickupImage } from "../../main/apis/illusts/illust.pickup.api.js";
@@ -42,6 +46,10 @@ declare global {
             registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, unknown>>;
             searchAuthor: (name: string | undefined, page: number, size: number) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, unknown>>;
             updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, unknown>>;
+            deleteDuplicateGroup: (groupId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteDuplicateGroup>, unknown>>;
+            getDuplicateGroup: (groupId: string) => Promise<Result<ReturnTypeUnwrapped<typeof getDuplicateGroup>, unknown>>;
+            listDuplicateGroups: () => Promise<Result<ReturnTypeUnwrapped<typeof listDuplicateGroups>, unknown>>;
+            removeItemFromGroup: (groupId: string, contentId: string) => Promise<Result<ReturnTypeUnwrapped<typeof removeItemFromGroup>, unknown>>;
             deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, unknown>>;
             detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, unknown>>;
             pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, unknown>>;
@@ -71,6 +79,10 @@ export interface ServiceIF {
     registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, unknown>>;
     searchAuthor: (name: string | undefined, page: number, size: number) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, unknown>>;
     updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, unknown>>;
+    deleteDuplicateGroup: (groupId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteDuplicateGroup>, unknown>>;
+    getDuplicateGroup: (groupId: string) => Promise<Result<ReturnTypeUnwrapped<typeof getDuplicateGroup>, unknown>>;
+    listDuplicateGroups: () => Promise<Result<ReturnTypeUnwrapped<typeof listDuplicateGroups>, unknown>>;
+    removeItemFromGroup: (groupId: string, contentId: string) => Promise<Result<ReturnTypeUnwrapped<typeof removeItemFromGroup>, unknown>>;
     deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, unknown>>;
     detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, unknown>>;
     pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, unknown>>;
@@ -117,6 +129,22 @@ export class ApiService implements ServiceIF {
 
     async updateAuthor(id: string, name: string, urls: string) {
         return window.api.updateAuthor(id, name, urls);
+    }
+
+    async deleteDuplicateGroup(groupId: string) {
+        return window.api.deleteDuplicateGroup(groupId);
+    }
+
+    async getDuplicateGroup(groupId: string) {
+        return window.api.getDuplicateGroup(groupId);
+    }
+
+    async listDuplicateGroups() {
+        return window.api.listDuplicateGroups();
+    }
+
+    async removeItemFromGroup(groupId: string, contentId: string) {
+        return window.api.removeItemFromGroup(groupId, contentId);
     }
 
     async deleteIllust(illustId: string) {

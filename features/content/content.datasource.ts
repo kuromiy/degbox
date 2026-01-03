@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { eq } from "drizzle-orm";
 import { CONTENTS } from "../shared/database/application/schema.js";
 import type { Database } from "../shared/database/application/type.js";
 import type { Content } from "./content.model.js";
@@ -29,5 +30,23 @@ export class ContentDataSource implements ContentRepository {
 			});
 
 		return content;
+	}
+
+	async findById(id: string): Promise<Content | null> {
+		const result = await this.db
+			.select()
+			.from(CONTENTS)
+			.where(eq(CONTENTS.id, id))
+			.limit(1);
+
+		const row = result[0];
+		if (!row) return null;
+
+		return {
+			id: row.id,
+			path: row.path,
+			name: row.name,
+			type: row.type,
+		};
 	}
 }

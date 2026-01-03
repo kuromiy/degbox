@@ -7,4 +7,8 @@ export interface DuplicateContentRepository {
 		contentId: string,
 		hashType: string,
 	): Promise<DuplicateGroup | null>;
+	findAll(): Promise<DuplicateGroup[]>;
+	findById(id: string): Promise<DuplicateGroup | null>;
+	delete(id: string): Promise<void>;
+	removeItemFromGroup(groupId: string, contentId: string): Promise<void>;
 }

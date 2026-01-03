@@ -19,6 +19,12 @@ import AuthorRegisterPage, {
 import AuthorSearchPage, {
 	loader as authorSearchLoader,
 } from "./pages/author.search.page.js";
+import DuplicateDetailPage, {
+	loader as duplicateDetailLoader,
+} from "./pages/duplicate.detail.page.js";
+import DuplicateListPage, {
+	loader as duplicateListLoader,
+} from "./pages/duplicate.list.page.js";
 import IllustDetailPage, {
 	loader as illustDetailLoader,
 } from "./pages/illust.detail.page.js";
@@ -156,6 +162,26 @@ export const route = createHashRouter([
 				),
 				loader: appsettingLoader,
 				action: appsettingAction,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/duplicate",
+				element: (
+					<Suspense fallback={<div>読み込み中...</div>}>
+						<DuplicateListPage />
+					</Suspense>
+				),
+				loader: duplicateListLoader,
+				HydrateFallback: () => <div>読み込み中...</div>,
+			},
+			{
+				path: "/duplicate/:groupId",
+				element: (
+					<Suspense fallback={<div>読み込み中...</div>}>
+						<DuplicateDetailPage />
+					</Suspense>
+				),
+				loader: duplicateDetailLoader,
 				HydrateFallback: () => <div>読み込み中...</div>,
 			},
 		],
