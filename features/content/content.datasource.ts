@@ -18,13 +18,13 @@ export class ContentDataSource implements ContentRepository {
 				id: content.id,
 				path: content.path,
 				name: content.name,
-				hash: content.hash,
+				type: content.type,
 			})
 			.onConflictDoUpdate({
 				target: CONTENTS.id,
 				set: {
 					path: content.path,
-					hash: content.hash,
+					type: content.type,
 				},
 			});
 

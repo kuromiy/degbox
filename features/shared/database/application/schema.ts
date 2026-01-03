@@ -5,6 +5,7 @@ import {
 	sqliteTable,
 	text,
 } from "drizzle-orm/sqlite-core";
+import type { ContentType } from "../../../content/content.type.js";
 
 // 共通のカラム?
 // createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
@@ -39,8 +40,41 @@ export const CONTENTS = sqliteTable("contents", {
 	id: text("id").primaryKey(),
 	path: text("path").notNull(),
 	name: text("name").notNull(),
-	hash: text("hash").notNull(),
+	type: text("type").$type<ContentType>().notNull(),
 });
+
+// コンテンツハッシュ
+export const CONTENT_HASHS = sqliteTable("content_hashs", {
+	id: text("id").primaryKey(),
+	contentId: text("content_id")
+		.notNull()
+		.references(() => CONTENTS.id, { onDelete: "cascade" }), // 紐づいたコンテンツが削除されたら一緒に削除される。
+	type: text("type").notNull(),
+	value: text("value").notNull(),
+	metadata: text("metadata", { mode: "json" }), // .$type<HashMetadata>()
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+// 重複コンテンツ
+export const DUPLICATE_GROUPS = sqliteTable("duplicate_groups", {
+	id: text("id").primaryKey(),
+	hashType: text("hash_type").notNull(),
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const DUPLICATE_GROUP_ITEMS = sqliteTable(
+	"duplicate_group_items",
+	{
+		groupId: text("group_id")
+			.notNull()
+			.references(() => DUPLICATE_GROUPS.id, { onDelete: "cascade" }),
+		contentId: text("content_id")
+			.notNull()
+			.references(() => CONTENTS.id, { onDelete: "cascade" }),
+		similarity: integer("similarity"),
+	},
+	(table) => [primaryKey({ columns: [table.groupId, table.contentId] })],
+);
 
 // 中間テーブル
 export const VIDEOS_TAGS = sqliteTable(

@@ -4,6 +4,11 @@ import type { AuthorRepository } from "../../../features/author/author.repositor
 import type { ContentAction } from "../../../features/content/content.action.js";
 import type { ContentRepository } from "../../../features/content/content.repository.js";
 import type { ContentService } from "../../../features/content/content.service.js";
+import type { CalculatorFactory } from "../../../features/duplicate-content/calculator/calculator.factory.js";
+import type { ContentHashRepository } from "../../../features/duplicate-content/content.hash.repository.js";
+import type { DuplicateContentAction } from "../../../features/duplicate-content/duplicate.content.action.js";
+import type { DuplicateContentRepository } from "../../../features/duplicate-content/duplicate.content.repository.js";
+import type { HashService } from "../../../features/duplicate-content/hash.service.js";
 import type { IllustAction } from "../../../features/illust/illust.action.js";
 import type { IllustRepository } from "../../../features/illust/illust.repository.js";
 import type { ProjectRepository } from "../../../features/project/project.repository.js";
@@ -55,8 +60,18 @@ export const TOKENS = {
 	USER_APPSETTING_REPOSITORY: new InjectionToken<UserAppSettingRepository>(
 		"UserAppSettingRepository",
 	),
+	CONTENT_HASH_REPOSITORY: new InjectionToken<ContentHashRepository>(
+		"ContentHashRepository",
+	),
+	DUPLICATE_CONTENT_REPOSITORY: new InjectionToken<DuplicateContentRepository>(
+		"DuplicateContentRepository",
+	),
 
 	// service
+	HASH_SERVICE: new InjectionToken<HashService>("HashService"),
+	CALCULATOR_FACTORY: new InjectionToken<CalculatorFactory>(
+		"CalculatorFactory",
+	),
 	CONTENT_SERVICE: new InjectionToken<ContentService>("ContentService"),
 	VIDEO_SERVICE: new InjectionToken<VideoService>("VideoService"),
 	TAG_SUGGESTION_SERVICE: new InjectionToken<TagSuggestionService>(
@@ -65,6 +80,9 @@ export const TOKENS = {
 
 	// action
 	CONTENT_ACTION: new InjectionToken<ContentAction>("ContentAction"),
+	DUPLICATE_CONTENT_ACTION: new InjectionToken<DuplicateContentAction>(
+		"DuplicateContentAction",
+	),
 	TAG_ACTION: new InjectionToken<TagAction>("TagAction"),
 	VIDEO_ACTION: new InjectionToken<VideoAction>("VideoAction"),
 	ILLUST_ACTION: new InjectionToken<IllustAction>("IllustAction"),

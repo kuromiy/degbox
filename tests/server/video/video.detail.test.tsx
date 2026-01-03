@@ -56,7 +56,7 @@ describe("ビデオ詳細画面", () => {
 			id: "1",
 			path: "contents/video",
 			name: "content001",
-			hash: "content001",
+			type: "video",
 		});
 
 		// ビデオ
@@ -97,7 +97,7 @@ describe("ビデオ詳細画面", () => {
 						id: "1",
 						path: "contents/video",
 						name: "content001",
-						hash: "content001",
+						type: "video" as const,
 					},
 					order: 0,
 					videoUrl: buildFileUrl("contents/video/index.m3u8"),
@@ -145,7 +145,7 @@ describe("ビデオ詳細画面", () => {
 			id: "1",
 			path: "contents/test-video",
 			name: "test-content",
-			hash: "test-hash",
+			type: "video",
 		});
 
 		// ビデオ

@@ -96,13 +96,13 @@ describe("ビデオ検索画面", () => {
 			id: "1",
 			path: "contents/video",
 			name: "content001",
-			hash: "content001",
+			type: "video",
 		});
 		await database.insert(CONTENTS).values({
 			id: "2",
 			path: "contents/video",
 			name: "content002",
-			hash: "content002",
+			type: "video",
 		});
 
 		// ビデオ（createdAtを明示的に指定して、id="2"が新しいことを保証）
@@ -149,7 +149,7 @@ describe("ビデオ検索画面", () => {
 								id: "2",
 								path: "contents/video",
 								name: "content002",
-								hash: "content002",
+								type: "video" as const,
 							},
 							order: 0,
 							videoUrl: buildFileUrl("contents/video/index.m3u8"),
@@ -171,7 +171,7 @@ describe("ビデオ検索画面", () => {
 								id: "1",
 								path: "contents/video",
 								name: "content001",
-								hash: "content001",
+								type: "video" as const,
 							},
 							order: 0,
 							videoUrl: buildFileUrl("contents/video/index.m3u8"),
