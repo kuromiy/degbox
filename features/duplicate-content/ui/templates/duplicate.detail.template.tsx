@@ -4,6 +4,7 @@ import {
 	NegativeButton,
 	NeutralButton,
 } from "../../../shared/ui/components/button.component.js";
+import { useToast } from "../../../shared/ui/toast.context.js";
 import type {
 	DuplicateGroup,
 	DuplicateGroupItem,
@@ -33,14 +34,28 @@ export function DuplicateDetailTemplate({
 	onDeleteGroup,
 	onBack,
 }: DuplicateDetailTemplateProps) {
+	const { addToast } = useToast();
 	const [selectedContentId, setSelectedContentId] = useState<string | null>(
 		null,
 	);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [processingContentId, setProcessingContentId] = useState<string | null>(
+		null,
+	);
 
 	const handleRemoveItem = async (contentId: string) => {
 		if (!confirm("このコンテンツをグループから除外しますか？")) return;
-		await onRemoveItem(contentId);
+		if (processingContentId) return; // 重複送信防止
+
+		setProcessingContentId(contentId);
+		try {
+			await onRemoveItem(contentId);
+		} catch (error) {
+			console.error("Failed to remove item:", error);
+			addToast("error", "アイテムの除外に失敗しました");
+		} finally {
+			setProcessingContentId(null);
+		}
 	};
 
 	const handleDeleteContent = async (contentId: string) => {
@@ -48,17 +63,30 @@ export function DuplicateDetailTemplate({
 			!confirm("このコンテンツを完全に削除しますか？この操作は取り消せません。")
 		)
 			return;
-		await onDeleteContent(contentId);
+		if (processingContentId) return; // 重複送信防止
+
+		setProcessingContentId(contentId);
+		try {
+			await onDeleteContent(contentId);
+		} catch (error) {
+			console.error("Failed to delete content:", error);
+			addToast("error", "コンテンツの削除に失敗しました");
+		} finally {
+			setProcessingContentId(null);
+		}
 	};
 
 	const handleDeleteGroup = async () => {
 		if (!confirm("このグループを削除しますか？この操作は取り消せません。"))
 			return;
+		if (isDeleting) return; // 重複送信防止
+
 		setIsDeleting(true);
 		try {
 			await onDeleteGroup();
-			onBack();
-		} finally {
+		} catch (error) {
+			console.error("Failed to delete group:", error);
+			addToast("error", "グループの削除に失敗しました");
 			setIsDeleting(false);
 		}
 	};
@@ -102,6 +130,7 @@ export function DuplicateDetailTemplate({
 								content={item.content}
 								contentUrl={getContentUrl(item.content)}
 								isSelected={selectedContentId === item.contentId}
+								isProcessing={processingContentId === item.contentId}
 								onSelect={() => setSelectedContentId(item.contentId)}
 								onRemove={() => handleRemoveItem(item.contentId)}
 								onDeleteContent={() => handleDeleteContent(item.contentId)}

@@ -6,6 +6,7 @@ interface DuplicateContentCardProps {
 	content: Content | null;
 	contentUrl: string | undefined;
 	isSelected: boolean;
+	isProcessing?: boolean;
 	onSelect: () => void;
 	onRemove: () => void;
 	onDeleteContent: () => void;
@@ -16,6 +17,7 @@ export function DuplicateContentCard({
 	content,
 	contentUrl,
 	isSelected,
+	isProcessing = false,
 	onSelect,
 	onRemove,
 	onDeleteContent,
@@ -82,16 +84,26 @@ export function DuplicateContentCard({
 				<button
 					type="button"
 					onClick={onRemove}
-					className="w-full rounded bg-red-100 px-3 py-1 text-red-700 text-sm hover:bg-red-200"
+					disabled={isProcessing}
+					className={`w-full rounded px-3 py-1 text-sm ${
+						isProcessing
+							? "cursor-not-allowed bg-gray-200 text-gray-400"
+							: "bg-red-100 text-red-700 hover:bg-red-200"
+					}`}
 				>
-					グループから除外
+					{isProcessing ? "処理中..." : "グループから除外"}
 				</button>
 				<button
 					type="button"
 					onClick={onDeleteContent}
-					className="mt-2 w-full rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
+					disabled={isProcessing}
+					className={`mt-2 w-full rounded px-3 py-1 text-sm ${
+						isProcessing
+							? "cursor-not-allowed bg-gray-300 text-gray-500"
+							: "bg-red-600 text-white hover:bg-red-700"
+					}`}
 				>
-					コンテンツを削除
+					{isProcessing ? "処理中..." : "コンテンツを削除"}
 				</button>
 			</div>
 		</div>

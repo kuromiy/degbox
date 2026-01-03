@@ -12,6 +12,7 @@ import type {
 	DuplicateGroupItem,
 } from "../../../features/duplicate-content/duplicate.content.model.js";
 import { DuplicateDetailTemplate } from "../../../features/duplicate-content/ui/templates/duplicate.detail.template.js";
+import { useToast } from "../../../features/shared/ui/toast.context.js";
 import { ApiService } from "../autogenerate/register.js";
 
 const client = new ApiService();
@@ -44,6 +45,7 @@ export default function DuplicateDetailPage() {
 	}>();
 	const revalidator = useRevalidator();
 	const navigate = useNavigate();
+	const { addToast } = useToast();
 
 	// コンテンツURL取得（ファイルパスを直接使用）
 	const getContentUrl = (content: Content | null): string | undefined => {
@@ -60,12 +62,13 @@ export default function DuplicateDetailPage() {
 			);
 			if (isFailure(response)) {
 				console.error("Failed to remove item:", response.value);
+				addToast("error", "アイテムの除外に失敗しました");
 				return;
 			}
 			// データを再取得
 			revalidator.revalidate();
 		},
-		[data.group, revalidator],
+		[data.group, revalidator, addToast],
 	);
 
 	const handleDeleteContent = useCallback(
@@ -74,12 +77,13 @@ export default function DuplicateDetailPage() {
 			const response = await client.deleteContent(data.group.id, contentId);
 			if (isFailure(response)) {
 				console.error("Failed to delete content:", response.value);
+				addToast("error", "コンテンツの削除に失敗しました");
 				return;
 			}
 			// データを再取得
 			revalidator.revalidate();
 		},
-		[data.group, revalidator],
+		[data.group, revalidator, addToast],
 	);
 
 	const handleDeleteGroup = useCallback(async () => {
@@ -89,7 +93,8 @@ export default function DuplicateDetailPage() {
 			console.error("Failed to delete group:", response.value);
 			throw response.value;
 		}
-	}, [data.group]);
+		navigate("/duplicate");
+	}, [data.group, navigate]);
 
 	const handleBack = useCallback(() => {
 		navigate("/duplicate");

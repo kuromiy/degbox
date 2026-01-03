@@ -6,4 +6,9 @@ export interface ContentRepository {
 	findById(id: string): Promise<Content | null>;
 
 	delete(id: string): Promise<void>;
+
+	/**
+	 * コンテンツに関連する中間テーブル（VIDEOS_CONTENTS, ILLUSTS_CONTENTS）のレコードを削除する
+	 */
+	deleteRelations(contentId: string): Promise<void>;
 }
