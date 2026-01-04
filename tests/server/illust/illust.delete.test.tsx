@@ -9,7 +9,7 @@ import { createServer } from "../../../src/server/server.js";
 import { TestJobQueue } from "../../api/testjobqueue.js";
 import {
 	createTestDatabase,
-	getTestProjectPath,
+	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
 import { testLogger } from "../../helpers/testlogger.js";
 
@@ -35,7 +35,9 @@ describe("イラスト削除（サーバー）", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 
 		// 事前準備: イラストを登録
 		const illustAction = container.get(TOKENS.ILLUST_ACTION);
@@ -97,7 +99,9 @@ describe("イラスト削除（サーバー）", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 
 		const app = createServer({ container, fileRoot: process.cwd() });
 
@@ -138,7 +142,9 @@ describe("イラスト削除（サーバー）", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 
 		const app = createServer({ container, fileRoot: process.cwd() });
 

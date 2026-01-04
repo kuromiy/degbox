@@ -1,6 +1,7 @@
 import { join, posix } from "node:path";
 import type { Author } from "../author/author.model.js";
 import type { Content } from "../content/content.model.js";
+import type { ProjectContext } from "../project/project.context.js";
 import type { Tag } from "../tag/tag.model.js";
 import type { VideoRepository } from "./video.repository.js";
 import type { VideoService } from "./video.service.js";
@@ -9,7 +10,7 @@ export class VideoAction {
 	constructor(
 		private readonly repository: VideoRepository,
 		private readonly service: VideoService,
-		private readonly projectPath: string,
+		private readonly projectContext: ProjectContext,
 	) {}
 
 	async register(tags: Tag[], contents: Content[], authors?: Author[]) {
@@ -21,10 +22,12 @@ export class VideoAction {
 			throw new Error("At least one content is required");
 		}
 
+		const projectPath = this.projectContext.getPath();
+
 		// すべてのコンテンツに対してHLS生成
 		for (const content of contents) {
-			const fullPath = join(this.projectPath, content.path, content.name);
-			const outputDir = join(this.projectPath, content.path);
+			const fullPath = join(projectPath, content.path, content.name);
+			const outputDir = join(projectPath, content.path);
 
 			// HLS生成（hlsサブフォルダに出力）
 			await this.service.generateHls(
@@ -37,11 +40,11 @@ export class VideoAction {
 		// 最初のコンテンツからサムネイルとGIF生成
 		const firstContent = contents[0] as Content;
 		const firstFullPath = join(
-			this.projectPath,
+			projectPath,
 			firstContent.path,
 			firstContent.name,
 		);
-		const firstOutputDir = join(this.projectPath, firstContent.path);
+		const firstOutputDir = join(projectPath, firstContent.path);
 
 		// サムネイル生成
 		await this.service.generateThumbnail(

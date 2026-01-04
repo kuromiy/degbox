@@ -11,6 +11,7 @@ import type { DuplicateContentRepository } from "../../../features/duplicate-con
 import type { HashService } from "../../../features/duplicate-content/hash.service.js";
 import type { IllustAction } from "../../../features/illust/illust.action.js";
 import type { IllustRepository } from "../../../features/illust/illust.repository.js";
+import type { ProjectContext } from "../../../features/project/project.context.js";
 import type { ProjectRepository } from "../../../features/project/project.repository.js";
 import { InjectionToken } from "../../../features/shared/container/index.js";
 import type { Database } from "../../../features/shared/database/application/type.js";
@@ -37,7 +38,7 @@ export const TOKENS = {
 	DATABASE: new InjectionToken<Database>("Database"),
 	USER_DATABASE: new InjectionToken<UserDatabase>("UserDatabase"),
 	CACHE: new InjectionToken<Map<string, UnmanagedContent>>("Cache"),
-	PROJECT_PATH: new InjectionToken<string>("ProjectPath"),
+	PROJECT_CONTEXT: new InjectionToken<ProjectContext>("ProjectContext"),
 	MIGRATIONS_BASE_PATH: new InjectionToken<string>("MigrationsBasePath"),
 
 	// repository

@@ -1,6 +1,7 @@
 import { readdir } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { BrowserWindow, dialog } from "electron";
+import { toProjectPath } from "../../../../features/project/project.model.js";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
 import { createDatabase } from "../../../../features/shared/database/application/index.js";
 import type { Context } from "../../context.js";
@@ -10,12 +11,14 @@ import { startServer } from "../../startServer.js";
 
 export async function registerProject(ctx: Context) {
 	const { container, event } = ctx;
-	const [logger, database, fileSystem, appConfig] = container.get(
-		TOKENS.LOGGER,
-		TOKENS.USER_DATABASE,
-		TOKENS.FILE_SYSTEM,
-		TOKENS.APP_CONFIG,
-	);
+	const [logger, database, fileSystem, appConfig, projectContext] =
+		container.get(
+			TOKENS.LOGGER,
+			TOKENS.USER_DATABASE,
+			TOKENS.FILE_SYSTEM,
+			TOKENS.APP_CONFIG,
+			TOKENS.PROJECT_CONTEXT,
+		);
 	const projectRepository = container.get(TOKENS.PROJECT_REPOSITORY);
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ["openDirectory"],
@@ -64,14 +67,14 @@ export async function registerProject(ctx: Context) {
 				id: projectId,
 				name: basename(foldPath),
 				overview: "",
-				path: projectPath,
+				path: toProjectPath(projectPath),
 				openedAt: now,
 				createdAt: now,
 			};
 			await fs.create(projectPath, JSON.stringify(project, null, 2));
 			await scopedProjectRepository.save(project);
 
-			return true;
+			return project;
 		});
 	});
 
@@ -92,8 +95,8 @@ export async function registerProject(ctx: Context) {
 		return false;
 	}
 
-	// PROJECT_PATH をコンテナに登録
-	container.register(TOKENS.PROJECT_PATH, () => foldPath);
+	// ProjectContextにプロジェクトを設定
+	projectContext.open(result);
 
 	// サーバー起動
 	logger.info("start server");

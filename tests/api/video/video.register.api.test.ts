@@ -10,7 +10,7 @@ import { depend } from "../../../src/main/di/dependencies.js";
 import { TOKENS } from "../../../src/main/di/token.js";
 import {
 	createTestDatabase,
-	getTestProjectPath,
+	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
 import { testLogger } from "../../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "../testIpcMainInvokeEvent.js";
@@ -55,7 +55,9 @@ describe("ビデオ登録API", () => {
 		container.register(TOKENS.DATABASE, () => database);
 		container.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container.register(TOKENS.CACHE, () => cache);
-		container.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 
 		// UserAppSettingRepositoryのモックを登録
 		container.register(

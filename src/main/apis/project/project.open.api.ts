@@ -13,13 +13,19 @@ export type OpenProjectRequest = z.infer<typeof openProjectSchema>;
 
 export async function openProject(ctx: Context, request: OpenProjectRequest) {
 	const { container, event } = ctx;
-	const [logger, appConfig, migrationsBasePath, projectRepository] =
-		container.get(
-			TOKENS.LOGGER,
-			TOKENS.APP_CONFIG,
-			TOKENS.MIGRATIONS_BASE_PATH,
-			TOKENS.PROJECT_REPOSITORY,
-		);
+	const [
+		logger,
+		appConfig,
+		migrationsBasePath,
+		projectRepository,
+		projectContext,
+	] = container.get(
+		TOKENS.LOGGER,
+		TOKENS.APP_CONFIG,
+		TOKENS.MIGRATIONS_BASE_PATH,
+		TOKENS.PROJECT_REPOSITORY,
+		TOKENS.PROJECT_CONTEXT,
+	);
 
 	logger.info("open project by id", request);
 	const valid = openProjectSchema.safeParse(request);
@@ -61,8 +67,8 @@ export async function openProject(ctx: Context, request: OpenProjectRequest) {
 		return false;
 	}
 
-	// PROJECT_PATH をコンテナに登録
-	container.register(TOKENS.PROJECT_PATH, () => foldPath);
+	// ProjectContextにプロジェクトを設定
+	projectContext.open(project);
 
 	// サーバー起動
 	logger.info("start server");

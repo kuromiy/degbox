@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import { migrate } from "drizzle-orm/libsql/migrator";
+import { ProjectContext } from "../../features/project/project.context.js";
+import { toProjectPath } from "../../features/project/project.model.js";
 import * as schema from "../../features/shared/database/application/schema.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,6 +18,23 @@ const __dirname = dirname(__filename);
  */
 export function getTestProjectPath(): string {
 	return join(__dirname, "../db");
+}
+
+/**
+ * テスト用のProjectContextを作成する
+ * @returns テスト用ProjectContext
+ */
+export function createTestProjectContext(): ProjectContext {
+	const context = new ProjectContext();
+	context.open({
+		id: "test-project-id",
+		name: "Test Project",
+		path: toProjectPath(getTestProjectPath()),
+		overview: "",
+		openedAt: new Date().toISOString(),
+		createdAt: new Date().toISOString(),
+	});
+	return context;
 }
 
 /**

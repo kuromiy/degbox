@@ -3,6 +3,7 @@ import { cwd } from "node:process";
 import { fileURLToPath } from "node:url";
 import { app, protocol } from "electron";
 import { UserAppSettingDataSource } from "../../features/appsetting/user.app.setting.datasource.js";
+import { ProjectContext } from "../../features/project/project.context.js";
 import { Container } from "../../features/shared/container/index.js";
 import { createDatabase as createUserDatabase } from "../../features/shared/database/user/index.js";
 import { registerAPI, registerProtocol } from "./autogenerate/index.js";
@@ -75,6 +76,8 @@ app.whenReady().then(async () => {
 			rendererPath: rendererPath,
 		};
 	});
+	const projectContext = new ProjectContext();
+	container.register(TOKENS.PROJECT_CONTEXT, () => projectContext);
 
 	createSubWindow(IS_DEV, preloadPath, rendererPath);
 

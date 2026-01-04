@@ -1,5 +1,6 @@
 import { basename, dirname, relative } from "node:path";
 import type { DuplicateContentAction } from "../duplicate-content/duplicate.content.action.js";
+import type { ProjectContext } from "../project/project.context.js";
 import type { ContentRepository } from "./content.repository.js";
 import type { ContentService } from "./content.service.js";
 import { detectContentType } from "./content.type.js";
@@ -8,7 +9,7 @@ export class ContentAction {
 	constructor(
 		private readonly repository: ContentRepository,
 		private readonly service: ContentService,
-		private readonly projectPath: string,
+		private readonly projectContext: ProjectContext,
 		private readonly duplicateContentAction: DuplicateContentAction,
 	) {}
 
@@ -22,7 +23,8 @@ export class ContentAction {
 		const destPath = await this.service.moveToDestination(path, id);
 
 		// パスからファイル名を取得（プロジェクトルートからの相対パス）
-		const dirPath = relative(this.projectPath, dirname(destPath));
+		const projectPath = this.projectContext.getPath();
+		const dirPath = relative(projectPath, dirname(destPath));
 		const fileName = basename(destPath);
 
 		const content = {

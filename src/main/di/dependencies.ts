@@ -47,7 +47,7 @@ export const depend: DependencyEntry[] = [
 		provider: (c: Container) =>
 			new FileSystemImpl(
 				(err) => console.error(err),
-				c.get(TOKENS.PROJECT_PATH),
+				c.get(TOKENS.PROJECT_CONTEXT).getPath(),
 			),
 	},
 	{
@@ -118,7 +118,7 @@ export const depend: DependencyEntry[] = [
 		provider: (c: Container) =>
 			new CalculatorFactory(
 				c.get(TOKENS.HASH_SERVICE),
-				c.get(TOKENS.PROJECT_PATH),
+				c.get(TOKENS.PROJECT_CONTEXT),
 			),
 	},
 	{
@@ -127,7 +127,7 @@ export const depend: DependencyEntry[] = [
 			new ContentServiceImpl(
 				c.get(TOKENS.LOGGER),
 				c.get(TOKENS.FILE_SYSTEM),
-				c.get(TOKENS.PROJECT_PATH),
+				c.get(TOKENS.PROJECT_CONTEXT).getPath(),
 			),
 	},
 	{
@@ -165,7 +165,7 @@ export const depend: DependencyEntry[] = [
 			new ContentAction(
 				c.get(TOKENS.CONTENT_REPOSITORY),
 				c.get(TOKENS.CONTENT_SERVICE),
-				c.get(TOKENS.PROJECT_PATH),
+				c.get(TOKENS.PROJECT_CONTEXT),
 				c.get(TOKENS.DUPLICATE_CONTENT_ACTION),
 			),
 	},
@@ -183,7 +183,7 @@ export const depend: DependencyEntry[] = [
 			new VideoAction(
 				c.get(TOKENS.VIDEO_REPOSITORY),
 				c.get(TOKENS.VIDEO_SERVICE),
-				c.get(TOKENS.PROJECT_PATH),
+				c.get(TOKENS.PROJECT_CONTEXT),
 			),
 	},
 	{
