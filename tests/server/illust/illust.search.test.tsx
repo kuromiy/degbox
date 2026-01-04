@@ -124,19 +124,19 @@ describe("イラスト検索画面", () => {
 
 		// コンテンツを作成
 		await database.insert(CONTENTS).values({
-			id: "content-1",
+			id: "00000000-0000-0000-0000-000000000001",
 			path: "/path/to/content-1.jpg",
 			name: "content-1.jpg",
 			type: "image",
 		});
 		await database.insert(CONTENTS).values({
-			id: "content-2",
+			id: "00000000-0000-0000-0000-000000000002",
 			path: "/path/to/content-2.jpg",
 			name: "content-2.jpg",
 			type: "image",
 		});
 		await database.insert(CONTENTS).values({
-			id: "content-3",
+			id: "00000000-0000-0000-0000-000000000003",
 			path: "/path/to/content-3.jpg",
 			name: "content-3.jpg",
 			type: "image",
@@ -146,17 +146,17 @@ describe("イラスト検索画面", () => {
 		await database.insert(ILLUSTS_CONTENTS).values({
 			illustId: "illust-1",
 			order: 0,
-			contentId: "content-1",
+			contentId: "00000000-0000-0000-0000-000000000001",
 		});
 		await database.insert(ILLUSTS_CONTENTS).values({
 			illustId: "illust-2",
 			order: 0,
-			contentId: "content-2",
+			contentId: "00000000-0000-0000-0000-000000000002",
 		});
 		await database.insert(ILLUSTS_CONTENTS).values({
 			illustId: "illust-3",
 			order: 0,
-			contentId: "content-3",
+			contentId: "00000000-0000-0000-0000-000000000003",
 		});
 
 		const app = createServer({ container, fileRoot: process.cwd() });
@@ -196,11 +196,12 @@ describe("イラスト検索画面", () => {
 		// テストデータのセットアップ
 		// 5件のイラストを作成
 		for (let i = 1; i <= 5; i++) {
+			const contentId = `00000000-0000-0000-0000-00000000000${i}`;
 			await database.insert(ILLUSTS).values({
 				id: `illust-${i}`,
 			});
 			await database.insert(CONTENTS).values({
-				id: `content-${i}`,
+				id: contentId,
 				path: `/path/to/content-${i}.jpg`,
 				name: `content-${i}.jpg`,
 				type: "image",
@@ -208,7 +209,7 @@ describe("イラスト検索画面", () => {
 			await database.insert(ILLUSTS_CONTENTS).values({
 				illustId: `illust-${i}`,
 				order: 0,
-				contentId: `content-${i}`,
+				contentId: contentId,
 			});
 		}
 

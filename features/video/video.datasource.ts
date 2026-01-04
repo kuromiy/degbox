@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { posix } from "node:path";
 import { asc, countDistinct, desc, eq, inArray, like } from "drizzle-orm";
 import type { Logger } from "winston";
+import { asContentId } from "../content/content.model.js";
 import {
 	AUTHORS,
 	CONTENTS,
@@ -313,7 +314,10 @@ export class VideoDataSource implements VideoRepository {
 			thumbnailPath: posix.join(firstContent.path, "thumbnail.jpg"),
 			tags: tags.map((t) => t.tags),
 			contents: contents.map((c) => ({
-				content: c.contents,
+				content: {
+					...c.contents,
+					id: asContentId(c.contents.id),
+				},
 				order: c.videos_contents.order,
 				videoUrl: posix.join(c.contents.path, "index.m3u8"),
 			})),

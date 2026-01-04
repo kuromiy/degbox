@@ -3,7 +3,6 @@ import type { UserAppSettingRepository } from "../../../features/appsetting/user
 import type { AuthorRepository } from "../../../features/author/author.repository.js";
 import type { ContentAction } from "../../../features/content/content.action.js";
 import type { ContentRepository } from "../../../features/content/content.repository.js";
-import type { ContentService } from "../../../features/content/content.service.js";
 import type { CalculatorFactory } from "../../../features/duplicate-content/calculator/calculator.factory.js";
 import type { ContentHashRepository } from "../../../features/duplicate-content/content.hash.repository.js";
 import type { DuplicateContentAction } from "../../../features/duplicate-content/duplicate.content.action.js";
@@ -11,6 +10,7 @@ import type { DuplicateContentRepository } from "../../../features/duplicate-con
 import type { HashService } from "../../../features/duplicate-content/hash.service.js";
 import type { IllustAction } from "../../../features/illust/illust.action.js";
 import type { IllustRepository } from "../../../features/illust/illust.repository.js";
+import type { ProjectContext } from "../../../features/project/project.context.js";
 import type { ProjectRepository } from "../../../features/project/project.repository.js";
 import { InjectionToken } from "../../../features/shared/container/index.js";
 import type { Database } from "../../../features/shared/database/application/type.js";
@@ -37,7 +37,7 @@ export const TOKENS = {
 	DATABASE: new InjectionToken<Database>("Database"),
 	USER_DATABASE: new InjectionToken<UserDatabase>("UserDatabase"),
 	CACHE: new InjectionToken<Map<string, UnmanagedContent>>("Cache"),
-	PROJECT_PATH: new InjectionToken<string>("ProjectPath"),
+	PROJECT_CONTEXT: new InjectionToken<ProjectContext>("ProjectContext"),
 	MIGRATIONS_BASE_PATH: new InjectionToken<string>("MigrationsBasePath"),
 
 	// repository
@@ -72,7 +72,6 @@ export const TOKENS = {
 	CALCULATOR_FACTORY: new InjectionToken<CalculatorFactory>(
 		"CalculatorFactory",
 	),
-	CONTENT_SERVICE: new InjectionToken<ContentService>("ContentService"),
 	VIDEO_SERVICE: new InjectionToken<VideoService>("VideoService"),
 	TAG_SUGGESTION_SERVICE: new InjectionToken<TagSuggestionService>(
 		"TagSuggestionService",

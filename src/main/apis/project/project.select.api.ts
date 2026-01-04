@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { BrowserWindow, dialog } from "electron";
 import { z } from "zod";
+import { toProjectPath } from "../../../../features/project/project.model.js";
 import { createDatabase } from "../../../../features/shared/database/application/index.js";
 import type { Context } from "../../context.js";
 import { createMainWindow } from "../../createMainWindow.js";
@@ -16,13 +17,19 @@ const projectFileSchema = z.object({
 
 export async function selectProject(ctx: Context) {
 	const { container, event } = ctx;
-	const [logger, appConfig, migrationsBasePath, projectRepository] =
-		container.get(
-			TOKENS.LOGGER,
-			TOKENS.APP_CONFIG,
-			TOKENS.MIGRATIONS_BASE_PATH,
-			TOKENS.PROJECT_REPOSITORY,
-		);
+	const [
+		logger,
+		appConfig,
+		migrationsBasePath,
+		projectRepository,
+		projectContext,
+	] = container.get(
+		TOKENS.LOGGER,
+		TOKENS.APP_CONFIG,
+		TOKENS.MIGRATIONS_BASE_PATH,
+		TOKENS.PROJECT_REPOSITORY,
+		TOKENS.PROJECT_CONTEXT,
+	);
 
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ["openDirectory"],
@@ -74,7 +81,7 @@ export async function selectProject(ctx: Context) {
 		id: projectData.id,
 		name: projectData.name,
 		overview: projectData.overview,
-		path: foldPath,
+		path: toProjectPath(foldPath),
 		openedAt: now,
 		createdAt: now,
 	});
@@ -115,14 +122,16 @@ export async function selectProject(ctx: Context) {
 		}
 		// コンテナ登録を解除
 		container.unregister(TOKENS.DATABASE);
-		container.unregister(TOKENS.PROJECT_PATH);
+		// ProjectContextをクローズ
+		projectContext.close();
 		// プロジェクトレコードを削除
 		await projectRepository.delete(projectData.id);
 		logger.info("cleaned up after failure", { projectId: projectData.id });
 	};
 
 	container.register(TOKENS.DATABASE, () => db);
-	container.register(TOKENS.PROJECT_PATH, () => foldPath);
+	// ProjectContextにプロジェクトを設定
+	projectContext.open(savedProject);
 
 	// サーバー起動
 	logger.info("start server");

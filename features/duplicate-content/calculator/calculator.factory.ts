@@ -1,4 +1,5 @@
 import type { ContentType } from "../../content/content.type.js";
+import type { ProjectContext } from "../../project/project.context.js";
 import type { HashService } from "../hash.service.js";
 import type { HashCalculator } from "./hash.calculator.js";
 import { ImageHashCalculator } from "./image.hash.calculator.js";
@@ -7,15 +8,16 @@ import { VideoHashCalculator } from "./video.hash.calculator.js";
 export class CalculatorFactory {
 	constructor(
 		private readonly hashService: HashService,
-		private readonly projectPath: string,
+		private readonly projectContext: ProjectContext,
 	) {}
 
 	create(type: ContentType): HashCalculator {
+		const projectPath = this.projectContext.getPath();
 		switch (type) {
 			case "image":
-				return new ImageHashCalculator(this.hashService, this.projectPath);
+				return new ImageHashCalculator(this.hashService, projectPath);
 			case "video":
-				return new VideoHashCalculator(this.hashService, this.projectPath);
+				return new VideoHashCalculator(this.hashService, projectPath);
 			default:
 				throw new Error(`Unsupported content type: ${type}`);
 		}

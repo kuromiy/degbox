@@ -6,14 +6,14 @@ import {
 	VIDEOS_CONTENTS,
 } from "../shared/database/application/schema.js";
 import type { Database } from "../shared/database/application/type.js";
-import type { Content } from "./content.model.js";
+import { asContentId, type Content, type ContentId } from "./content.model.js";
 import type { ContentRepository } from "./content.repository.js";
 
 export class ContentDataSource implements ContentRepository {
 	constructor(private readonly db: Database) {}
 
-	async generateId(): Promise<string> {
-		return randomUUID();
+	async generateId(): Promise<ContentId> {
+		return asContentId(randomUUID());
 	}
 
 	async save(content: Content): Promise<Content> {
@@ -47,7 +47,7 @@ export class ContentDataSource implements ContentRepository {
 		if (!row) return null;
 
 		return {
-			id: row.id,
+			id: asContentId(row.id),
 			path: row.path,
 			name: row.name,
 			type: row.type,

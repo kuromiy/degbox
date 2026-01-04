@@ -2,7 +2,6 @@ import type { Logger } from "winston";
 import type { Author } from "../author/author.model.js";
 import type { ContentAction } from "../content/content.action.js";
 import type { Content } from "../content/content.model.js";
-import type { ContentService } from "../content/content.service.js";
 import type { Tag } from "../tag/tag.model.js";
 import type { UnmanagedContentRepository } from "../unmanaged-content/unmanagedContent.repository.js";
 import type { IllustContent } from "./illust.model.js";
@@ -20,7 +19,6 @@ export class IllustAction {
 		private readonly repository: IllustRepository,
 		private readonly contentAction: ContentAction,
 		private readonly unmanagedContentRepository: UnmanagedContentRepository,
-		private readonly contentService: ContentService,
 	) {}
 
 	async register(tags: Tag[], contents: Content[], authors?: Author[]) {
@@ -113,14 +111,11 @@ export class IllustAction {
 			return false;
 		}
 
-		// 物理ファイルを削除（ContentServiceが利用可能な場合）
+		// 物理ファイルを削除
 		for (const illustContent of illust.contents) {
 			const content = illustContent.content;
-			// buildFileUrlされたパスからオリジナルのパスを復元
-			// content.pathはURLエンコードされている可能性があるため、
-			// 実際のファイルパスとファイル名を使用
 			this.logger.info("illust content", { content });
-			await this.contentService.deleteContent(content.path, content.name);
+			await this.contentAction.deleteContent(content);
 		}
 
 		// データベースから削除

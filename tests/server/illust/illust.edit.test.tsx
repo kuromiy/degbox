@@ -19,7 +19,7 @@ import IllustEditPage from "../../../src/server/view/pages/illust.edit.page.js";
 import { TestJobQueue } from "../../api/testjobqueue.js";
 import {
 	createTestDatabase,
-	getTestProjectPath,
+	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
 import { normalizeHtml } from "../../helpers/normalizeHtml.js";
 import { testLogger } from "../../helpers/testlogger.js";
@@ -46,7 +46,9 @@ describe("イラスト編集画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 
 		// 事前準備: イラストを登録
 		const illustAction = container.get(TOKENS.ILLUST_ACTION);
@@ -100,7 +102,9 @@ describe("イラスト編集画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 
 		// 事前準備: イラストを登録
 		const illustAction = container.get(TOKENS.ILLUST_ACTION);
@@ -195,7 +199,9 @@ describe("イラスト編集画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 
 		// 事前準備: 複数の画像を持つイラストを登録
 		const illustAction = container.get(TOKENS.ILLUST_ACTION);
@@ -286,7 +292,9 @@ describe("イラスト編集画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 
 		// 事前準備: イラストを登録
 		const illustAction = container.get(TOKENS.ILLUST_ACTION);
@@ -380,7 +388,9 @@ describe("イラスト編集画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 
 		// 事前準備: 作者を登録
 		const authorRepository = container.get(TOKENS.AUTHOR_REPOSITORY);

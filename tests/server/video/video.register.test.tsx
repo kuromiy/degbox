@@ -20,7 +20,7 @@ import VideoRegisterPage from "../../../src/server/view/pages/video.register.pag
 import { TestJobQueue } from "../../api/testjobqueue.js";
 import {
 	createTestDatabase,
-	getTestProjectPath,
+	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
 import { normalizeHtml } from "../../helpers/normalizeHtml.js";
 import { testLogger } from "../../helpers/testlogger.js";
@@ -47,7 +47,9 @@ describe("ビデオ登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request("/video/register");
@@ -80,7 +82,9 @@ describe("ビデオ登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 		const mockUserAppSettingRepository: UserAppSettingRepository = {
 			get: async () => ({
 				ffmpeg:

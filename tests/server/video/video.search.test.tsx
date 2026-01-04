@@ -3,6 +3,7 @@ import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
 import { load } from "cheerio";
 import { renderToString } from "react-dom/server";
+import { asContentId } from "../../../features/content/content.model.js";
 import { Container } from "../../../features/shared/container/index.js";
 import {
 	CONTENTS,
@@ -92,14 +93,16 @@ describe("ビデオ検索画面", () => {
 		await database.insert(TAGS).values({ id: "2", name: "tag002" });
 
 		// コンテンツ
+		const contentId1 = "11111111-1111-1111-1111-111111111111";
+		const contentId2 = "22222222-2222-2222-2222-222222222222";
 		await database.insert(CONTENTS).values({
-			id: "1",
+			id: contentId1,
 			path: "contents/video",
 			name: "content001",
 			type: "video",
 		});
 		await database.insert(CONTENTS).values({
-			id: "2",
+			id: contentId2,
 			path: "contents/video",
 			name: "content002",
 			type: "video",
@@ -121,10 +124,10 @@ describe("ビデオ検索画面", () => {
 		// ビデオコンテンツ
 		await database
 			.insert(VIDEOS_CONTENTS)
-			.values({ videoId: "1", contentId: "1" });
+			.values({ videoId: "1", contentId: contentId1 });
 		await database
 			.insert(VIDEOS_CONTENTS)
-			.values({ videoId: "2", contentId: "2" });
+			.values({ videoId: "2", contentId: contentId2 });
 
 		const app = createServer({ container, fileRoot: process.cwd() });
 
@@ -146,7 +149,7 @@ describe("ビデオ検索画面", () => {
 					contents: [
 						{
 							content: {
-								id: "2",
+								id: asContentId(contentId2),
 								path: "contents/video",
 								name: "content002",
 								type: "video" as const,
@@ -168,7 +171,7 @@ describe("ビデオ検索画面", () => {
 					contents: [
 						{
 							content: {
-								id: "1",
+								id: asContentId(contentId1),
 								path: "contents/video",
 								name: "content001",
 								type: "video" as const,

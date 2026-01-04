@@ -1,7 +1,6 @@
 import { AuthorDataSource } from "../../../features/author/author.datasource.js";
 import { ContentAction } from "../../../features/content/content.action.js";
 import { ContentDataSource } from "../../../features/content/content.datasource.js";
-import { ContentServiceImpl } from "../../../features/content/content.service.impl.js";
 import { CalculatorFactory } from "../../../features/duplicate-content/calculator/calculator.factory.js";
 import { ContentHashDataSource } from "../../../features/duplicate-content/content.hash.datasource.js";
 import { DuplicateContentAction } from "../../../features/duplicate-content/duplicate.content.action.js";
@@ -47,7 +46,7 @@ export const depend: DependencyEntry[] = [
 		provider: (c: Container) =>
 			new FileSystemImpl(
 				(err) => console.error(err),
-				c.get(TOKENS.PROJECT_PATH),
+				c.get(TOKENS.PROJECT_CONTEXT).getPath(),
 			),
 	},
 	{
@@ -118,16 +117,7 @@ export const depend: DependencyEntry[] = [
 		provider: (c: Container) =>
 			new CalculatorFactory(
 				c.get(TOKENS.HASH_SERVICE),
-				c.get(TOKENS.PROJECT_PATH),
-			),
-	},
-	{
-		token: TOKENS.CONTENT_SERVICE,
-		provider: (c: Container) =>
-			new ContentServiceImpl(
-				c.get(TOKENS.LOGGER),
-				c.get(TOKENS.FILE_SYSTEM),
-				c.get(TOKENS.PROJECT_PATH),
+				c.get(TOKENS.PROJECT_CONTEXT),
 			),
 	},
 	{
@@ -163,9 +153,10 @@ export const depend: DependencyEntry[] = [
 		token: TOKENS.CONTENT_ACTION,
 		provider: (c: Container) =>
 			new ContentAction(
+				c.get(TOKENS.LOGGER),
 				c.get(TOKENS.CONTENT_REPOSITORY),
-				c.get(TOKENS.CONTENT_SERVICE),
-				c.get(TOKENS.PROJECT_PATH),
+				c.get(TOKENS.PROJECT_CONTEXT),
+				c.get(TOKENS.FILE_SYSTEM),
 				c.get(TOKENS.DUPLICATE_CONTENT_ACTION),
 			),
 	},
@@ -183,7 +174,7 @@ export const depend: DependencyEntry[] = [
 			new VideoAction(
 				c.get(TOKENS.VIDEO_REPOSITORY),
 				c.get(TOKENS.VIDEO_SERVICE),
-				c.get(TOKENS.PROJECT_PATH),
+				c.get(TOKENS.PROJECT_CONTEXT),
 			),
 	},
 	{
@@ -194,7 +185,6 @@ export const depend: DependencyEntry[] = [
 				c.get(TOKENS.ILLUST_REPOSITORY),
 				c.get(TOKENS.CONTENT_ACTION),
 				c.get(TOKENS.UNMANAGED_CONTENT_REPOSITORY),
-				c.get(TOKENS.CONTENT_SERVICE),
 			),
 	},
 ];

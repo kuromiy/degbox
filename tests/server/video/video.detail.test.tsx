@@ -3,6 +3,7 @@ import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
 import { load } from "cheerio";
 import { renderToString } from "react-dom/server";
+import { asContentId } from "../../../features/content/content.model.js";
 import { Container } from "../../../features/shared/container/index.js";
 import {
 	CONTENTS,
@@ -52,8 +53,9 @@ describe("ビデオ詳細画面", () => {
 		await database.insert(TAGS).values({ id: "2", name: "tag002" });
 
 		// コンテンツ
+		const contentId = "11111111-1111-1111-1111-111111111111";
 		await database.insert(CONTENTS).values({
-			id: "1",
+			id: contentId,
 			path: "contents/video",
 			name: "content001",
 			type: "video",
@@ -73,7 +75,7 @@ describe("ビデオ詳細画面", () => {
 		// ビデオコンテンツ
 		await database
 			.insert(VIDEOS_CONTENTS)
-			.values({ videoId: testVideoId, contentId: "1" });
+			.values({ videoId: testVideoId, contentId: contentId });
 
 		const app = createServer({ container, fileRoot: process.cwd() });
 
@@ -94,7 +96,7 @@ describe("ビデオ詳細画面", () => {
 			contents: [
 				{
 					content: {
-						id: "1",
+						id: asContentId(contentId),
 						path: "contents/video",
 						name: "content001",
 						type: "video" as const,
@@ -141,8 +143,9 @@ describe("ビデオ詳細画面", () => {
 		await database.insert(TAGS).values({ id: "1", name: "テストタグ" });
 
 		// コンテンツ
+		const contentId2 = "22222222-2222-2222-2222-222222222222";
 		await database.insert(CONTENTS).values({
-			id: "1",
+			id: contentId2,
 			path: "contents/test-video",
 			name: "test-content",
 			type: "video",
@@ -159,7 +162,7 @@ describe("ビデオ詳細画面", () => {
 		// ビデオコンテンツ
 		await database
 			.insert(VIDEOS_CONTENTS)
-			.values({ videoId: testVideoId, contentId: "1" });
+			.values({ videoId: testVideoId, contentId: contentId2 });
 
 		const app = createServer({ container, fileRoot: process.cwd() });
 

@@ -19,7 +19,7 @@ import IllustRegisterPage from "../../../src/server/view/pages/illust.register.p
 import { TestJobQueue } from "../../api/testjobqueue.js";
 import {
 	createTestDatabase,
-	getTestProjectPath,
+	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
 import { normalizeHtml } from "../../helpers/normalizeHtml.js";
 import { testLogger } from "../../helpers/testlogger.js";
@@ -46,7 +46,9 @@ describe("イラスト登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const res = await app.request("/illust/register");
@@ -79,7 +81,9 @@ describe("イラスト登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();
@@ -225,7 +229,9 @@ describe("イラスト登録画面", () => {
 		container?.register(TOKENS.DATABASE, () => database);
 		container?.register(TOKENS.LOGGER, () => testLogger);
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
-		container?.register(TOKENS.PROJECT_PATH, () => getTestProjectPath());
+		container?.register(TOKENS.PROJECT_CONTEXT, () =>
+			createTestProjectContext(),
+		);
 		const app = createServer({ container, fileRoot: process.cwd() });
 
 		const formData = new FormData();

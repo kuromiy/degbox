@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { PROJECTS } from "../shared/database/user/schema.js";
 import type { Database } from "../shared/database/user/type.js";
-import type { Project } from "./project.model.js";
+import { type Project, toProjectPath } from "./project.model.js";
 import type { ProjectRepository } from "./project.repository.js";
 
 export class ProjectDataSource implements ProjectRepository {
@@ -55,7 +55,7 @@ export class ProjectDataSource implements ProjectRepository {
 		return {
 			id: row.id,
 			name: row.name,
-			path: row.path,
+			path: toProjectPath(row.path),
 			overview: row.overview,
 			openedAt: row.openedAt,
 			createdAt: row.createdAt,

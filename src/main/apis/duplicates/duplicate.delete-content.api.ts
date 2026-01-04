@@ -22,11 +22,11 @@ export async function deleteContent(
 	request: DeleteContentRequest,
 ): Promise<DeleteContentResponse> {
 	const { container } = ctx;
-	const [logger, database, contentRepository, contentService] = container.get(
+	const [logger, database, contentRepository, contentAction] = container.get(
 		TOKENS.LOGGER,
 		TOKENS.DATABASE,
 		TOKENS.CONTENT_REPOSITORY,
-		TOKENS.CONTENT_SERVICE,
+		TOKENS.CONTENT_ACTION,
 	);
 	logger.info("delete content from duplicate group", request);
 
@@ -71,7 +71,7 @@ export async function deleteContent(
 
 	// 3. 物理ファイル削除（トランザクション成功後に実行）
 	try {
-		await contentService.deleteContent(content.path, content.name);
+		await contentAction.deleteContent(content);
 	} catch (error) {
 		// 物理ファイル削除に失敗してもDBは既にコミット済み
 		// ログに記録して続行（孤立ファイルとして残る可能性がある）
