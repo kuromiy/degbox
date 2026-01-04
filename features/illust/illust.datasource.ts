@@ -215,7 +215,10 @@ export class IllustDataSource implements IllustRepository {
 				const cs = contents
 					.filter((c) => c.illusts_contents.illustId === illustId)
 					.map((c) => ({
-						content: c.contents,
+						content: {
+							...c.contents,
+							id: asContentId(c.contents.id),
+						},
 						order: c.illusts_contents.order,
 					}));
 				const as = authors
@@ -390,7 +393,10 @@ export class IllustDataSource implements IllustRepository {
 				const cs = contents
 					.filter((c) => c.illusts_contents.illustId === illustId)
 					.map((c) => ({
-						content: c.contents,
+						content: {
+							...c.contents,
+							id: asContentId(c.contents.id),
+						},
 						order: c.illusts_contents.order,
 					}));
 				const as = authors
