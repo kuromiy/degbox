@@ -51,4 +51,52 @@ export class HashService {
 		}
 		return hex;
 	}
+
+	/**
+	 * dHashのハミング距離から類似度を計算
+	 * @param hash1 比較元の16進数ハッシュ
+	 * @param hash2 比較先の16進数ハッシュ
+	 * @returns 類似度（0-100%）
+	 */
+	compareByHammingDistance(hash1: string, hash2: string): number {
+		const distance = this.hammingDistance(hash1, hash2);
+		// 16進数1文字 = 4ビット
+		const bits = hash1.length * 4;
+		// ハミング距離が0なら100%、全ビット異なれば0%
+		return Math.round((1 - distance / bits) * 100);
+	}
+
+	/**
+	 * 2つの16進数文字列のハミング距離を計算
+	 * ハミング距離 = 異なるビットの個数
+	 * @param a 16進数文字列
+	 * @param b 16進数文字列
+	 * @returns 異なるビット数
+	 */
+	private hammingDistance(a: string, b: string): number {
+		let distance = 0;
+		for (let i = 0; i < a.length; i++) {
+			// XORで異なるビットを抽出
+			const charA = a[i] ?? "0";
+			const charB = b[i] ?? "0";
+			const diff = parseInt(charA, 16) ^ parseInt(charB, 16);
+			// 立っているビット数をカウント
+			distance += this.popCount(diff);
+		}
+		return distance;
+	}
+
+	/**
+	 * 数値の立っているビット数をカウント（ポップカウント）
+	 * @param n 対象の数値
+	 * @returns 1のビット数
+	 */
+	private popCount(n: number): number {
+		let count = 0;
+		while (n) {
+			count += n & 1;
+			n >>= 1;
+		}
+		return count;
+	}
 }
