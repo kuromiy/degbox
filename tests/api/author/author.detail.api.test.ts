@@ -54,20 +54,23 @@ describe("作者詳細API", () => {
 		await database.insert(VIDEOS).values({ id: "v3" });
 
 		// コンテンツデータ
+		const contentId1 = "11111111-1111-1111-1111-111111111111";
+		const contentId2 = "22222222-2222-2222-2222-222222222222";
+		const contentId3 = "33333333-3333-3333-3333-333333333333";
 		await database.insert(CONTENTS).values({
-			id: "c1",
+			id: contentId1,
 			path: "/path/to/video1",
 			name: "動画1",
 			type: "video",
 		});
 		await database.insert(CONTENTS).values({
-			id: "c2",
+			id: contentId2,
 			path: "/path/to/video2",
 			name: "動画2",
 			type: "video",
 		});
 		await database.insert(CONTENTS).values({
-			id: "c3",
+			id: contentId3,
 			path: "/path/to/video3",
 			name: "動画3",
 			type: "video",
@@ -87,13 +90,13 @@ describe("作者詳細API", () => {
 		// ビデオとコンテンツの関連
 		await database
 			.insert(VIDEOS_CONTENTS)
-			.values({ videoId: "v1", contentId: "c1" });
+			.values({ videoId: "v1", contentId: contentId1 });
 		await database
 			.insert(VIDEOS_CONTENTS)
-			.values({ videoId: "v2", contentId: "c2" });
+			.values({ videoId: "v2", contentId: contentId2 });
 		await database
 			.insert(VIDEOS_CONTENTS)
-			.values({ videoId: "v3", contentId: "c3" });
+			.values({ videoId: "v3", contentId: contentId3 });
 
 		// 準備
 		const mockEvent = createTestIpcMainInvokeEvent();
@@ -153,10 +156,14 @@ describe("作者詳細API", () => {
 		});
 
 		// 10個のビデオとコンテンツを作成
+		// UUIDフォーマット: 8-4-4-4-12
+		const hex = "0123456789abcdef";
 		for (let i = 1; i <= 10; i++) {
+			const h = hex[i % 16];
+			const contentId = `${h}${h}${h}${h}${h}${h}${h}${h}-${h}${h}${h}${h}-${h}${h}${h}${h}-${h}${h}${h}${h}-${h}${h}${h}${h}${h}${h}${h}${h}${h}${h}${h}${h}`;
 			await database.insert(VIDEOS).values({ id: `v${i}` });
 			await database.insert(CONTENTS).values({
-				id: `c${i}`,
+				id: contentId,
 				path: `/path/to/video${i}`,
 				name: `動画${i}`,
 				type: "video",
@@ -166,7 +173,7 @@ describe("作者詳細API", () => {
 				.values({ videoId: `v${i}`, authorId: "author1" });
 			await database
 				.insert(VIDEOS_CONTENTS)
-				.values({ videoId: `v${i}`, contentId: `c${i}` });
+				.values({ videoId: `v${i}`, contentId: contentId });
 		}
 
 		// 準備

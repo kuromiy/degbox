@@ -3,7 +3,6 @@ import type { UserAppSettingRepository } from "../../../features/appsetting/user
 import type { AuthorRepository } from "../../../features/author/author.repository.js";
 import type { ContentAction } from "../../../features/content/content.action.js";
 import type { ContentRepository } from "../../../features/content/content.repository.js";
-import type { ContentService } from "../../../features/content/content.service.js";
 import type { CalculatorFactory } from "../../../features/duplicate-content/calculator/calculator.factory.js";
 import type { ContentHashRepository } from "../../../features/duplicate-content/content.hash.repository.js";
 import type { DuplicateContentAction } from "../../../features/duplicate-content/duplicate.content.action.js";
@@ -73,7 +72,6 @@ export const TOKENS = {
 	CALCULATOR_FACTORY: new InjectionToken<CalculatorFactory>(
 		"CalculatorFactory",
 	),
-	CONTENT_SERVICE: new InjectionToken<ContentService>("ContentService"),
 	VIDEO_SERVICE: new InjectionToken<VideoService>("VideoService"),
 	TAG_SUGGESTION_SERVICE: new InjectionToken<TagSuggestionService>(
 		"TagSuggestionService",
