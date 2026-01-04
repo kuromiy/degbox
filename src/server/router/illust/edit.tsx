@@ -1,5 +1,6 @@
 import { csrf } from "hono/csrf";
 import { z } from "zod";
+import { asContentId } from "../../../../features/content/content.model.js";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
 import { Tag } from "../../../../features/tag/tag.model.js";
 import { TOKENS } from "../../../main/di/token.js";
@@ -126,7 +127,7 @@ app.post(
 
 							if (type === "existing") {
 								// 既存コンテンツ
-								const content = existingContentMap.get(id);
+								const content = existingContentMap.get(asContentId(id));
 								if (!content) {
 									throw new Error(`Existing content not found: ${id}`);
 								}

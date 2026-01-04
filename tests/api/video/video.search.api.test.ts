@@ -44,14 +44,16 @@ describe("ビデオ検索API", () => {
 		await database.insert(TAGS).values({ id: "2", name: "tag002" });
 
 		// コンテンツ
+		const contentId1 = "11111111-1111-1111-1111-111111111111";
+		const contentId2 = "22222222-2222-2222-2222-222222222222";
 		await database.insert(CONTENTS).values({
-			id: "1",
+			id: contentId1,
 			path: "contents/video",
 			name: "content001",
 			type: "video",
 		});
 		await database.insert(CONTENTS).values({
-			id: "2",
+			id: contentId2,
 			path: "contents/video",
 			name: "content002",
 			type: "video",
@@ -69,10 +71,10 @@ describe("ビデオ検索API", () => {
 		// ビデオコンテンツ
 		await database
 			.insert(VIDEOS_CONTENTS)
-			.values({ videoId: "1", contentId: "1" });
+			.values({ videoId: "1", contentId: contentId1 });
 		await database
 			.insert(VIDEOS_CONTENTS)
-			.values({ videoId: "2", contentId: "2" });
+			.values({ videoId: "2", contentId: contentId2 });
 
 		// 準備
 		const mockEvent = createTestIpcMainInvokeEvent();
@@ -109,7 +111,7 @@ describe("ビデオ検索API", () => {
 		assert.ok(video1.tags.some((t) => t.id === "2" && t.name === "tag002"));
 		assert.equal(video1.contents.length, 1);
 		assert.ok(video1.contents[0], "ビデオ1のコンテンツが存在すること");
-		assert.equal(video1.contents[0]?.content.id, "1");
+		assert.equal(video1.contents[0]?.content.id, contentId1);
 		assert.equal(video1.contents[0]?.content.name, "content001");
 		assert.equal(video1.contents[0]?.content.path, "contents/video");
 
@@ -124,7 +126,7 @@ describe("ビデオ検索API", () => {
 		assert.equal(video2.tags[0]?.name, "tag001");
 		assert.equal(video2.contents.length, 1);
 		assert.ok(video2.contents[0], "ビデオ2のコンテンツが存在すること");
-		assert.equal(video2.contents[0]?.content.id, "2");
+		assert.equal(video2.contents[0]?.content.id, contentId2);
 		assert.equal(video2.contents[0]?.content.name, "content002");
 		assert.equal(video2.contents[0]?.content.path, "contents/video");
 	});

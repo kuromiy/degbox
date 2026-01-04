@@ -16,9 +16,6 @@ export class ContentAction {
 	async register(path: string) {
 		const id = await this.repository.generateId();
 
-		// ハッシュ計算
-		// const hash = await this.service.calcHash(path);
-
 		// ファイル移動（IDを使用）
 		const destPath = await this.service.moveToDestination(path, id);
 
@@ -32,7 +29,6 @@ export class ContentAction {
 			path: dirPath,
 			name: fileName,
 			type: detectContentType(fileName),
-			// hash,
 		};
 		const registered = await this.repository.save(content);
 

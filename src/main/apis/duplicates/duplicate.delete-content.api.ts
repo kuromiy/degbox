@@ -71,7 +71,7 @@ export async function deleteContent(
 
 	// 3. 物理ファイル削除（トランザクション成功後に実行）
 	try {
-		await contentService.deleteContent(content.path, content.name);
+		await contentService.deleteContent(content);
 	} catch (error) {
 		// 物理ファイル削除に失敗してもDBは既にコミット済み
 		// ログに記録して続行（孤立ファイルとして残る可能性がある）

@@ -48,8 +48,9 @@ describe("ビデオ詳細API", () => {
 		await database.insert(TAGS).values({ id: "2", name: "tag002" });
 
 		// コンテンツ
+		const contentId = "11111111-1111-1111-1111-111111111111";
 		await database.insert(CONTENTS).values({
-			id: "1",
+			id: contentId,
 			path: "contents/video",
 			name: "content001",
 			type: "video",
@@ -66,7 +67,7 @@ describe("ビデオ詳細API", () => {
 		// ビデオコンテンツ
 		await database
 			.insert(VIDEOS_CONTENTS)
-			.values({ videoId: videoId, contentId: "1" });
+			.values({ videoId: videoId, contentId: contentId });
 
 		// 準備
 		const mockEvent = createTestIpcMainInvokeEvent();
@@ -93,7 +94,7 @@ describe("ビデオ詳細API", () => {
 		// コンテンツの検証
 		assert.equal(video.contents.length, 1);
 		assert.ok(video.contents[0], "ビデオのコンテンツが存在すること");
-		assert.equal(video.contents[0]?.content.id, "1");
+		assert.equal(video.contents[0]?.content.id, contentId);
 		assert.equal(video.contents[0]?.content.name, "content001");
 		assert.equal(video.contents[0]?.content.path, "contents/video");
 	});

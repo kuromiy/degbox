@@ -120,7 +120,7 @@ export class IllustAction {
 			// content.pathはURLエンコードされている可能性があるため、
 			// 実際のファイルパスとファイル名を使用
 			this.logger.info("illust content", { content });
-			await this.contentService.deleteContent(content.path, content.name);
+			await this.contentService.deleteContent(content);
 		}
 
 		// データベースから削除

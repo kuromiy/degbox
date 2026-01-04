@@ -127,7 +127,7 @@ export const depend: DependencyEntry[] = [
 			new ContentServiceImpl(
 				c.get(TOKENS.LOGGER),
 				c.get(TOKENS.FILE_SYSTEM),
-				c.get(TOKENS.PROJECT_CONTEXT).getPath(),
+				c.get(TOKENS.PROJECT_CONTEXT),
 			),
 	},
 	{

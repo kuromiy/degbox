@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { asc, countDistinct, desc, eq, inArray, like } from "drizzle-orm";
 import type { Logger } from "winston";
+import { asContentId } from "../content/content.model.js";
 import {
 	AUTHORS,
 	CONTENTS,
@@ -292,7 +293,10 @@ export class IllustDataSource implements IllustRepository {
 			id: illustId,
 			tags: tags.map((t) => t.tags),
 			contents: contents.map((c) => ({
-				content: c.contents,
+				content: {
+					...c.contents,
+					id: asContentId(c.contents.id),
+				},
 				order: c.illusts_contents.order,
 			})),
 			authors: authors.map((a) => ({

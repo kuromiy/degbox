@@ -1,7 +1,7 @@
-import type { Content } from "./content.model.js";
+import type { Content, ContentId } from "./content.model.js";
 
 export interface ContentRepository {
-	generateId(): Promise<string>;
+	generateId(): Promise<ContentId>;
 	save(content: Content): Promise<Content>;
 	findById(id: string): Promise<Content | null>;
 
