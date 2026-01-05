@@ -4,7 +4,8 @@ import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
 export const updateAppSettingSchema = z.object({
-	ffmpegPath: z.string(),
+	ffmpegPath: z.string().optional(),
+	ffprobePath: z.string().optional(),
 });
 export type updateAppSettingRequest = z.infer<typeof updateAppSettingSchema>;
 
@@ -25,9 +26,10 @@ export async function updateAppSetting(
 		throw new Error("Invalid Request");
 	}
 
-	const { ffmpegPath } = valid.data;
+	const { ffmpegPath, ffprobePath } = valid.data;
 	const value: UserAppSetting = {
 		ffmpeg: ffmpegPath,
+		ffprobe: ffprobePath,
 	};
 	await repository.save(value);
 	return value;

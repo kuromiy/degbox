@@ -180,7 +180,10 @@ export class FetchClient implements ServiceIF {
 		return failure(new Error("getAppSetting is not allowed in FetchClient"));
 	}
 
-	async updateAppSetting(_ffmpegPath: string) {
+	async updateAppSetting(
+		_ffmpegPath: string | undefined,
+		_ffprobePath: string | undefined,
+	) {
 		return failure(new Error("updateAppSetting is not allowed in FetchClient"));
 	}
 
@@ -226,5 +229,9 @@ export class FetchClient implements ServiceIF {
 
 	async deleteContent(_groupId: string, _contentId: string) {
 		return failure(new Error("deleteContent is not allowed in FetchClient"));
+	}
+
+	async selectFfmpegBin() {
+		return failure(new Error("selectFfmpegBin is not allowed in FetchClient"));
 	}
 }

@@ -5,6 +5,7 @@ import { success, failure } from "electron-flow";
 import { customErrorHandler } from "../errorHandler.js";
 
 import { getAppSetting } from "../apis/appsettings/app.setting.get.api.js";
+import { selectFfmpegBin } from "../apis/appsettings/app.setting.selectbin.api.js";
 import { updateAppSetting } from "../apis/appsettings/app.setting.update.api.js";
 import { deleteAuthor, deleteAuthorValidator } from "../apis/authors/author.delete.api.js";
 import { getAuthorDetail, getAuthorDetailValidator } from "../apis/authors/author.detail.api.js";
@@ -38,6 +39,16 @@ export const autoGenerateHandlers = {
         return async (event: IpcMainInvokeEvent, _: unknown) => {
             try {
                 const result = await getAppSetting({ ...ctx, event });
+                return success(result);
+            } catch (e) {
+                return customErrorHandler(e, { ...ctx, event });
+            }
+        };
+    },
+    "selectFfmpegBin": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, _: unknown) => {
+            try {
+                const result = await selectFfmpegBin({ ...ctx, event });
                 return success(result);
             } catch (e) {
                 return customErrorHandler(e, { ...ctx, event });

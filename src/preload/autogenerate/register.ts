@@ -3,7 +3,8 @@ import { ipcRenderer } from "electron";
 
 export default {
     getAppSetting: () => ipcRenderer.invoke("getAppSetting", {  }),
-    updateAppSetting: (ffmpegPath: string) => ipcRenderer.invoke("updateAppSetting", { ffmpegPath }),
+    selectFfmpegBin: () => ipcRenderer.invoke("selectFfmpegBin", {  }),
+    updateAppSetting: (ffmpegPath: string | undefined, ffprobePath: string | undefined) => ipcRenderer.invoke("updateAppSetting", { ffmpegPath, ffprobePath }),
     deleteAuthor: (id: string) => ipcRenderer.invoke("deleteAuthor", { id }),
     getAuthorDetail: (authorId: string, videoPage: number, videoSize: number) => ipcRenderer.invoke("getAuthorDetail", { authorId, videoPage, videoSize }),
     registerAuthor: (name: string, urls: string) => ipcRenderer.invoke("registerAuthor", { name, urls }),
