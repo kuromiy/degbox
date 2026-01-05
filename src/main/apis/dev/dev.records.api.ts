@@ -80,33 +80,52 @@ export async function devRecords(
 	// カラム情報取得
 	// 注: PRAGMA table_infoではテーブル名をパラメータ化できないため、
 	// バリデーション済みのテーブル名をsql.rawで埋め込む
-	const columnsResult = await db.run(
-		sql`PRAGMA table_info(${sql.raw(tableName)})`,
-	);
-	const columns = columnsResult.rows.map((row) => ({
-		cid: row.cid as number,
-		name: row.name as string,
-		type: row.type as string,
-		notnull: row.notnull as number,
-		dflt_value: row.dflt_value as string | null,
-		pk: row.pk as number,
-	}));
+	let columns: ColumnInfo[];
+	try {
+		const columnsResult = await db.run(
+			sql`PRAGMA table_info(${sql.raw(tableName)})`,
+		);
+		columns = columnsResult.rows.map((row) => ({
+			cid: row.cid as number,
+			name: row.name as string,
+			type: row.type as string,
+			notnull: row.notnull as number,
+			dflt_value: row.dflt_value as string | null,
+			pk: row.pk as number,
+		}));
+	} catch (error) {
+		logger.error("Failed to get column info", { tableName, error });
+		throw new Error(`Failed to get column info for table: ${tableName}`);
+	}
 
 	// 総レコード数取得
 	// 注: FROM句のテーブル名は識別子なのでパラメータ化できない
-	const countResult = await db.run(
-		sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)}`,
-	);
-	const total = (countResult.rows[0]?.count as number) ?? 0;
+	let total: number;
+	try {
+		const countResult = await db.run(
+			sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)}`,
+		);
+		total = (countResult.rows[0]?.count as number) ?? 0;
+	} catch (error) {
+		logger.error("Failed to get record count", { tableName, error });
+		throw new Error(`Failed to get record count for table: ${tableName}`);
+	}
 
 	// レコード取得（ページネーション）
 	const offset = (page - 1) * limit;
-	const recordsResult = await db.run(
-		sql`SELECT * FROM ${sql.raw(tableName)} LIMIT ${limit} OFFSET ${offset}`,
-	);
-	const records = recordsResult.rows.map(
-		(row) => Object.fromEntries(Object.entries(row)) as Record<string, unknown>,
-	);
+	let records: Record<string, unknown>[];
+	try {
+		const recordsResult = await db.run(
+			sql`SELECT * FROM ${sql.raw(tableName)} LIMIT ${limit} OFFSET ${offset}`,
+		);
+		records = recordsResult.rows.map(
+			(row) =>
+				Object.fromEntries(Object.entries(row)) as Record<string, unknown>,
+		);
+	} catch (error) {
+		logger.error("Failed to get records", { tableName, page, limit, error });
+		throw new Error(`Failed to get records for table: ${tableName}`);
+	}
 
 	const totalPages = Math.ceil(total / limit);
 
