@@ -131,6 +131,116 @@ export class VideoServiceImpl implements VideoService {
 				.catch(reject);
 		});
 	}
+	getDuration(videoPath: string): Promise<number> {
+		return new Promise((resolve, reject) => {
+			this.userAppSettingRepository
+				.get()
+				.then((value) => {
+					const ffprobePath = value.ffprobe || "ffprobe";
+					const process = spawn(ffprobePath, [
+						"-v",
+						"error",
+						"-show_entries",
+						"format=duration",
+						"-of",
+						"default=noprint_wrappers=1:nokey=1",
+						videoPath,
+					]);
+					let output = "";
+					process.stdout.on("data", (data) => {
+						output += data.toString();
+					});
+					process.stderr.on("data", (data) => {
+						this.logger.debug(`getDuration stderr: ${data}`);
+					});
+					process.on("error", (err: NodeJS.ErrnoException) => {
+						this.logger.error(`getDuration process error: ${err.message}`);
+						if (err.code === "ENOENT") {
+							reject(
+								new Error(
+									"ffprobeが見つかりません。PATHに追加するか、設定画面でパスを指定してください。",
+								),
+							);
+						} else {
+							reject(err);
+						}
+					});
+					process.once("close", (code, signal) => {
+						if (code === 0) {
+							const duration = Number.parseFloat(output.trim());
+							if (Number.isNaN(duration)) {
+								reject(new Error("動画の長さを取得できませんでした"));
+							} else {
+								this.logger.debug(`getDuration: ${duration}s`);
+								resolve(duration);
+							}
+						} else {
+							this.logger.error(
+								`getDuration failed with code: ${code}, signal: ${signal}`,
+							);
+							reject(
+								new Error(
+									`Process exited with code: ${code}, signal: ${signal}`,
+								),
+							);
+						}
+					});
+				})
+				.catch(reject);
+		});
+	}
+	extractFrame(
+		videoPath: string,
+		timestamp: number,
+		outputPath: string,
+	): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this.userAppSettingRepository
+				.get()
+				.then((value) => {
+					const ffmpegPath = value.ffmpeg || "ffmpeg";
+					const process = spawn(ffmpegPath, [
+						"-y",
+						"-ss",
+						timestamp.toString(),
+						"-i",
+						videoPath,
+						"-frames:v",
+						"1",
+						"-q:v",
+						"2",
+						outputPath,
+					]);
+					process.stderr.on("data", (data) => {
+						this.logger.debug(`extractFrame stderr: ${data}`);
+					});
+					process.on("error", (err: NodeJS.ErrnoException) => {
+						this.logger.error(`extractFrame process error: ${err.message}`);
+						if (err.code === "ENOENT") {
+							reject(createFfmpegNotFoundError());
+						} else {
+							reject(err);
+						}
+					});
+					process.once("close", (code, signal) => {
+						if (code === 0) {
+							this.logger.debug(`extractFrame completed: ${outputPath}`);
+							resolve();
+						} else {
+							this.logger.error(
+								`extractFrame failed with code: ${code}, signal: ${signal}`,
+							);
+							reject(
+								new Error(
+									`Process exited with code: ${code}, signal: ${signal}`,
+								),
+							);
+						}
+					});
+				})
+				.catch(reject);
+		});
+	}
 	async generateHls(
 		inputPath: string,
 		outputTsPath: string,

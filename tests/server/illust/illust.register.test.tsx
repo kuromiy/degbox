@@ -21,6 +21,7 @@ import {
 	createTestDatabase,
 	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
+import { MockUserAppSettingRepository } from "../../helpers/mockUserAppSettingRepository.js";
 import { normalizeHtml } from "../../helpers/normalizeHtml.js";
 import { testLogger } from "../../helpers/testlogger.js";
 
@@ -48,6 +49,10 @@ describe("イラスト登録画面", () => {
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 		const app = createServer({ container, fileRoot: process.cwd() });
 
@@ -83,6 +88,10 @@ describe("イラスト登録画面", () => {
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 		const app = createServer({ container, fileRoot: process.cwd() });
 
@@ -231,6 +240,10 @@ describe("イラスト登録画面", () => {
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 		const app = createServer({ container, fileRoot: process.cwd() });
 

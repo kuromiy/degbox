@@ -1,7 +1,6 @@
 import { strict as assert } from "node:assert";
 import { rm } from "node:fs/promises";
 import { before, describe, it } from "node:test";
-import type { UserAppSettingRepository } from "../../../features/appsetting/user.app.setting.repository.js";
 import { Container } from "../../../features/shared/container/index.js";
 import type { UnmanagedContent } from "../../../features/unmanaged-content/unmanagedContent.model.js";
 import { registerVideo } from "../../../src/main/apis/videos/video.register.api.js";
@@ -12,16 +11,10 @@ import {
 	createTestDatabase,
 	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
+import { MockUserAppSettingRepository } from "../../helpers/mockUserAppSettingRepository.js";
 import { testLogger } from "../../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "../testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "../testjobqueue.js";
-
-class MockUserAppSettingRepository implements UserAppSettingRepository {
-	async get() {
-		return { ffmpeg: "" };
-	}
-	async save() {}
-}
 
 const CATEGORY_NAME = "video-register-api";
 

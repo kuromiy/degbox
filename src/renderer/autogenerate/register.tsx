@@ -1,5 +1,6 @@
 // auto generated
 import type { getAppSetting } from "../../main/apis/appsettings/app.setting.get.api.js";
+import type { selectFfmpegBin } from "../../main/apis/appsettings/app.setting.selectbin.api.js";
 import type { updateAppSetting } from "../../main/apis/appsettings/app.setting.update.api.js";
 import type { deleteAuthor } from "../../main/apis/authors/author.delete.api.js";
 import type { getAuthorDetail } from "../../main/apis/authors/author.detail.api.js";
@@ -41,7 +42,8 @@ declare global {
     interface Window {
         api: {
             getAppSetting: () => Promise<Result<ReturnTypeUnwrapped<typeof getAppSetting>, unknown>>;
-            updateAppSetting: (ffmpegPath: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, unknown>>;
+            selectFfmpegBin: () => Promise<Result<ReturnTypeUnwrapped<typeof selectFfmpegBin>, unknown>>;
+            updateAppSetting: (ffmpegPath: string | undefined, ffprobePath: string | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, unknown>>;
             deleteAuthor: (id: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteAuthor>, unknown>>;
             getAuthorDetail: (authorId: string, videoPage: number, videoSize: number) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, unknown>>;
             registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, unknown>>;
@@ -75,7 +77,8 @@ declare global {
 // サービスインターフェース
 export interface ServiceIF {
     getAppSetting: () => Promise<Result<ReturnTypeUnwrapped<typeof getAppSetting>, unknown>>;
-    updateAppSetting: (ffmpegPath: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, unknown>>;
+    selectFfmpegBin: () => Promise<Result<ReturnTypeUnwrapped<typeof selectFfmpegBin>, unknown>>;
+    updateAppSetting: (ffmpegPath: string | undefined, ffprobePath: string | undefined) => Promise<Result<ReturnTypeUnwrapped<typeof updateAppSetting>, unknown>>;
     deleteAuthor: (id: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteAuthor>, unknown>>;
     getAuthorDetail: (authorId: string, videoPage: number, videoSize: number) => Promise<Result<ReturnTypeUnwrapped<typeof getAuthorDetail>, unknown>>;
     registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, unknown>>;
@@ -110,8 +113,12 @@ export class ApiService implements ServiceIF {
         return window.api.getAppSetting();
     }
 
-    async updateAppSetting(ffmpegPath: string) {
-        return window.api.updateAppSetting(ffmpegPath);
+    async selectFfmpegBin() {
+        return window.api.selectFfmpegBin();
+    }
+
+    async updateAppSetting(ffmpegPath: string | undefined, ffprobePath: string | undefined) {
+        return window.api.updateAppSetting(ffmpegPath, ffprobePath);
     }
 
     async deleteAuthor(id: string) {

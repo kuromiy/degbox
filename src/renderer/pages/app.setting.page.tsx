@@ -1,4 +1,5 @@
 import { isFailure } from "electron-flow/result";
+import { useState } from "react";
 import {
 	type ActionFunctionArgs,
 	redirect,
@@ -33,17 +34,11 @@ export async function loader() {
 export async function action({ request }: ActionFunctionArgs) {
 	const formData = await request.formData();
 	const ffmpegPath = formData.get("ffmpegPath")?.toString();
+	const ffprobePath = formData.get("ffprobePath")?.toString();
 
-	console.log(`ffmpeg: ${ffmpegPath}`);
-	if (!ffmpegPath) {
-		console.log("必須項目が入力されていません");
-		throw new Error("必須項目が入力されていません");
-	}
-
-	const response = await client.updateAppSetting(ffmpegPath);
+	const response = await client.updateAppSetting(ffmpegPath, ffprobePath);
 	if (isFailure(response)) {
 		const error = response.value;
-		console.log(`response error: ${getErrorMessage(error)}`);
 		if (isErrorResponse(error)) {
 			return { error } as ActionError;
 		}
@@ -58,6 +53,9 @@ export default function AppSettingPage() {
 	const actionData = useActionData<ActionError>();
 	const { Form } = useNavigation();
 
+	const [ffmpegPath, setFfmpegPath] = useState(data.ffmpeg ?? "");
+	const [ffprobePath, setFfprobePath] = useState(data.ffprobe ?? "");
+
 	const fieldErrors = isActionError(actionData)
 		? actionData.error.type === "valid"
 			? actionData.error.messages
@@ -69,6 +67,24 @@ export default function AppSettingPage() {
 			? actionData.error.messages
 			: undefined;
 
+	const handleSelectBinFolder = async () => {
+		const response = await client.selectFfmpegBin();
+		if (isFailure(response)) {
+			console.error("Failed to select bin folder:", response.value);
+			return;
+		}
+		const result = response.value;
+		if (result) {
+			setFfmpegPath(result.ffmpegPath);
+			setFfprobePath(result.ffprobePath);
+		}
+	};
+
+	const handleClear = () => {
+		setFfmpegPath("");
+		setFfprobePath("");
+	};
+
 	return (
 		<main className="container mx-auto flex flex-col justify-center px-2 pt-10">
 			<h1>設定画面</h1>
@@ -77,14 +93,36 @@ export default function AppSettingPage() {
 					{generalError}
 				</div>
 			)}
+			<div className="mb-4">
+				<NeutralButton type="button" onClick={handleSelectBinFolder}>
+					binフォルダを選択
+				</NeutralButton>
+			</div>
 			<Form className="flex flex-col gap-4" method="POST">
-				<h1>FFMPEG パス</h1>
 				<div>
-					<Input name="ffmpegPath" type="text" defaultValue={data.ffmpeg} />
+					<h2>FFMPEG パス</h2>
+					<Input
+						name="ffmpegPath"
+						type="text"
+						value={ffmpegPath}
+						onChange={(e) => setFfmpegPath(e.target.value)}
+					/>
 					<FieldError errors={fieldErrors?.ffmpegPath} />
 				</div>
+				<div>
+					<h2>FFPROBE パス</h2>
+					<Input
+						name="ffprobePath"
+						type="text"
+						value={ffprobePath}
+						onChange={(e) => setFfprobePath(e.target.value)}
+					/>
+					<FieldError errors={fieldErrors?.ffprobePath} />
+				</div>
 				<div className="flex gap-4">
-					<NeutralButton type="reset">クリア</NeutralButton>
+					<NeutralButton type="button" onClick={handleClear}>
+						クリア
+					</NeutralButton>
 					<PositiveButton type="submit">更新</PositiveButton>
 				</div>
 			</Form>

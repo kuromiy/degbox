@@ -118,6 +118,8 @@ export const depend: DependencyEntry[] = [
 			new CalculatorFactory(
 				c.get(TOKENS.HASH_SERVICE),
 				c.get(TOKENS.PROJECT_CONTEXT),
+				c.get(TOKENS.VIDEO_SERVICE),
+				c.get(TOKENS.FILE_SYSTEM),
 			),
 	},
 	{

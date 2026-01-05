@@ -11,6 +11,7 @@ import {
 	createTestDatabase,
 	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
+import { MockUserAppSettingRepository } from "../../helpers/mockUserAppSettingRepository.js";
 import { testLogger } from "../../helpers/testlogger.js";
 
 const CATEGORY_NAME = "illust-delete-server";
@@ -37,6 +38,10 @@ describe("イラスト削除（サーバー）", () => {
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 
 		// 事前準備: イラストを登録
@@ -102,6 +107,10 @@ describe("イラスト削除（サーバー）", () => {
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
 		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
+		);
 
 		const app = createServer({ container, fileRoot: process.cwd() });
 
@@ -144,6 +153,10 @@ describe("イラスト削除（サーバー）", () => {
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 
 		const app = createServer({ container, fileRoot: process.cwd() });

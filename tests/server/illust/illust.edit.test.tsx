@@ -21,6 +21,7 @@ import {
 	createTestDatabase,
 	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
+import { MockUserAppSettingRepository } from "../../helpers/mockUserAppSettingRepository.js";
 import { normalizeHtml } from "../../helpers/normalizeHtml.js";
 import { testLogger } from "../../helpers/testlogger.js";
 
@@ -48,6 +49,10 @@ describe("イラスト編集画面", () => {
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 
 		// 事前準備: イラストを登録
@@ -104,6 +109,10 @@ describe("イラスト編集画面", () => {
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 
 		// 事前準備: イラストを登録
@@ -202,6 +211,10 @@ describe("イラスト編集画面", () => {
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
 		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
+		);
 
 		// 事前準備: 複数の画像を持つイラストを登録
 		const illustAction = container.get(TOKENS.ILLUST_ACTION);
@@ -294,6 +307,10 @@ describe("イラスト編集画面", () => {
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 
 		// 事前準備: イラストを登録
@@ -390,6 +407,10 @@ describe("イラスト編集画面", () => {
 		container?.register(TOKENS.JOB_QUEUE, () => testJobQueue);
 		container?.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container?.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 
 		// 事前準備: 作者を登録
