@@ -19,7 +19,13 @@ export class ImageHashCalculator implements HashCalculator {
 			value: await this.hashService.calcSha256(filePath),
 			contentId: content.id,
 		};
+		const result2: ContentHash = {
+			id: randomUUID(),
+			type: "dhash",
+			value: await this.hashService.calcDhash(filePath),
+			contentId: content.id,
+		};
 
-		return [result];
+		return [result, result2];
 	}
 }
