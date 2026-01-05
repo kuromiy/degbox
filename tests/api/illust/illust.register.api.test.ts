@@ -16,6 +16,7 @@ import {
 	createTestDatabase,
 	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
+import { MockUserAppSettingRepository } from "../../helpers/mockUserAppSettingRepository.js";
 import { testLogger } from "../../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "../testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "../testjobqueue.js";
@@ -59,6 +60,10 @@ describe("イラスト登録API", () => {
 		container.register(TOKENS.CACHE, () => cache);
 		container.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 
 		// 準備
@@ -156,6 +161,10 @@ describe("イラスト登録API", () => {
 		container.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
 		);
+		container.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
+		);
 
 		// コンテナから作者リポジトリを取得して作者を登録
 		const authorRepository = container.get(TOKENS.AUTHOR_REPOSITORY);
@@ -229,6 +238,10 @@ describe("イラスト登録API", () => {
 		container.register(TOKENS.CACHE, () => cache);
 		container.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 
 		// 不正なリクエスト（resourceIdsが空配列）

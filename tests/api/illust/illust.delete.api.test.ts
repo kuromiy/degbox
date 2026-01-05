@@ -13,6 +13,7 @@ import {
 	createTestDatabase,
 	createTestProjectContext,
 } from "../../helpers/createTestDatabase.js";
+import { MockUserAppSettingRepository } from "../../helpers/mockUserAppSettingRepository.js";
 import { testLogger } from "../../helpers/testlogger.js";
 import { createTestIpcMainInvokeEvent } from "../testIpcMainInvokeEvent.js";
 import { TestJobQueue } from "../testjobqueue.js";
@@ -52,6 +53,10 @@ describe("イラスト削除API", () => {
 		container.register(TOKENS.CACHE, () => cache);
 		container.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 
 		// IpcMainInvokeEventのモックを作成
@@ -111,6 +116,10 @@ describe("イラスト削除API", () => {
 		container.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
 		);
+		container.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
+		);
 
 		// IpcMainInvokeEventのモックを作成
 		const mockEvent = createTestIpcMainInvokeEvent();
@@ -162,6 +171,10 @@ describe("イラスト削除API", () => {
 		container.register(TOKENS.CACHE, () => cache);
 		container.register(TOKENS.PROJECT_CONTEXT, () =>
 			createTestProjectContext(),
+		);
+		container.register(
+			TOKENS.USER_APPSETTING_REPOSITORY,
+			() => new MockUserAppSettingRepository(),
 		);
 
 		// IpcMainInvokeEventのモックを作成
