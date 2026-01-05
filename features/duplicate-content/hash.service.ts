@@ -59,6 +59,11 @@ export class HashService {
 	 * @returns 類似度（0-100%）
 	 */
 	compareByHammingDistance(hash1: string, hash2: string): number {
+		if (hash1.length !== hash2.length) {
+			throw new Error(
+				`Hash length mismatch: hash1 has ${hash1.length} characters, hash2 has ${hash2.length} characters`,
+			);
+		}
 		const distance = this.hammingDistance(hash1, hash2);
 		// 16進数1文字 = 4ビット
 		const bits = hash1.length * 4;

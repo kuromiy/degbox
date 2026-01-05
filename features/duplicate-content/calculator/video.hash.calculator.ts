@@ -43,24 +43,37 @@ export class VideoHashCalculator implements HashCalculator {
 		const tempDir = join(this.projectPath, "temp", randomUUID());
 		await this.fs.createDirectory(tempDir);
 
-		for (const timestamp of positions) {
-			const framePath = join(tempDir, `frame_${timestamp}.jpg`);
-			await this.videoService.extractFrame(filePath, timestamp, framePath);
+		let processingError: unknown;
+		try {
+			for (const timestamp of positions) {
+				const framePath = join(tempDir, `frame_${timestamp}.jpg`);
+				await this.videoService.extractFrame(filePath, timestamp, framePath);
 
-			results.push({
-				id: randomUUID(),
-				type: "dhash",
-				value: await this.hashService.calcDhash(framePath),
-				contentId: content.id,
-				metadata: {
-					source: "scene",
-					timestamp,
-				},
-			});
+				results.push({
+					id: randomUUID(),
+					type: "dhash",
+					value: await this.hashService.calcDhash(framePath),
+					contentId: content.id,
+					metadata: {
+						source: "scene",
+						timestamp,
+					},
+				});
+			}
+		} catch (error) {
+			processingError = error;
+		} finally {
+			// 一時ディレクトリ削除（エラー時も必ず実行）
+			try {
+				await this.fs.deleteDirectory(tempDir);
+			} catch (deleteError) {
+				console.error("Failed to delete temp directory:", tempDir, deleteError);
+			}
 		}
 
-		// 一時ディレクトリ削除
-		await this.fs.deleteDirectory(tempDir);
+		if (processingError) {
+			throw processingError;
+		}
 
 		return results;
 	}

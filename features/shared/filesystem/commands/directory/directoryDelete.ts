@@ -45,15 +45,15 @@ async function copyDirectory(src: string, dest: string) {
 		const relativePath = relative(src, file.parentPath);
 		const destPath =
 			relativePath === ""
-				? `${dest}/${file.name}`
-				: `${dest}/${relativePath}/${file.name}`;
+				? join(dest, file.name)
+				: join(dest, relativePath, file.name);
 		if (file.isDirectory()) {
 			await mkdir(destPath, { recursive: true });
 		} else {
 			// ファイルの親ディレクトリが存在することを保証
 			const destDir = dirname(destPath);
 			await mkdir(destDir, { recursive: true });
-			const srcPath = `${file.parentPath}/${file.name}`;
+			const srcPath = join(file.parentPath, file.name);
 			await copyFile(srcPath, destPath);
 		}
 	}

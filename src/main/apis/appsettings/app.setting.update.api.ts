@@ -27,9 +27,12 @@ export async function updateAppSetting(
 	}
 
 	const { ffmpegPath, ffprobePath } = valid.data;
+
+	// Get existing settings and merge with new values (only update defined fields)
+	const existing = await repository.get();
 	const value: UserAppSetting = {
-		ffmpeg: ffmpegPath,
-		ffprobe: ffprobePath,
+		ffmpeg: ffmpegPath !== undefined ? ffmpegPath : existing.ffmpeg,
+		ffprobe: ffprobePath !== undefined ? ffprobePath : existing.ffprobe,
 	};
 	await repository.save(value);
 	return value;

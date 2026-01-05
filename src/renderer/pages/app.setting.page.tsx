@@ -36,12 +36,9 @@ export async function action({ request }: ActionFunctionArgs) {
 	const ffmpegPath = formData.get("ffmpegPath")?.toString();
 	const ffprobePath = formData.get("ffprobePath")?.toString();
 
-	console.log(`ffmpeg: ${ffmpegPath}, ffprobe: ${ffprobePath}`);
-
 	const response = await client.updateAppSetting(ffmpegPath, ffprobePath);
 	if (isFailure(response)) {
 		const error = response.value;
-		console.log(`response error: ${getErrorMessage(error)}`);
 		if (isErrorResponse(error)) {
 			return { error } as ActionError;
 		}
