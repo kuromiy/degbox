@@ -34,7 +34,7 @@ export function RecordTable({ client, tableName }: Props) {
 			prevTableNameRef.current = tableName;
 			setPage(1);
 		}
-	});
+	}, [tableName]);
 
 	useEffect(() => {
 		const fetchRecords = async () => {

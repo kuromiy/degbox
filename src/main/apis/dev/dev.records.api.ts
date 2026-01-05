@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { z } from "zod";
 import { zodValidator } from "../../../../features/shared/validation/index.js";
 import type { Context } from "../../context.js";
@@ -68,7 +69,7 @@ export async function devRecords(
 
 	// テーブルが存在するかチェック
 	const tableExistsResult = await db.run(
-		`SELECT name FROM sqlite_master WHERE type='table' AND name = '${tableName}'`,
+		sql`SELECT name FROM sqlite_master WHERE type='table' AND name = ${tableName}`,
 	);
 
 	if (tableExistsResult.rows.length === 0) {
@@ -77,7 +78,11 @@ export async function devRecords(
 	}
 
 	// カラム情報取得
-	const columnsResult = await db.run(`PRAGMA table_info(${tableName})`);
+	// 注: PRAGMA table_infoではテーブル名をパラメータ化できないため、
+	// バリデーション済みのテーブル名をsql.rawで埋め込む
+	const columnsResult = await db.run(
+		sql`PRAGMA table_info(${sql.raw(tableName)})`,
+	);
 	const columns = columnsResult.rows.map((row) => ({
 		cid: row.cid as number,
 		name: row.name as string,
@@ -88,15 +93,16 @@ export async function devRecords(
 	}));
 
 	// 総レコード数取得
+	// 注: FROM句のテーブル名は識別子なのでパラメータ化できない
 	const countResult = await db.run(
-		`SELECT COUNT(*) as count FROM ${tableName}`,
+		sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)}`,
 	);
 	const total = (countResult.rows[0]?.count as number) ?? 0;
 
 	// レコード取得（ページネーション）
 	const offset = (page - 1) * limit;
 	const recordsResult = await db.run(
-		`SELECT * FROM ${tableName} LIMIT ${limit} OFFSET ${offset}`,
+		sql`SELECT * FROM ${sql.raw(tableName)} LIMIT ${limit} OFFSET ${offset}`,
 	);
 	const records = recordsResult.rows.map(
 		(row) => Object.fromEntries(Object.entries(row)) as Record<string, unknown>,

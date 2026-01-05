@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import type { Context } from "../../context.js";
 import { TOKENS } from "../../di/token.js";
 
@@ -26,7 +27,7 @@ export async function devTables(ctx: Context): Promise<DevTablesResponse> {
 	}
 
 	const result = await db.run(
-		"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name",
+		sql`SELECT name FROM sqlite_master WHERE type='table' ORDER BY name`,
 	);
 
 	return {

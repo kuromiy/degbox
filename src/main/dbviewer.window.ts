@@ -27,7 +27,7 @@ export function openDbViewerWindow(preloadPath: string, isDev: boolean): void {
 	});
 
 	dbViewerWindow.loadURL("http://localhost:5173/dbviewer.html");
-	dbViewerWindow.webContents.openDevTools();
+	// dbViewerWindow.webContents.openDevTools();
 	dbViewerWindow.setMenuBarVisibility(false);
 
 	dbViewerWindow.on("closed", () => {
