@@ -1,17 +1,25 @@
 import type { Logger } from "winston";
 import type { Content } from "../content/content.model.js";
+import type { JobQueue } from "../shared/jobqueue/index.js";
 import type { CalculatorFactory } from "./calculator/calculator.factory.js";
 import type { ContentHash } from "./content.hash.model.js";
 import type { ContentHashRepository } from "./content.hash.repository.js";
 import type { DuplicateGroup } from "./duplicate.content.model.js";
 import type { DuplicateContentRepository } from "./duplicate.content.repository.js";
+import type { SimilarityScanHandler } from "./job/similarity-scan.handler.js";
+import type { ScanQueueRepository } from "./scan-queue.repository.js";
 
 export class DuplicateContentAction {
+	private static readonly BATCH_THRESHOLD = 10;
+
 	constructor(
 		private readonly logger: Logger,
 		private readonly factory: CalculatorFactory,
 		private readonly duplicateContentRepository: DuplicateContentRepository,
 		private readonly contentHashRepository: ContentHashRepository,
+		private readonly scanQueueRepository: ScanQueueRepository,
+		private readonly jobQueue: JobQueue,
+		private readonly similarityScanHandler: SimilarityScanHandler,
 	) {}
 
 	async register(content: Content) {
@@ -23,8 +31,42 @@ export class DuplicateContentAction {
 			await this.contentHashRepository.save(hash);
 
 			// SHA-256は即時で重複グループ更新
-			await this.updateExactGroup(content.id, hash);
+			if (hash.type === "sha256") {
+				await this.updateExactGroup(content.id, hash);
+			}
+
+			// dHashはスキャン待ちキューに追加
+			if (hash.type === "dhash") {
+				await this.scanQueueRepository.add(hash.id);
+				await this.checkAndEnqueueScan();
+			}
 		}
+	}
+
+	private async checkAndEnqueueScan(): Promise<void> {
+		const queueCount = await this.scanQueueRepository.count();
+		if (queueCount >= DuplicateContentAction.BATCH_THRESHOLD) {
+			this.logger.debug("Queue threshold reached, enqueueing similarity scan", {
+				queueCount,
+				threshold: DuplicateContentAction.BATCH_THRESHOLD,
+			});
+			this.jobQueue.enqueue({
+				name: "similarity-scan",
+				input: {},
+				handle: async () => this.similarityScanHandler.execute(),
+				onError: (error) => {
+					this.logger.error("Similarity scan job failed", { error });
+				},
+			});
+		}
+	}
+
+	async runManualScan(): Promise<{ processed: number; groupsCreated: number }> {
+		return this.similarityScanHandler.execute();
+	}
+
+	async getQueueCount(): Promise<number> {
+		return this.scanQueueRepository.count();
 	}
 
 	private async updateExactGroup(contentId: string, hash: ContentHash) {

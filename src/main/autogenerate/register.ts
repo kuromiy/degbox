@@ -19,6 +19,7 @@ import { deleteDuplicateGroup, deleteDuplicateGroupValidator } from "../apis/dup
 import { getDuplicateGroup, getDuplicateGroupValidator } from "../apis/duplicates/duplicate.detail.api.js";
 import { listDuplicateGroups } from "../apis/duplicates/duplicate.list.api.js";
 import { removeItemFromGroup, removeItemFromGroupValidator } from "../apis/duplicates/duplicate.remove-item.api.js";
+import { getQueueCount, runSimilarityScan } from "../apis/duplicates/duplicate.scan.api.js";
 import { deleteIllust, deleteIllustValidator } from "../apis/illusts/illust.delete.api.js";
 import { detailIllust, detailIllustValidator } from "../apis/illusts/illust.detail.api.js";
 import { pickupImage } from "../apis/illusts/illust.pickup.api.js";
@@ -191,6 +192,26 @@ export const autoGenerateHandlers = {
             try {
                 const validatedArgs = removeItemFromGroupValidator(args, { ...ctx, event });
                 const result = await removeItemFromGroup({ ...ctx, event }, validatedArgs);
+                return success(result);
+            } catch (e) {
+                return customErrorHandler(e, { ...ctx, event });
+            }
+        };
+    },
+    "getQueueCount": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, _: unknown) => {
+            try {
+                const result = await getQueueCount({ ...ctx, event });
+                return success(result);
+            } catch (e) {
+                return customErrorHandler(e, { ...ctx, event });
+            }
+        };
+    },
+    "runSimilarityScan": (ctx: Omit<Context, "event">) => {
+        return async (event: IpcMainInvokeEvent, _: unknown) => {
+            try {
+                const result = await runSimilarityScan({ ...ctx, event });
                 return success(result);
             } catch (e) {
                 return customErrorHandler(e, { ...ctx, event });

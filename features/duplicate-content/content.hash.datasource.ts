@@ -44,6 +44,20 @@ export class ContentHashDataSource implements ContentHashRepository {
 		return rows;
 	}
 
+	async findByType(type: string): Promise<ContentHash[]> {
+		const rows = await this.db
+			.select({
+				id: CONTENT_HASHS.id,
+				contentId: CONTENT_HASHS.contentId,
+				type: CONTENT_HASHS.type,
+				value: CONTENT_HASHS.value,
+			})
+			.from(CONTENT_HASHS)
+			.where(eq(CONTENT_HASHS.type, type));
+
+		return rows;
+	}
+
 	async deleteByContentId(contentId: string): Promise<void> {
 		await this.db
 			.delete(CONTENT_HASHS)

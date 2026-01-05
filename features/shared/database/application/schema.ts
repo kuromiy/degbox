@@ -76,6 +76,15 @@ export const DUPLICATE_GROUP_ITEMS = sqliteTable(
 	(table) => [primaryKey({ columns: [table.groupId, table.contentId] })],
 );
 
+// 類似スキャン待ちキュー
+export const SIMILARITY_SCAN_QUEUE = sqliteTable("similarity_scan_queue", {
+	id: text("id").primaryKey(),
+	contentHashId: text("content_hash_id")
+		.notNull()
+		.references(() => CONTENT_HASHS.id, { onDelete: "cascade" }),
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 // 中間テーブル
 export const VIDEOS_TAGS = sqliteTable(
 	"videos_tags",

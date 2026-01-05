@@ -8,6 +8,8 @@ import type { ContentHashRepository } from "../../../features/duplicate-content/
 import type { DuplicateContentAction } from "../../../features/duplicate-content/duplicate.content.action.js";
 import type { DuplicateContentRepository } from "../../../features/duplicate-content/duplicate.content.repository.js";
 import type { HashService } from "../../../features/duplicate-content/hash.service.js";
+import type { SimilarityScanHandler } from "../../../features/duplicate-content/job/similarity-scan.handler.js";
+import type { ScanQueueRepository } from "../../../features/duplicate-content/scan-queue.repository.js";
 import type { IllustAction } from "../../../features/illust/illust.action.js";
 import type { IllustRepository } from "../../../features/illust/illust.repository.js";
 import type { ProjectContext } from "../../../features/project/project.context.js";
@@ -66,6 +68,9 @@ export const TOKENS = {
 	DUPLICATE_CONTENT_REPOSITORY: new InjectionToken<DuplicateContentRepository>(
 		"DuplicateContentRepository",
 	),
+	SCAN_QUEUE_REPOSITORY: new InjectionToken<ScanQueueRepository>(
+		"ScanQueueRepository",
+	),
 
 	// service
 	HASH_SERVICE: new InjectionToken<HashService>("HashService"),
@@ -75,6 +80,9 @@ export const TOKENS = {
 	VIDEO_SERVICE: new InjectionToken<VideoService>("VideoService"),
 	TAG_SUGGESTION_SERVICE: new InjectionToken<TagSuggestionService>(
 		"TagSuggestionService",
+	),
+	SIMILARITY_SCAN_HANDLER: new InjectionToken<SimilarityScanHandler>(
+		"SimilarityScanHandler",
 	),
 
 	// action
