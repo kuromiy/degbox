@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createDatabase } from "../../../../features/shared/database/application/index.js";
 import type { Context } from "../../context.js";
 import { createMainWindow } from "../../createMainWindow.js";
+import { openDbViewerWindow } from "../../dbviewer.window.js";
 import { TOKENS } from "../../di/token.js";
 import { startServer } from "../../startServer.js";
 
@@ -86,4 +87,13 @@ export async function openProject(ctx: Context, request: OpenProjectRequest) {
 	);
 
 	window?.destroy();
+
+	// 開発モード時はDB Viewerウィンドウを自動起動
+	if (appConfig.isDev) {
+		try {
+			openDbViewerWindow(appConfig.preloadPath, appConfig.isDev);
+		} catch (dbViewerErr) {
+			logger.warn("Failed to open DB viewer", { error: dbViewerErr });
+		}
+	}
 }

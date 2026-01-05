@@ -3,7 +3,7 @@ import { createLogger, format, transports } from "winston";
 /**
  * Errorオブジェクトのstackプロパティを展開するカスタムformat
  */
-const errorStackFormat = format((info) => {
+const _errorStackFormat = format((info) => {
 	if (info.error instanceof Error) {
 		const { message, stack, name, cause } = info.error;
 		info.error = {
@@ -16,8 +16,16 @@ const errorStackFormat = format((info) => {
 	return info;
 });
 
+const myFormat = format.printf(({ level, message, timestamp }) => {
+	return `${timestamp} [${level}] ${message}`;
+});
+
 export const logger = createLogger({
-	level: "info",
-	format: format.combine(errorStackFormat(), format.json()),
+	level: "debug",
+	// format: format.combine(
+	// 	errorStackFormat(),
+	// 	format.json(),
+	// ),
+	format: format.combine(format.timestamp(), myFormat),
 	transports: [new transports.Console()],
 });

@@ -7,6 +7,8 @@ import type { getAuthorDetail } from "../../main/apis/authors/author.detail.api.
 import type { registerAuthor } from "../../main/apis/authors/author.register.api.js";
 import type { searchAuthor } from "../../main/apis/authors/author.search.api.js";
 import type { updateAuthor } from "../../main/apis/authors/author.update.api.js";
+import type { devRecords } from "../../main/apis/dev/dev.records.api.js";
+import type { devTables } from "../../main/apis/dev/dev.tables.api.js";
 import type { deleteContent } from "../../main/apis/duplicates/duplicate.delete-content.api.js";
 import type { deleteDuplicateGroup } from "../../main/apis/duplicates/duplicate.delete.api.js";
 import type { getDuplicateGroup } from "../../main/apis/duplicates/duplicate.detail.api.js";
@@ -49,6 +51,8 @@ declare global {
             registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, unknown>>;
             searchAuthor: (name: string | undefined, page: number, size: number) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, unknown>>;
             updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, unknown>>;
+            devRecords: (tableName: string, page: number, limit: number) => Promise<Result<ReturnTypeUnwrapped<typeof devRecords>, unknown>>;
+            devTables: () => Promise<Result<ReturnTypeUnwrapped<typeof devTables>, unknown>>;
             deleteContent: (groupId: string, contentId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteContent>, unknown>>;
             deleteDuplicateGroup: (groupId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteDuplicateGroup>, unknown>>;
             getDuplicateGroup: (groupId: string) => Promise<Result<ReturnTypeUnwrapped<typeof getDuplicateGroup>, unknown>>;
@@ -84,6 +88,8 @@ export interface ServiceIF {
     registerAuthor: (name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof registerAuthor>, unknown>>;
     searchAuthor: (name: string | undefined, page: number, size: number) => Promise<Result<ReturnTypeUnwrapped<typeof searchAuthor>, unknown>>;
     updateAuthor: (id: string, name: string, urls: string) => Promise<Result<ReturnTypeUnwrapped<typeof updateAuthor>, unknown>>;
+    devRecords: (tableName: string, page: number, limit: number) => Promise<Result<ReturnTypeUnwrapped<typeof devRecords>, unknown>>;
+    devTables: () => Promise<Result<ReturnTypeUnwrapped<typeof devTables>, unknown>>;
     deleteContent: (groupId: string, contentId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteContent>, unknown>>;
     deleteDuplicateGroup: (groupId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteDuplicateGroup>, unknown>>;
     getDuplicateGroup: (groupId: string) => Promise<Result<ReturnTypeUnwrapped<typeof getDuplicateGroup>, unknown>>;
@@ -139,6 +145,14 @@ export class ApiService implements ServiceIF {
 
     async updateAuthor(id: string, name: string, urls: string) {
         return window.api.updateAuthor(id, name, urls);
+    }
+
+    async devRecords(tableName: string, page: number, limit: number) {
+        return window.api.devRecords(tableName, page, limit);
+    }
+
+    async devTables() {
+        return window.api.devTables();
     }
 
     async deleteContent(groupId: string, contentId: string) {
