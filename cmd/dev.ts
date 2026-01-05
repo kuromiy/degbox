@@ -65,6 +65,7 @@ const rendererProcess = await createServer({
 			input: {
 				index: "./src/renderer/index.html",
 				"project-select": "./src/renderer/project-select.html",
+				dbviewer: "./src/renderer/dbviewer.html",
 			},
 		},
 	},

@@ -10,6 +10,8 @@ export default {
     registerAuthor: (name: string, urls: string) => ipcRenderer.invoke("registerAuthor", { name, urls }),
     searchAuthor: (name: string | undefined, page: number, size: number) => ipcRenderer.invoke("searchAuthor", { name, page, size }),
     updateAuthor: (id: string, name: string, urls: string) => ipcRenderer.invoke("updateAuthor", { id, name, urls }),
+    devRecords: (tableName: string, page: number, limit: number) => ipcRenderer.invoke("devRecords", { tableName, page, limit }),
+    devTables: () => ipcRenderer.invoke("devTables", {  }),
     deleteContent: (groupId: string, contentId: string) => ipcRenderer.invoke("deleteContent", { groupId, contentId }),
     deleteDuplicateGroup: (groupId: string) => ipcRenderer.invoke("deleteDuplicateGroup", { groupId }),
     getDuplicateGroup: (groupId: string) => ipcRenderer.invoke("getDuplicateGroup", { groupId }),

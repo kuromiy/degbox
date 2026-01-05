@@ -234,4 +234,12 @@ export class FetchClient implements ServiceIF {
 	async selectFfmpegBin() {
 		return failure(new Error("selectFfmpegBin is not allowed in FetchClient"));
 	}
+
+	async devTables() {
+		return failure(new Error("devTables is not allowed in FetchClient"));
+	}
+
+	async devRecords(_tableName: string, _page: number, _limit: number) {
+		return failure(new Error("devRecords is not allowed in FetchClient"));
+	}
 }
