@@ -5,8 +5,13 @@ let dbViewerWindow: BrowserWindow | null = null;
 /**
  * DB Viewerウィンドウを開く（開発モード専用）
  * 既存のウィンドウがあればフォーカスする
+ * @throws 開発モードでない場合にエラーをスロー
  */
-export function openDbViewerWindow(preloadPath: string): void {
+export function openDbViewerWindow(preloadPath: string, isDev: boolean): void {
+	if (!isDev) {
+		throw new Error("openDbViewerWindow is only available in development mode");
+	}
+
 	if (dbViewerWindow && !dbViewerWindow.isDestroyed()) {
 		dbViewerWindow.focus();
 		return;

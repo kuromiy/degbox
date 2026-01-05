@@ -166,7 +166,11 @@ export async function selectProject(ctx: Context) {
 
 		// 開発モード時はDB Viewerウィンドウを自動起動
 		if (appConfig.isDev) {
-			openDbViewerWindow(appConfig.preloadPath);
+			try {
+				openDbViewerWindow(appConfig.preloadPath, appConfig.isDev);
+			} catch (dbViewerErr) {
+				logger.warn("Failed to open DB viewer", { error: dbViewerErr });
+			}
 		}
 	} catch (err) {
 		logger.error("failed to create main window", { error: err });

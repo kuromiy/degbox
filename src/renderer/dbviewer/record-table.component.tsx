@@ -1,5 +1,5 @@
 import { isFailure } from "electron-flow/result";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ServiceIF } from "../autogenerate/register.js";
 
 type ColumnInfo = {
@@ -27,20 +27,21 @@ export function RecordTable({ client, tableName }: Props) {
 	const [reloadKey, setReloadKey] = useState(0);
 	const limit = 50;
 
-	const [prevTableName, setPrevTableName] = useState(tableName);
-	const currentPage = prevTableName !== tableName ? 1 : page;
-
-	if (prevTableName !== tableName) {
-		setPrevTableName(tableName);
-		setPage(1);
-	}
+	// テーブル名が変更されたらページを1にリセット
+	const prevTableNameRef = useRef(tableName);
+	useEffect(() => {
+		if (prevTableNameRef.current !== tableName) {
+			prevTableNameRef.current = tableName;
+			setPage(1);
+		}
+	});
 
 	useEffect(() => {
 		const fetchRecords = async () => {
 			setLoading(true);
 			setError(null);
 			try {
-				const result = await client.devRecords(tableName, currentPage, limit);
+				const result = await client.devRecords(tableName, page, limit);
 				if (isFailure(result)) {
 					setError("レコードの取得に失敗しました");
 				} else {
@@ -59,7 +60,7 @@ export function RecordTable({ client, tableName }: Props) {
 		// reloadKeyの変更でデータを再取得
 		void reloadKey;
 		fetchRecords();
-	}, [client, tableName, currentPage, reloadKey]);
+	}, [client, tableName, page, reloadKey]);
 
 	if (loading) {
 		return (
