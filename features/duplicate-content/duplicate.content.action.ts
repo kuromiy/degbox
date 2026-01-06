@@ -11,6 +11,7 @@ import type { ScanQueueRepository } from "./scan-queue.repository.js";
 
 export class DuplicateContentAction {
 	private static readonly BATCH_THRESHOLD = 10;
+	private isSimilarityScanEnqueued = false;
 
 	constructor(
 		private readonly logger: Logger,
@@ -44,17 +45,29 @@ export class DuplicateContentAction {
 	}
 
 	private async checkAndEnqueueScan(): Promise<void> {
+		if (this.isSimilarityScanEnqueued) {
+			return;
+		}
+
 		const queueCount = await this.scanQueueRepository.count();
 		if (queueCount >= DuplicateContentAction.BATCH_THRESHOLD) {
 			this.logger.debug("Queue threshold reached, enqueueing similarity scan", {
 				queueCount,
 				threshold: DuplicateContentAction.BATCH_THRESHOLD,
 			});
+			this.isSimilarityScanEnqueued = true;
 			this.jobQueue.enqueue({
 				name: "similarity-scan",
 				input: {},
-				handle: async () => this.similarityScanHandler.execute(),
+				handle: async () => {
+					try {
+						return await this.similarityScanHandler.execute();
+					} finally {
+						this.isSimilarityScanEnqueued = false;
+					}
+				},
 				onError: (error) => {
+					this.isSimilarityScanEnqueued = false;
 					this.logger.error("Similarity scan job failed", { error });
 				},
 			});

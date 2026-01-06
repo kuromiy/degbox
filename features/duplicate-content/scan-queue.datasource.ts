@@ -15,6 +15,17 @@ export class ScanQueueDataSource implements ScanQueueRepository {
 	constructor(private readonly db: Database) {}
 
 	async add(contentHashId: string): Promise<void> {
+		// 既存のエントリがあるかチェック（重複防止）
+		const existing = await this.db
+			.select({ id: SIMILARITY_SCAN_QUEUE.id })
+			.from(SIMILARITY_SCAN_QUEUE)
+			.where(eq(SIMILARITY_SCAN_QUEUE.contentHashId, contentHashId))
+			.limit(1);
+
+		if (existing.length > 0) {
+			return;
+		}
+
 		await this.db.insert(SIMILARITY_SCAN_QUEUE).values({
 			id: uuidv4(),
 			contentHashId,

@@ -44,7 +44,10 @@ export function DuplicateListTemplate<T extends DuplicateGroup>({
 							<div
 								className="h-full bg-blue-500 transition-all duration-300"
 								style={{
-									width: `${Math.min((queueCount / threshold) * 100, 100)}%`,
+									width:
+										threshold > 0
+											? `${Math.min((queueCount / threshold) * 100, 100)}%`
+											: "0%",
 								}}
 							/>
 						</div>

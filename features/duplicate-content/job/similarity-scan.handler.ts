@@ -24,13 +24,11 @@ export class SimilarityScanHandler {
 			return { processed: 0, groupsCreated: 0 };
 		}
 
-		// 既存の全dHashを取得
-		const allDhashes = await this.contentHashRepository.findByType("dhash");
-
 		let groupsCreated = 0;
 
 		for (const queueItem of queueItems) {
-			const similarPairs = await this.findSimilarHashes(queueItem, allDhashes);
+			// バッチごとに類似ハッシュを検索（メモリ効率化）
+			const similarPairs = await this.findSimilarHashesBatched(queueItem);
 
 			if (similarPairs.length > 0) {
 				const created = await this.updateOrCreateGroup(
@@ -54,36 +52,40 @@ export class SimilarityScanHandler {
 		return { processed: queueItems.length, groupsCreated };
 	}
 
-	private async findSimilarHashes(
+	private async findSimilarHashesBatched(
 		queueItem: ContentHashWithQueue,
-		allDhashes: { id: string; contentId: string; value: string }[],
 	): Promise<{ contentId: string; similarity: number }[]> {
 		const similarPairs: { contentId: string; similarity: number }[] = [];
 
-		for (const existingHash of allDhashes) {
-			// 自身は除外
-			if (existingHash.contentId === queueItem.contentId) {
-				continue;
-			}
+		// バッチごとにdHashを取得して比較
+		for await (const batch of this.contentHashRepository.findByTypeBatched(
+			"dhash",
+		)) {
+			for (const existingHash of batch) {
+				// 自身は除外
+				if (existingHash.contentId === queueItem.contentId) {
+					continue;
+				}
 
-			try {
-				const similarity = this.hashService.compareByHammingDistance(
-					queueItem.hashValue,
-					existingHash.value,
-				);
+				try {
+					const similarity = this.hashService.compareByHammingDistance(
+						queueItem.hashValue,
+						existingHash.value,
+					);
 
-				if (similarity >= SIMILARITY_THRESHOLD) {
-					similarPairs.push({
-						contentId: existingHash.contentId,
-						similarity,
+					if (similarity >= SIMILARITY_THRESHOLD) {
+						similarPairs.push({
+							contentId: existingHash.contentId,
+							similarity,
+						});
+					}
+				} catch (error) {
+					this.logger.warn("Failed to compare hashes", {
+						queueContentId: queueItem.contentId,
+						existingContentId: existingHash.contentId,
+						error,
 					});
 				}
-			} catch (error) {
-				this.logger.warn("Failed to compare hashes", {
-					queueContentId: queueItem.contentId,
-					existingContentId: existingHash.contentId,
-					error,
-				});
 			}
 		}
 
