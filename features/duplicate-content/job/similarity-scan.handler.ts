@@ -123,14 +123,16 @@ export class SimilarityScanHandler {
 		const groupIds = Array.from(existingGroups.keys());
 
 		if (groupIds.length > 1) {
-			// 複数グループが見つかった場合はマージが必要（複雑なのでログ出力のみ）
+			// 複数グループが見つかった場合はマージが必要
+			// データ不整合を防ぐため処理をスキップし、手動解決を促す
 			this.logger.warn(
-				"Multiple existing dhash groups found, manual resolution may be needed",
+				"Multiple existing dhash groups found, skipping to prevent data inconsistency. Manual resolution required.",
 				{
 					contentId,
 					groupIds,
 				},
 			);
+			return false;
 		}
 
 		const firstGroupId = groupIds[0];

@@ -12,6 +12,7 @@ import type { ScanQueueRepository } from "./scan-queue.repository.js";
 export class DuplicateContentAction {
 	private static readonly BATCH_THRESHOLD = 10;
 	private isSimilarityScanEnqueued = false;
+	private isScanning = false;
 
 	constructor(
 		private readonly logger: Logger,
@@ -45,7 +46,7 @@ export class DuplicateContentAction {
 	}
 
 	private async checkAndEnqueueScan(): Promise<void> {
-		if (this.isSimilarityScanEnqueued) {
+		if (this.isSimilarityScanEnqueued || this.isScanning) {
 			return;
 		}
 
@@ -75,7 +76,16 @@ export class DuplicateContentAction {
 	}
 
 	async runManualScan(): Promise<{ processed: number; groupsCreated: number }> {
-		return this.similarityScanHandler.execute();
+		if (this.isScanning || this.isSimilarityScanEnqueued) {
+			this.logger.warn("Similarity scan is already in progress");
+			return { processed: 0, groupsCreated: 0 };
+		}
+		this.isScanning = true;
+		try {
+			return await this.similarityScanHandler.execute();
+		} finally {
+			this.isScanning = false;
+		}
 	}
 
 	async getQueueCount(): Promise<number> {
