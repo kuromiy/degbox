@@ -6,6 +6,8 @@ import { ContentHashDataSource } from "../../../features/duplicate-content/conte
 import { DuplicateContentAction } from "../../../features/duplicate-content/duplicate.content.action.js";
 import { DuplicateContentDataSource } from "../../../features/duplicate-content/duplicate.content.datasource.js";
 import { HashService } from "../../../features/duplicate-content/hash.service.js";
+import { SimilarityScanHandler } from "../../../features/duplicate-content/job/similarity-scan.handler.js";
+import { ScanQueueDataSource } from "../../../features/duplicate-content/scan-queue.datasource.js";
 import { IllustAction } from "../../../features/illust/illust.action.js";
 import { IllustDataSource } from "../../../features/illust/illust.datasource.js";
 import { ProjectDataSource } from "../../../features/project/project.datasource.js";
@@ -106,6 +108,10 @@ export const depend: DependencyEntry[] = [
 		provider: (c: Container) =>
 			new DuplicateContentDataSource(c.get(TOKENS.DATABASE)),
 	},
+	{
+		token: TOKENS.SCAN_QUEUE_REPOSITORY,
+		provider: (c: Container) => new ScanQueueDataSource(c.get(TOKENS.DATABASE)),
+	},
 
 	// service
 	{
@@ -139,6 +145,17 @@ export const depend: DependencyEntry[] = [
 				c.get(TOKENS.TAG_COOCCURRENCE_REPOSITORY),
 			),
 	},
+	{
+		token: TOKENS.SIMILARITY_SCAN_HANDLER,
+		provider: (c: Container) =>
+			new SimilarityScanHandler(
+				c.get(TOKENS.LOGGER),
+				c.get(TOKENS.SCAN_QUEUE_REPOSITORY),
+				c.get(TOKENS.CONTENT_HASH_REPOSITORY),
+				c.get(TOKENS.DUPLICATE_CONTENT_REPOSITORY),
+				c.get(TOKENS.HASH_SERVICE),
+			),
+	},
 
 	// action
 	{
@@ -149,6 +166,9 @@ export const depend: DependencyEntry[] = [
 				c.get(TOKENS.CALCULATOR_FACTORY),
 				c.get(TOKENS.DUPLICATE_CONTENT_REPOSITORY),
 				c.get(TOKENS.CONTENT_HASH_REPOSITORY),
+				c.get(TOKENS.SCAN_QUEUE_REPOSITORY),
+				c.get(TOKENS.JOB_QUEUE),
+				c.get(TOKENS.SIMILARITY_SCAN_HANDLER),
 			),
 	},
 	{

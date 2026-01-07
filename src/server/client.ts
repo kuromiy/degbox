@@ -242,4 +242,14 @@ export class FetchClient implements ServiceIF {
 	async devRecords(_tableName: string, _page: number, _limit: number) {
 		return failure(new Error("devRecords is not allowed in FetchClient"));
 	}
+
+	async runSimilarityScan() {
+		return failure(
+			new Error("runSimilarityScan is not allowed in FetchClient"),
+		);
+	}
+
+	async getQueueCount() {
+		return failure(new Error("getQueueCount is not allowed in FetchClient"));
+	}
 }

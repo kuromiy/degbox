@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import { CONTENT_HASHS } from "../shared/database/application/schema.js";
 import type { Database } from "../shared/database/application/type.js";
 import type { ContentHash } from "./content.hash.model.js";
@@ -42,6 +42,57 @@ export class ContentHashDataSource implements ContentHashRepository {
 			.where(and(eq(CONTENT_HASHS.type, type), eq(CONTENT_HASHS.value, value)));
 
 		return rows;
+	}
+
+	async findByType(type: string): Promise<ContentHash[]> {
+		const rows = await this.db
+			.select({
+				id: CONTENT_HASHS.id,
+				contentId: CONTENT_HASHS.contentId,
+				type: CONTENT_HASHS.type,
+				value: CONTENT_HASHS.value,
+			})
+			.from(CONTENT_HASHS)
+			.where(eq(CONTENT_HASHS.type, type));
+
+		return rows;
+	}
+
+	async *findByTypeBatched(
+		type: string,
+		batchSize = 100,
+	): AsyncIterable<ContentHash[]> {
+		let cursor: string | undefined;
+
+		while (true) {
+			const conditions = cursor
+				? and(eq(CONTENT_HASHS.type, type), gt(CONTENT_HASHS.id, cursor))
+				: eq(CONTENT_HASHS.type, type);
+
+			const rows = await this.db
+				.select({
+					id: CONTENT_HASHS.id,
+					contentId: CONTENT_HASHS.contentId,
+					type: CONTENT_HASHS.type,
+					value: CONTENT_HASHS.value,
+				})
+				.from(CONTENT_HASHS)
+				.where(conditions)
+				.orderBy(CONTENT_HASHS.id)
+				.limit(batchSize);
+
+			if (rows.length === 0) {
+				break;
+			}
+
+			yield rows;
+
+			if (rows.length < batchSize) {
+				break;
+			}
+
+			cursor = rows[rows.length - 1]?.id;
+		}
 	}
 
 	async deleteByContentId(contentId: string): Promise<void> {

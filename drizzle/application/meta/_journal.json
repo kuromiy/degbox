@@ -15,6 +15,13 @@
 			"when": 1767394689984,
 			"tag": "0001_last_gladiator",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1767619007104,
+			"tag": "0002_cool_grandmaster",
+			"breakpoints": true
 		}
 	]
 }

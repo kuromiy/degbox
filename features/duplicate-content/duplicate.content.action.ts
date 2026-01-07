@@ -1,17 +1,27 @@
 import type { Logger } from "winston";
 import type { Content } from "../content/content.model.js";
+import type { JobQueue } from "../shared/jobqueue/index.js";
 import type { CalculatorFactory } from "./calculator/calculator.factory.js";
 import type { ContentHash } from "./content.hash.model.js";
 import type { ContentHashRepository } from "./content.hash.repository.js";
 import type { DuplicateGroup } from "./duplicate.content.model.js";
 import type { DuplicateContentRepository } from "./duplicate.content.repository.js";
+import type { SimilarityScanHandler } from "./job/similarity-scan.handler.js";
+import type { ScanQueueRepository } from "./scan-queue.repository.js";
 
 export class DuplicateContentAction {
+	private static readonly BATCH_THRESHOLD = 10;
+	private isSimilarityScanEnqueued = false;
+	private isScanning = false;
+
 	constructor(
 		private readonly logger: Logger,
 		private readonly factory: CalculatorFactory,
 		private readonly duplicateContentRepository: DuplicateContentRepository,
 		private readonly contentHashRepository: ContentHashRepository,
+		private readonly scanQueueRepository: ScanQueueRepository,
+		private readonly jobQueue: JobQueue,
+		private readonly similarityScanHandler: SimilarityScanHandler,
 	) {}
 
 	async register(content: Content) {
@@ -23,8 +33,63 @@ export class DuplicateContentAction {
 			await this.contentHashRepository.save(hash);
 
 			// SHA-256は即時で重複グループ更新
-			await this.updateExactGroup(content.id, hash);
+			if (hash.type === "sha256") {
+				await this.updateExactGroup(content.id, hash);
+			}
+
+			// dHashはスキャン待ちキューに追加
+			if (hash.type === "dhash") {
+				await this.scanQueueRepository.add(hash.id);
+				await this.checkAndEnqueueScan();
+			}
 		}
+	}
+
+	private async checkAndEnqueueScan(): Promise<void> {
+		if (this.isSimilarityScanEnqueued || this.isScanning) {
+			return;
+		}
+
+		const queueCount = await this.scanQueueRepository.count();
+		if (queueCount >= DuplicateContentAction.BATCH_THRESHOLD) {
+			this.logger.debug("Queue threshold reached, enqueueing similarity scan", {
+				queueCount,
+				threshold: DuplicateContentAction.BATCH_THRESHOLD,
+			});
+			this.isSimilarityScanEnqueued = true;
+			this.jobQueue.enqueue({
+				name: "similarity-scan",
+				input: {},
+				handle: async () => {
+					try {
+						return await this.similarityScanHandler.execute();
+					} finally {
+						this.isSimilarityScanEnqueued = false;
+					}
+				},
+				onError: (error) => {
+					this.isSimilarityScanEnqueued = false;
+					this.logger.error("Similarity scan job failed", { error });
+				},
+			});
+		}
+	}
+
+	async runManualScan(): Promise<{ processed: number; groupsCreated: number }> {
+		if (this.isScanning || this.isSimilarityScanEnqueued) {
+			this.logger.warn("Similarity scan is already in progress");
+			return { processed: 0, groupsCreated: 0 };
+		}
+		this.isScanning = true;
+		try {
+			return await this.similarityScanHandler.execute();
+		} finally {
+			this.isScanning = false;
+		}
+	}
+
+	async getQueueCount(): Promise<number> {
+		return this.scanQueueRepository.count();
 	}
 
 	private async updateExactGroup(contentId: string, hash: ContentHash) {

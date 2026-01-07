@@ -14,6 +14,7 @@ import type { deleteDuplicateGroup } from "../../main/apis/duplicates/duplicate.
 import type { getDuplicateGroup } from "../../main/apis/duplicates/duplicate.detail.api.js";
 import type { listDuplicateGroups } from "../../main/apis/duplicates/duplicate.list.api.js";
 import type { removeItemFromGroup } from "../../main/apis/duplicates/duplicate.remove-item.api.js";
+import type { getQueueCount, runSimilarityScan } from "../../main/apis/duplicates/duplicate.scan.api.js";
 import type { deleteIllust } from "../../main/apis/illusts/illust.delete.api.js";
 import type { detailIllust } from "../../main/apis/illusts/illust.detail.api.js";
 import type { pickupImage } from "../../main/apis/illusts/illust.pickup.api.js";
@@ -58,6 +59,8 @@ declare global {
             getDuplicateGroup: (groupId: string) => Promise<Result<ReturnTypeUnwrapped<typeof getDuplicateGroup>, unknown>>;
             listDuplicateGroups: () => Promise<Result<ReturnTypeUnwrapped<typeof listDuplicateGroups>, unknown>>;
             removeItemFromGroup: (groupId: string, contentId: string) => Promise<Result<ReturnTypeUnwrapped<typeof removeItemFromGroup>, unknown>>;
+            getQueueCount: () => Promise<Result<ReturnTypeUnwrapped<typeof getQueueCount>, unknown>>;
+            runSimilarityScan: () => Promise<Result<ReturnTypeUnwrapped<typeof runSimilarityScan>, unknown>>;
             deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, unknown>>;
             detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, unknown>>;
             pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, unknown>>;
@@ -95,6 +98,8 @@ export interface ServiceIF {
     getDuplicateGroup: (groupId: string) => Promise<Result<ReturnTypeUnwrapped<typeof getDuplicateGroup>, unknown>>;
     listDuplicateGroups: () => Promise<Result<ReturnTypeUnwrapped<typeof listDuplicateGroups>, unknown>>;
     removeItemFromGroup: (groupId: string, contentId: string) => Promise<Result<ReturnTypeUnwrapped<typeof removeItemFromGroup>, unknown>>;
+    getQueueCount: () => Promise<Result<ReturnTypeUnwrapped<typeof getQueueCount>, unknown>>;
+    runSimilarityScan: () => Promise<Result<ReturnTypeUnwrapped<typeof runSimilarityScan>, unknown>>;
     deleteIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof deleteIllust>, unknown>>;
     detailIllust: (illustId: string) => Promise<Result<ReturnTypeUnwrapped<typeof detailIllust>, unknown>>;
     pickupImage: () => Promise<Result<ReturnTypeUnwrapped<typeof pickupImage>, unknown>>;
@@ -173,6 +178,14 @@ export class ApiService implements ServiceIF {
 
     async removeItemFromGroup(groupId: string, contentId: string) {
         return window.api.removeItemFromGroup(groupId, contentId);
+    }
+
+    async getQueueCount() {
+        return window.api.getQueueCount();
+    }
+
+    async runSimilarityScan() {
+        return window.api.runSimilarityScan();
     }
 
     async deleteIllust(illustId: string) {

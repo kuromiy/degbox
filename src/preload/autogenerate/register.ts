@@ -17,6 +17,8 @@ export default {
     getDuplicateGroup: (groupId: string) => ipcRenderer.invoke("getDuplicateGroup", { groupId }),
     listDuplicateGroups: () => ipcRenderer.invoke("listDuplicateGroups", {  }),
     removeItemFromGroup: (groupId: string, contentId: string) => ipcRenderer.invoke("removeItemFromGroup", { groupId, contentId }),
+    getQueueCount: () => ipcRenderer.invoke("getQueueCount", {  }),
+    runSimilarityScan: () => ipcRenderer.invoke("runSimilarityScan", {  }),
     deleteIllust: (illustId: string) => ipcRenderer.invoke("deleteIllust", { illustId }),
     detailIllust: (illustId: string) => ipcRenderer.invoke("detailIllust", { illustId }),
     pickupImage: () => ipcRenderer.invoke("pickupImage", {  }),
