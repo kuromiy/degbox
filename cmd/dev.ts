@@ -95,6 +95,7 @@ const mainCtx = await esbuild.context({
 		".js": ".mjs",
 	},
 	format: "esm",
+	sourcemap: true,
 	plugins: [
 		createBuildLoggerPlugin({
 			processName: "メインプロセス",
