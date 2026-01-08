@@ -19,9 +19,6 @@ export async function registerProject(ctx: Context) {
 		TOKENS.APP_CONFIG,
 		TOKENS.PROJECT_CONTEXT,
 	);
-	// 新規プロジェクト登録時はProjectContextがまだ開かれていないため、
-	// DIコンテナからFILE_SYSTEMを取得せず、直接FileSystemImplを作成
-	const fileSystem = new FileSystemImpl((err) => logger.error(err));
 	const projectRepository = container.get(TOKENS.PROJECT_REPOSITORY);
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ["openDirectory"],
@@ -33,6 +30,11 @@ export async function registerProject(ctx: Context) {
 	if (!foldPath) {
 		return false;
 	}
+
+	// 新規プロジェクト登録時はProjectContextがまだ開かれていないため、
+	// DIコンテナからFILE_SYSTEMを取得せず、直接FileSystemImplを作成
+	const fileSystem = new FileSystemImpl((err) => logger.error(err), foldPath);
+
 	const IGNORED_FILES = [".DS_Store", "Thumbs.db", "desktop.ini", ".gitkeep"];
 	const files = await readdir(foldPath);
 	const visibleFiles = files.filter(
