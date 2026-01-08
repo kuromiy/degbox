@@ -33,7 +33,13 @@ export function createElectron(): ElectronProcess {
 		console.log(
 			`[${new Date().toLocaleTimeString()}] Electronプロセスを起動しています...`,
 		);
-		ps = spawn(electronPath, ["."], { stdio: "pipe" });
+		ps = spawn(electronPath, ["."], {
+			stdio: "pipe",
+			env: {
+				...process.env,
+				NODE_OPTIONS: "--enable-source-maps",
+			},
+		});
 
 		ps.stdout.on("data", (data) => {
 			console.log(`${data.toString().trim()}`);

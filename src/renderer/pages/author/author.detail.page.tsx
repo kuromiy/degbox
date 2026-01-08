@@ -4,9 +4,9 @@ import {
 	useLoaderData,
 	useNavigate,
 } from "react-router-dom";
-import { AuthorDetailTemplate } from "../../../features/author/ui/templates/author.detail.template.js";
-import type { AuthorDetailResponse } from "../../../src/main/apis/authors/author.detail.api.js";
-import { ApiService } from "../autogenerate/register.js";
+import { AuthorDetailTemplate } from "../../../../features/author/ui/templates/author.detail.template.js";
+import type { AuthorDetailResponse } from "../../../main/apis/authors/author.detail.api.js";
+import { ApiService } from "../../autogenerate/register.js";
 
 const client = new ApiService();
 

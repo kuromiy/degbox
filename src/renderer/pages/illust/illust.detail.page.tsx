@@ -5,9 +5,9 @@ import {
 	useLoaderData,
 	useNavigate,
 } from "react-router-dom";
-import type { Illust } from "../../../features/illust/illust.model.js";
-import { IllustDetailTemplate } from "../../../features/illust/ui/templates/illust.detail.template.js";
-import { ApiService } from "../autogenerate/register.js";
+import type { Illust } from "../../../../features/illust/illust.model.js";
+import { IllustDetailTemplate } from "../../../../features/illust/ui/templates/illust.detail.template.js";
+import { ApiService } from "../../autogenerate/register.js";
 
 const client = new ApiService();
 

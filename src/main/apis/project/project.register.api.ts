@@ -4,6 +4,7 @@ import { BrowserWindow, dialog } from "electron";
 import { toProjectPath } from "../../../../features/project/project.model.js";
 import { createScopedContainer } from "../../../../features/shared/container/index.js";
 import { createDatabase } from "../../../../features/shared/database/application/index.js";
+import { FileSystemImpl } from "../../../../features/shared/filesystem/index.js";
 import type { Context } from "../../context.js";
 import { createMainWindow } from "../../createMainWindow.js";
 import { openDbViewerWindow } from "../../dbviewer.window.js";
@@ -12,14 +13,12 @@ import { startServer } from "../../startServer.js";
 
 export async function registerProject(ctx: Context) {
 	const { container, event } = ctx;
-	const [logger, database, fileSystem, appConfig, projectContext] =
-		container.get(
-			TOKENS.LOGGER,
-			TOKENS.USER_DATABASE,
-			TOKENS.FILE_SYSTEM,
-			TOKENS.APP_CONFIG,
-			TOKENS.PROJECT_CONTEXT,
-		);
+	const [logger, database, appConfig, projectContext] = container.get(
+		TOKENS.LOGGER,
+		TOKENS.USER_DATABASE,
+		TOKENS.APP_CONFIG,
+		TOKENS.PROJECT_CONTEXT,
+	);
 	const projectRepository = container.get(TOKENS.PROJECT_REPOSITORY);
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ["openDirectory"],
@@ -31,6 +30,11 @@ export async function registerProject(ctx: Context) {
 	if (!foldPath) {
 		return false;
 	}
+
+	// 新規プロジェクト登録時はProjectContextがまだ開かれていないため、
+	// DIコンテナからFILE_SYSTEMを取得せず、直接FileSystemImplを作成
+	const fileSystem = new FileSystemImpl((err) => logger.error(err), foldPath);
+
 	const IGNORED_FILES = [".DS_Store", "Thumbs.db", "desktop.ini", ".gitkeep"];
 	const files = await readdir(foldPath);
 	const visibleFiles = files.filter(
@@ -68,7 +72,7 @@ export async function registerProject(ctx: Context) {
 				id: projectId,
 				name: basename(foldPath),
 				overview: "",
-				path: toProjectPath(projectPath),
+				path: toProjectPath(foldPath),
 				openedAt: now,
 				createdAt: now,
 			};

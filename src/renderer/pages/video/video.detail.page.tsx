@@ -1,9 +1,9 @@
 import { isFailure } from "electron-flow/result";
 import { Suspense } from "react";
 import { type LoaderFunctionArgs, useLoaderData } from "react-router-dom";
-import { VideoDetailTemplate } from "../../../features/video/ui/templates/video.detail.template.js";
-import type { Video } from "../../../features/video/video.model.js";
-import { ApiService } from "../autogenerate/register.js";
+import { VideoDetailTemplate } from "../../../../features/video/ui/templates/video.detail.template.js";
+import type { Video } from "../../../../features/video/video.model.js";
+import { ApiService } from "../../autogenerate/register.js";
 
 const client = new ApiService();
 

@@ -7,52 +7,47 @@ import {
 	useLoaderData,
 	useNavigate,
 } from "react-router-dom";
-import type { Illust } from "../../../features/illust/illust.model.js";
-import { IllustEditTemplate } from "../../../features/illust/ui/templates/illust.edit.template.js";
-import { ApiService } from "../autogenerate/register.js";
+import { AuthorEditTemplate } from "../../../../features/author/ui/templates/author.edit.template.js";
+import { ApiService } from "../../autogenerate/register.js";
 import {
 	type ActionError,
 	getErrorMessage,
 	isActionError,
 	isErrorResponse,
-} from "../utils/error.js";
+} from "../../utils/error.js";
 
 const client = new ApiService();
 
 export async function loader({ params }: LoaderFunctionArgs) {
-	const { illustId } = params;
-	if (!illustId) {
-		throw new Error("Illust ID is required");
+	const { authorId } = params;
+	if (!authorId) {
+		throw new Error("Author ID is required");
 	}
 
-	const response = await client.detailIllust(illustId);
+	const response = await client.getAuthorDetail(authorId, 1, 20);
 	if (isFailure(response)) {
 		throw response.value;
 	}
-	return response.value;
+	return {
+		id: response.value.id,
+		name: response.value.name,
+		urls: response.value.urls,
+	};
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-	const { illustId } = params;
-	if (!illustId) {
-		throw new Error("Illust ID is required");
+	const { authorId } = params;
+	if (!authorId) {
+		throw new Error("Author ID is required");
 	}
 
 	const formData = await request.formData();
-	const tags = formData.get("tags")?.toString() ?? "";
-	const imageItems = formData.getAll("imageItems").map(String);
-	const authorIds = formData.getAll("authorIds").map(String);
+	const name = formData.get("name")?.toString() ?? "";
+	const urls = formData.get("urls")?.toString() || "{}";
 
-	console.log(
-		`url: ${request.url}, id: ${illustId}, tags: ${tags}, imageItems: ${imageItems}, authorIds: ${authorIds}`,
-	);
+	console.log(`id: ${authorId}, name: ${name}, urls: ${urls}`);
 
-	const response = await client.updateIllust(
-		illustId,
-		tags,
-		imageItems,
-		authorIds,
-	);
+	const response = await client.updateAuthor(authorId, name, urls);
 	if (isFailure(response)) {
 		const error = response.value;
 		console.log(`response error: ${getErrorMessage(error)}`);
@@ -62,12 +57,16 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		throw new Error(getErrorMessage(error));
 	}
 
-	// 更新成功後、詳細画面へリダイレクト
-	return redirect(`/illust/${illustId}`);
+	// 更新成功後、作者詳細画面へリダイレクト
+	return redirect(`/author/${authorId}`);
 }
 
-export default function IllustEditPage() {
-	const illust = useLoaderData<Illust>();
+export default function AuthorEditPage() {
+	const author = useLoaderData<{
+		id: string;
+		name: string;
+		urls: Record<string, string>;
+	}>();
 	const actionData = useActionData<ActionError>();
 	const navigate = useNavigate();
 
@@ -83,12 +82,12 @@ export default function IllustEditPage() {
 			: undefined;
 
 	const handleCancel = () => {
-		navigate(`/illust/${illust.id}`);
+		navigate(`/author/${author.id}`);
 	};
 
 	return (
-		<IllustEditTemplate
-			illust={illust}
+		<AuthorEditTemplate
+			author={author}
 			onCancel={handleCancel}
 			fieldErrors={fieldErrors}
 			generalError={generalError}
