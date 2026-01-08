@@ -6,14 +6,14 @@ import {
 	useActionData,
 	useLoaderData,
 } from "react-router-dom";
-import { VideoRegisterTemplate } from "../../../features/video/ui/templates/video.register.template.js";
-import { ApiService } from "../autogenerate/register.js";
+import { VideoRegisterTemplate } from "../../../../features/video/ui/templates/video.register.template.js";
+import { ApiService } from "../../autogenerate/register.js";
 import {
 	type ActionError,
 	getErrorMessage,
 	isActionError,
 	isErrorResponse,
-} from "../utils/error.js";
+} from "../../utils/error.js";
 
 const client = new ApiService();
 

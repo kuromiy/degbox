@@ -1,8 +1,8 @@
 import { isFailure } from "electron-flow/result";
 import { type LoaderFunctionArgs, useLoaderData } from "react-router-dom";
-import type { Illust } from "../../../features/illust/illust.model.js";
-import { IllustSearchTemplate } from "../../../features/illust/ui/templates/illust.search.template.js";
-import { ApiService } from "../autogenerate/register.js";
+import type { Illust } from "../../../../features/illust/illust.model.js";
+import { IllustSearchTemplate } from "../../../../features/illust/ui/templates/illust.search.template.js";
+import { ApiService } from "../../autogenerate/register.js";
 
 const client = new ApiService();
 
